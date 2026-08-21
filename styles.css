@@ -1,0 +1,516 @@
+/* The conversation view.
+   Every colour, font and radius is an Obsidian variable. A panel that carries its own
+   palette looks bolted on the moment someone changes theme — and people change theme. */
+
+.colloquy-view {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  padding: 0;
+}
+
+.colloquy-thread {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding: var(--size-4-4) var(--size-4-3);
+}
+
+.colloquy-turn { margin-bottom: var(--size-4-6); }
+.colloquy-turn:last-child { margin-bottom: 0; }
+
+/* What you asked, as an object on the page — the answers are the page itself.
+
+   This is the only asymmetry in the thread and it is the one that matters: a question and
+   an answer set in the same grey text at the same size cannot be told apart while
+   scrolling, so finding what you asked means reading the replies to work out where they
+   began. Given a shape, your turns become the thing you scan and the answers become the
+   thing you read. */
+.colloquy-turn.is-mine {
+  background: var(--background-modifier-hover);
+  border-radius: var(--radius-m);
+  padding: var(--size-4-2) var(--size-4-3);
+}
+
+/* The tint already says who spoke. Labelling it as well is the same fact twice. */
+.colloquy-turn.is-mine .colloquy-who { display: none; }
+
+.colloquy-who {
+  font-size: var(--font-ui-smaller);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-muted);
+  margin-bottom: var(--size-2-2);
+}
+
+/* The answers are the content, so they are set at the size this vault reads notes at —
+   whatever the reader chose in Appearance, rather than a number picked here. A sidebar
+   inherits Obsidian's chrome sizing, which is right for a file tree and a paragraph too
+   small for prose. */
+.colloquy-body {
+  color: var(--text-normal);
+  font-size: var(--font-text-size);
+  line-height: var(--line-height-normal);
+  overflow-wrap: break-word;
+}
+
+.colloquy-body > :first-child { margin-top: 0; }
+.colloquy-body > :last-child { margin-bottom: 0; }
+
+/* A model answering in a sidebar still writes full-width tables and long code. Both scroll
+   in their own right rather than forcing the panel to, because a page that scrolls
+   sideways has lost the thread it was showing. */
+.colloquy-body table { display: block; width: fit-content; max-width: 100%; overflow-x: auto; }
+.colloquy-body pre { overflow-x: auto; }
+
+.colloquy-turn.is-failed .colloquy-body { color: var(--text-error); }
+
+.colloquy-composer {
+  border-top: 1px solid var(--background-modifier-border);
+  padding: var(--size-4-3);
+}
+
+/* Typed at the size it will be read at. A composer smaller than the answer it produces
+   makes writing the question feel like filling in a form rather than starting a note. */
+.colloquy-composer textarea {
+  width: 100%;
+  resize: vertical;
+  min-height: 4em;
+  max-height: 40vh;
+  font-size: var(--font-text-size);
+  line-height: var(--line-height-normal);
+}
+
+.colloquy-controls {
+  display: flex;
+  align-items: center;
+  gap: var(--size-4-2);
+  margin-top: var(--size-4-2);
+}
+
+/* The filename yields, the controls never do — min-width:0 is what lets a long name
+   shrink instead of pushing Send out of the panel.
+
+   Scoped like the chips so Obsidian's button styling does not turn a quiet label into a
+   third raised button in a row that already has its one action. */
+.colloquy-view .colloquy-where {
+  flex: 1;
+  min-width: 0;
+  /* display:block, not the inline-flex Obsidian gives buttons. On a flex container
+     text-align does nothing and the label sat centred in all that spare space, belonging
+     to neither the chips nor Send. It is state, so it sits with the action it reports on. */
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  text-align: right;
+  font-size: var(--font-ui-smaller);
+  color: var(--text-muted);
+  background: none;
+  border: 0;
+  box-shadow: none;
+  padding: var(--size-2-2) var(--size-4-1);
+  cursor: pointer;
+}
+
+/* It opens the note, so it reads like a link on approach — and only then, because a
+   permanent link colour would compete with Send for the eye. */
+.colloquy-view .colloquy-where:hover:not(:disabled) {
+  color: var(--text-accent);
+  text-decoration: underline;
+}
+
+/* Nothing to open yet, so nothing that suggests it. Italic because this state is a
+   sentence rather than a filename, and the shift is enough to say so without a second
+   colour in a row that already has three. */
+.colloquy-view .colloquy-where.is-pending {
+  cursor: default;
+  font-style: italic;
+  opacity: 0.75;
+}
+
+.colloquy-body button {
+  display: block;
+  margin-top: var(--size-4-2);
+}
+
+/* Quiet until reached for. Each states a fact most of the time and becomes a control only
+   when someone reaches for it, so neither competes with the sentence being written.
+
+   Scoped under .colloquy-view so it outranks Obsidian's own button styling — a chip that
+   inherits a raised button becomes the loudest thing in a row whose only real action is
+   Send. */
+.colloquy-view .colloquy-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--size-2-1);
+  flex: 0 1 auto;
+  min-width: 0;
+  height: auto;
+  font-size: var(--font-ui-small);
+  color: var(--text-muted);
+  background: none;
+  border: 0;
+  border-radius: var(--radius-s);
+  box-shadow: none;
+  padding: var(--size-2-2) var(--size-4-1);
+  cursor: pointer;
+}
+
+.colloquy-view .colloquy-chip:hover:not(:disabled) {
+  color: var(--text-normal);
+  background: var(--background-modifier-hover);
+  box-shadow: none;
+}
+
+/* Readable, and not the reason the row overflows. */
+.colloquy-chip-label {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Present enough to promise a menu, faint enough not to be read as punctuation. */
+.colloquy-chip-caret {
+  display: inline-flex;
+  flex: none;
+  opacity: 0.5;
+}
+
+.colloquy-chip-caret svg { width: 0.75em; height: 0.75em; }
+
+/* Answering as something other than what was chosen. Marked by weight and a rule under
+   the label rather than by a colour, because it is a fact and not a warning — nothing has
+   gone wrong, and the stored choice is untouched. */
+.colloquy-view .colloquy-chip.is-fallback {
+  color: var(--text-normal);
+  font-style: italic;
+}
+
+.colloquy-view .colloquy-chip.is-fallback .colloquy-chip-label {
+  text-decoration: underline dotted;
+  text-underline-offset: 3px;
+}
+
+/* Disabled still reports a fact, so it keeps its colour and only loses the affordance. */
+.colloquy-view .colloquy-chip:disabled { cursor: default; opacity: 1; }
+.colloquy-view .colloquy-chip:disabled .colloquy-chip-caret { display: none; }
+
+
+/* The panel's own action bar. Not Obsidian's view header — that can be hidden entirely
+   by the tab-title setting in a sidebar leaf, and an action nobody can find is one that
+   does not exist. */
+.colloquy-bar {
+  display: flex;
+  align-items: center;
+  gap: var(--size-2-1);
+  padding: var(--size-4-2) var(--size-4-3);
+  border-bottom: 1px solid var(--background-modifier-border);
+}
+
+.colloquy-view .colloquy-new {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--size-2-2);
+  /* Obsidian own control size. The smaller step is for annotations, and reaching for it
+     everywhere left every control in the panel one notch below the app around it. */
+  font-size: var(--font-ui-small);
+  color: var(--text-muted);
+  background: none;
+  border: 0;
+  box-shadow: none;
+  border-radius: var(--radius-s);
+  padding: var(--size-2-2) var(--size-4-1);
+  cursor: pointer;
+}
+
+.colloquy-view .colloquy-new:hover {
+  color: var(--text-normal);
+  background: var(--background-modifier-hover);
+}
+
+/* Centred against the text rather than left on its baseline. A flex wrapper with no
+   alignment of its own leaves the glyph wherever its box happens to fall — a pixel or two
+   low at every size, and unmistakable once the text around it grew. */
+.colloquy-new-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+}
+
+/* Obsidian own icon size, so these match every other icon in the app. They were 0.9em of a
+   12px label, which came to under twelve pixels. */
+.colloquy-new-icon svg {
+  width: var(--icon-s);
+  height: var(--icon-s);
+}
+
+/* A label gives a button its width; an icon has to be given one. This was twenty pixels
+   across — a target you had to aim at. */
+.colloquy-view .colloquy-new.is-icon-only {
+  justify-content: center;
+  min-width: var(--size-4-8);
+  min-height: var(--size-4-8);
+  padding: 0;
+}
+
+/* Capture and revisit on the left, decide on the right — the reading order they happen
+   in. Only the last control is pushed over, so adding a third does not scatter them. */
+.colloquy-bar .colloquy-new:last-child { margin-left: auto; }
+
+
+/* --- Deciding what a conversation was worth (ADR-0005) ------------------------------- */
+
+/* One claim, what already exists near it, and three ways out. The proportions do the
+   arguing: the claim is the largest thing on screen and the neighbours are the smallest,
+   because the question is what this note asserts, not what it resembles. */
+.modal:has(.colloquy-review-claim) { max-width: 34rem; }
+
+.colloquy-review-count {
+  font-size: var(--font-ui-smaller);
+  color: var(--text-faint);
+  margin: 0 0 var(--size-4-2);
+  letter-spacing: 0.04em;
+}
+
+.colloquy-review-claim {
+  margin: 0 0 var(--size-4-2);
+  font-size: var(--font-ui-large);
+  line-height: 1.3;
+}
+
+.colloquy-review-body {
+  color: var(--text-muted);
+  line-height: var(--line-height-normal);
+}
+
+.colloquy-review-body > :first-child { margin-top: 0; }
+.colloquy-review-body > :last-child { margin-bottom: 0; }
+
+.colloquy-review-related {
+  margin-top: var(--size-4-5);
+  padding-top: var(--size-4-3);
+  border-top: 1px solid var(--background-modifier-border);
+}
+
+.colloquy-review-related > .setting-item-description {
+  margin: 0 0 var(--size-2-2);
+  font-size: var(--font-ui-smaller);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-faint);
+}
+
+/* Merging is offered with the same weight as creating, per ADR-0005 — so these are real
+   rows rather than a footnote, but quiet enough that the page has one obvious next step. */
+.colloquy-review-related .setting-item {
+  padding: var(--size-2-3) 0;
+  border: 0;
+}
+
+.colloquy-review-related .setting-item-name { font-size: var(--font-ui-small); }
+
+.colloquy-review-related .setting-item-description {
+  font-size: var(--font-ui-smaller);
+  color: var(--text-faint);
+}
+
+/* A fact the person would otherwise have no way to learn, so it is coloured as one. */
+.colloquy-warning { color: var(--text-warning); }
+
+/* How many claims are waiting. Absent at zero rather than showing it — the resting state
+   of this queue is empty, and a badge reading "0" makes the normal case look like a task. */
+.colloquy-waiting.is-waiting {
+  margin-left: var(--size-2-1);
+  padding: 0 var(--size-2-2);
+  border-radius: var(--radius-l);
+  background: var(--color-accent);
+  color: var(--text-on-accent);
+  font-size: var(--font-ui-smaller);
+  line-height: 1.5;
+}
+
+/* What the review actually produced. Links, not paths — the question after deciding is
+   "where is it", and the answer should be one click rather than a search. */
+.colloquy-review-landed {
+  margin-top: var(--size-4-3);
+  padding-top: var(--size-4-2);
+  border-top: 1px solid var(--background-modifier-border);
+}
+
+.colloquy-review-landed > .setting-item-description {
+  margin: 0 0 var(--size-2-1);
+  font-size: var(--font-ui-smaller);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-faint);
+}
+
+.colloquy-review-landed ul { margin: 0; padding-left: var(--size-4-4); }
+
+/* When a conversation last moved, under its name in the picker. Quiet, because the name
+   is what you are scanning for and the date only settles a tie. */
+.colloquy-pick-when {
+  font-size: var(--font-ui-smaller);
+  color: var(--text-faint);
+}
+
+/* Waiting, visibly. A local model can take half a minute before its first token, and for
+   all of it a motionless ellipsis is indistinguishable from a panel that has stopped. */
+.colloquy-thinking {
+  display: inline-flex;
+  gap: 0.28em;
+  align-items: center;
+  height: var(--line-height-normal);
+}
+
+.colloquy-thinking span {
+  width: 0.36em;
+  height: 0.36em;
+  border-radius: 50%;
+  background: var(--text-faint);
+  animation: colloquy-pulse 1.25s ease-in-out infinite;
+}
+
+.colloquy-thinking span:nth-child(2) { animation-delay: 0.16s; }
+.colloquy-thinking span:nth-child(3) { animation-delay: 0.32s; }
+
+@keyframes colloquy-pulse {
+  0%, 70%, 100% { opacity: 0.25; transform: translateY(0); }
+  35%           { opacity: 1;    transform: translateY(-0.14em); }
+}
+
+/* Someone who has asked not to see motion has asked for all of it, not most of it. */
+@media (prefers-reduced-motion: reduce) {
+  .colloquy-thinking span { animation: none; opacity: 0.5; }
+}
+
+/* Send becomes Stop rather than going grey. A disabled button in the one place you are
+   looking says only "wait"; the same control, in the same place, doing the other useful
+   thing is what makes a long wait feel like something you are in rather than stuck in. */
+.colloquy-view .colloquy-controls button.is-stopping {
+  background: transparent;
+  color: var(--text-muted);
+  box-shadow: inset 0 0 0 1px var(--background-modifier-border);
+}
+
+.colloquy-view .colloquy-controls button.is-stopping:hover {
+  color: var(--text-normal);
+  box-shadow: inset 0 0 0 1px var(--background-modifier-border-hover);
+}
+
+/* The one thing wanted after a failure, so it sits with the failure rather than in a bar
+   somewhere. Quiet, because it is an offer and not an instruction. */
+.colloquy-again {
+  margin-top: var(--size-4-2);
+  font-size: var(--font-ui-smaller);
+  background: transparent;
+  box-shadow: inset 0 0 0 1px var(--background-modifier-border);
+  color: var(--text-muted);
+}
+
+.colloquy-again:hover { color: var(--text-normal); }
+
+/* Selectable, because the answers are the point.
+
+   Obsidian sets `user-select: none` across the workspace chrome — correct for tab bars and
+   ribbons, and inherited by anything that does not say otherwise. A panel full of prose you
+   might want to quote is exactly the thing that has to say otherwise.
+
+   The thread only. Chips, buttons and the filename stay unselectable: dragging across a row
+   of controls should move a selection through the text, not highlight the word "Send". */
+.colloquy-thread {
+  user-select: text;
+  -webkit-user-select: text;
+  cursor: auto;
+}
+
+/* An I-beam over prose, so it looks like what it now is. */
+.colloquy-body { cursor: text; }
+
+/* What a typed folder will actually become. Shown only when it differs from what was
+   typed — repeating somebody's own input back at them is noise. */
+.colloquy-folder-preview:not(:empty) {
+  margin-top: var(--size-2-1);
+  font-size: var(--font-ui-smaller);
+  color: var(--text-accent);
+}
+
+/* What the question is about, above the box it is typed in. Absent entirely when there is
+   nothing attached — an empty row that reserves its own space is a permanent reminder of a
+   feature you are not using. */
+.colloquy-attached { display: none; }
+
+.colloquy-attached.has-any {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--size-2-2);
+  margin-bottom: var(--size-2-2);
+}
+
+.colloquy-attachment {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--size-2-1);
+  max-width: 100%;
+  padding: var(--size-2-1) var(--size-2-2);
+  border-radius: var(--radius-s);
+  background: var(--background-modifier-hover);
+  font-size: var(--font-ui-smaller);
+  color: var(--text-muted);
+}
+
+.colloquy-attachment > span:not(.colloquy-attachment-icon) {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.colloquy-attachment-icon { display: inline-flex; flex: none; }
+.colloquy-attachment-icon svg { width: 0.9em; height: 0.9em; }
+
+/* Scoped, or Obsidian's button styling turns a dismissal into a third raised control. */
+.colloquy-view .colloquy-attachment-x {
+  flex: none;
+  padding: 0 var(--size-2-1);
+  background: none;
+  border: 0;
+  box-shadow: none;
+  color: var(--text-faint);
+  cursor: pointer;
+  line-height: 1;
+}
+
+.colloquy-view .colloquy-attachment-x:hover { color: var(--text-normal); }
+
+/* The paperclip: quiet, and first in the row — but the same size and the same target as
+   every other icon-only control here. It was 18px in a 26px box while the bar buttons were
+   16px in 32, which is the sort of difference nobody names and everybody sees. */
+.colloquy-view .colloquy-attach {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: var(--size-4-8);
+  min-height: var(--size-4-8);
+  padding: 0;
+  background: none;
+  border: 0;
+  box-shadow: none;
+  color: var(--text-muted);
+  cursor: pointer;
+}
+
+.colloquy-view .colloquy-attach svg {
+  width: var(--icon-s);
+  height: var(--icon-s);
+}
+
+.colloquy-view .colloquy-attach:hover { color: var(--text-normal); }
+
+/* What a question carried, under it in the thread. */
+.colloquy-turn-attached {
+  margin-top: var(--size-2-2);
+  font-size: var(--font-ui-smaller);
+  color: var(--text-faint);
+}

@@ -1,0 +1,81 @@
+/**
+ * Attaching something that is not in the vault yet (ADR-0011, amended).
+ *
+ * ADR-0011 said the vault and only the vault, on the grounds that what you want to ask
+ * about is usually already in it. That is often true and it is not a reason to refuse the
+ * times it is not — a photo on the desktop, something just downloaded, a screenshot that
+ * never made it in.
+ *
+ * What arrives is copied into the vault first, using Obsidian's own attachment path, so it
+ * behaves from then on exactly like anything else: the transcript can link to it, the file
+ * explorer can see it, and a sync carries it. A file sent but not saved would leave the
+ * conversation referring to something on a disk somewhere that nothing else can reach.
+ */
+import { Notice } from "obsidian";
+import { kindOf, mimeOf, refuse } from "./attach.js";
+
+/** Base64 without a FileReader, in chunks so a 4MB image does not overflow the call stack. */
+function base64Of(buffer) {
+  const bytes = new Uint8Array(buffer);
+  let binary = "";
+  for (let i = 0; i < bytes.length; i += 0x8000) {
+    binary += String.fromCharCode.apply(null, bytes.subarray(i, i + 0x8000));
+  }
+  return btoa(binary);
+}
+
+/**
+ * Opens the system file dialog and returns what was chosen, already in the vault.
+ *
+ * A hidden `<input type="file">` rather than Electron's dialog module: it is the same
+ * dialog, it needs no access to Node from the renderer, and it keeps this working if the
+ * plugin is ever run somewhere that has no Electron at all.
+ */
+export function chooseFromDisk(app, onPicked) {
+  const input = createEl("input", { attr: { type: "file", multiple: true, accept: ".png,.jpg,.jpeg,.gif,.webp,.md,.txt,.csv,.json,.yaml,.yml,.js,.ts,.py,.html,.css" } });
+  input.style.display = "none";
+  activeDocument.body.appendChild(input);
+
+  input.onchange = async () => {
+    for (const file of Array.from(input.files ?? [])) {
+      const attachment = await bringIntoVault(app, file);
+      if (attachment) onPicked(attachment);
+    }
+    input.remove();
+  };
+
+  // Removed if the dialog is dismissed, so a cancelled attach leaves nothing behind. The
+  // event is not universally reliable, which is why the change handler removes it too.
+  input.addEventListener("cancel", () => input.remove());
+  input.click();
+}
+
+/**
+ * Copies a chosen file into the vault and reads it as an attachment.
+ *
+ * The name Obsidian would have given it — `getAvailablePathForAttachment` honours whatever
+ * attachment folder the person configured, and avoids collisions — so a file attached here
+ * lands where the same file dropped into a note would have.
+ */
+async function bringIntoVault(app, file) {
+  const why = refuse({ name: file.name, size: file.size });
+  if (why) {
+    new Notice(why, 6000);
+    return null;
+  }
+
+  try {
+    const buffer = await file.arrayBuffer();
+    const path = await app.fileManager.getAvailablePathForAttachment(file.name);
+    const created = await app.vault.createBinary(path, buffer);
+
+    const kind = kindOf(file.name);
+    return kind === "text"
+      ? { kind, name: created.name, path: created.path, text: new TextDecoder().decode(buffer) }
+      : { kind, name: created.name, path: created.path, mime: mimeOf(file.name), data: base64Of(buffer) };
+  } catch (err) {
+    // Named, because "could not attach" leaves somebody guessing which of three files failed.
+    new Notice(`${file.name} could not be brought into the vault: ${err?.message ?? err}`, 8000);
+    return null;
+  }
+}

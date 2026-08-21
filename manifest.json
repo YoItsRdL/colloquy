@@ -1,0 +1,10 @@
+{
+  "id": "colloquy",
+  "name": "Colloquy",
+  "version": "1.0.0",
+  "minAppVersion": "1.4.0",
+  "description": "Ask a model anything from inside Obsidian. Every exchange lands in your vault as markdown, and the markdown remembers.",
+  "author": "Ibon Escalada",
+  "isDesktopOnly": false,
+  "authorUrl": "https://github.com/YoItsRdL"
+}

@@ -1,0 +1,8 @@
+node_modules/
+
+# The build output. Committed only on a release, as a release asset — a bundle in every
+# commit makes every diff twice as long and the second half unreadable.
+main.js
+
+# Whatever vault this is being tested against.
+test-vault/

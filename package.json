@@ -1,0 +1,29 @@
+{
+  "name": "colloquy",
+  "version": "0.1.0",
+  "type": "module",
+  "description": "Ask a model anything from inside Obsidian. Every exchange lands in your vault as markdown, and the markdown remembers.",
+  "scripts": {
+    "build": "node build.mjs",
+    "watch": "node build.mjs --watch",
+    "test": "node --test *.test.js",
+    "gate": "node scripts/gate.mjs"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "esbuild": "^0.25.0"
+  },
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/YoItsRdL/colloquy.git"
+  },
+  "keywords": [
+    "obsidian",
+    "obsidian-plugin",
+    "ai",
+    "llm",
+    "ollama",
+    "notes"
+  ]
+}

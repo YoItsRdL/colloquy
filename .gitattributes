@@ -1,0 +1,17 @@
+# Line endings.
+#
+# Without this, git converts on checkout and the working tree drifts from the index on a
+# Windows machine — three conversations showed as modified with no change in them, which
+# is noise that hides the diffs that matter.
+#
+# Vault content and source are normalised to LF in the repository. What lands on disk is
+# git's business; what is committed should be the same bytes on every machine.
+* text=auto eol=lf
+
+# Not text, and not diffable.
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.webp binary
+*.pdf binary
