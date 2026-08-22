@@ -75,7 +75,7 @@ and merge flow, search-before-create, the topic and duplicate gates. Roughly six
 and their tests, all of which existed to manage a risk we no longer take.
 
 **Bad.** `10-notes/` no longer grows by itself, and nothing proposes durable knowledge any
-more. That capability is genuinely lost, not relocated. `/process` in the terminal still
+more. That capability is genuinely lost, not relocated. Promoting a conversation by hand still
 does it, deliberately and with a person present, which is where that judgment belongs.
 
 **Bad.** Three ADRs in one day on the same subject, two of them now superseded. The record

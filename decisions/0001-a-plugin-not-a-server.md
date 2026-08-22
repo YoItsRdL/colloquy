@@ -5,7 +5,7 @@
 
 > The gateway's own ADRs are referenced below by number and are no longer linkable: that
 > directory was deleted in TKT-0301. They are in git history, at the last commit that
-> contained `_system/gateway/decisions/`.
+> contained the server's own decision records.
 **Supersedes:** the gateway's architecture entirely. Its
 ADR-0001 of the gateway (provider seam),
 ADR-0004 of the gateway

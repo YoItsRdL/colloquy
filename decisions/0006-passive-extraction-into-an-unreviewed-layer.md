@@ -11,9 +11,9 @@ ADR-0005 put a person in front of every proposal, and it works — the first rea
 a false claim (*"Claude Opus 5 does not exist"*) that a 4B local model was confident about,
 and the second run correctly offered to merge rather than duplicate it.
 
-It also costs a click per conversation, and the vault's own research is unambiguous about
-what that does: *"the most consistent predictor of abandonment is how expensive it is to
-add a note correctly."* A gate nobody passes through protects nothing.
+It also costs a click per conversation, and the most consistent predictor of somebody
+abandoning a notes system is how expensive it is to add a note correctly. A gate nobody
+passes through protects nothing.
 
 Two things changed since ADR-0005 was written:
 
@@ -24,7 +24,8 @@ argument for asking first.
 **We saw exactly what unattended writing produces.** Both local models are confidently
 wrong about the same thing, because the conversations are about the edge of what they know.
 `gemma3` additionally returns topics where the vault demands claims — *"Qwen3 vs. Claude 3
-Comparison"* is the failure `/process` names first.
+Comparison"* is a topic, not a claim, and a topic is the first thing any promotion rule
+refuses.
 
 So the question is not whether to automate, but what the automated output is allowed to
 claim. The assistants this was modelled on — ChatGPT, Gemini — do not passively write a
@@ -71,7 +72,8 @@ a re-read. Nothing else in the vault may link into it or depend on it.
 ## Consequences
 
 **Good.** Capture is now genuinely free — ask a question, and by the time you look again
-the claims are waiting. That is the property the vault's research says matters most.
+the claims are waiting. Capture that costs nothing is the property that decides whether a
+notes system survives its first month.
 
 **Good.** The queue is reviewed at whatever pace suits, in one sitting over many
 conversations, instead of one modal per conversation at the moment of least interest.

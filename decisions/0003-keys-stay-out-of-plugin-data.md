@@ -22,7 +22,7 @@ would be committed and pushed to GitHub on the next commit, through a mechanism 
 would think to check, in a directory nobody reads diffs for.
 
 The streaming spike tested the alternative, and it works: `app.vault.adapter.read()`
-reaches `_system/gateway/.env` — a dotfile, inside a directory Obsidian hides from its
+reaches a `.env` beside the server — a dotfile, inside a directory Obsidian hides from its
 own file explorer — and returned the key on the first attempt.
 
 ## Decision
@@ -48,7 +48,7 @@ would matter if it were published.
 **Bad.** Setting a key means editing a file, which is worse than a settings field. That
 is the cost of the file not being tracked, and it is paid once per provider.
 
-**Bad.** The path `_system/gateway/.env` names a component being superseded. Renaming it
+**Bad.** That `.env` sits beside a component being superseded. Moving it
 is recorded rather than done, because moving a secrets file and changing its readers in
 the same step is how a working setup breaks quietly.
 

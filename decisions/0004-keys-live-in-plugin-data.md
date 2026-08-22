@@ -17,7 +17,7 @@ the gateway's own settings screen "existed because a server could not read a fil
 simply incorrect. That screen existed because editing a dotfile by hand is hostile, which
 is just as true inside Obsidian.
 
-**It is impossible on a phone.** There is no way to edit `_system/gateway/.env` from
+**It is impossible on a phone.** There is no way to edit a dotfile beside a server from
 Obsidian mobile. So keys could only ever be configured on one machine — which gives up
 the single largest reason ADR-0001 chose a plugin.
 

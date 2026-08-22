@@ -9,7 +9,8 @@ scope entirely.
 ## Context
 
 Capture works. Conversations land in `00-inbox/` and stay there, and every one of them
-carries a line saying to run `/process`. That command exists and is good — it searches
+carries a line pointing at a promotion step run by hand elsewhere. That step exists and is
+good — it searches
 before it writes, defaults to merging rather than creating, and treats an unprocessed
 inbox as an acceptable outcome. But it lives in a terminal, so the trail goes cold at the
 point the conversation was captured — the judgment about what it was worth happens
@@ -34,12 +35,12 @@ instructions lose to task-completion momentum every time, so I stopped writing
 instructions and started writing gates."* One card at a time is the gate.
 
 **Search before create, shown but never blocking.** Every proposal is accompanied by what
-already exists on the subject. The vault's research killed the idea of a similarity gate —
-it "blocks precisely the notes the system exists to produce" — so this informs the person
-and never vetoes them. What was found is recorded in `related:` whether or not a new note
+already exists on the subject. A similarity gate was considered and rejected: it blocks
+precisely the notes such a system exists to produce, so this informs the person and never
+vetoes them. What was found is recorded in `related:` whether or not a new note
 was created, because that is the evidence the search happened.
 
-**Merging is a first-class outcome, not a fallback.** `/process` says to default to
+**Merging is a first-class outcome, not a fallback.** The rule being followed is to default to
 editing an existing note, and duplication is the failure this system is least able to
 detect afterwards. Merge is offered with equal weight to create.
 
@@ -65,9 +66,9 @@ it — rather than in a terminal, later, if at all.
 **Good.** Search-before-create becomes something the person sees rather than something an
 agent claims to have done.
 
-**Bad.** This duplicates part of what `/process` already does, and the two can drift. The
+**Bad.** This duplicates part of what that manual step already does, and the two can drift. The
 mitigation is that they share the same rules by being written from the same notes, not by
-sharing code — and `/process` remains the more capable of the two, because it can read and
+sharing code — and the manual step remains the more capable of the two, because it can read and
 merge across the whole vault without asking permission for each step.
 
 **Bad.** The scope rule that made this plugin easy to reason about is now qualified. "It
@@ -80,12 +81,13 @@ thing tedious rather than impossible, which is the most that an interface can do
 
 ## Alternatives rejected
 
-**Triage in the plugin, promotion in `/process`.** Recommended first, and rejected by the
+**Triage in the plugin, promotion by hand elsewhere.** Recommended first, and rejected by the
 person whose vault it is: the point of the plugin is that the work happens where they are,
 and sending the important half to a terminal defeats it.
 
 **Auto-promotion with a review afterwards.** Review-after-write is not review. The notes
 are already in the vault and already being retrieved.
 
-**A similarity gate that blocks near-duplicates.** Already rejected by the vault's own
-research on three counts, and rejecting it again here for the same reasons.
+**A similarity gate that blocks near-duplicates.** Rejected on three counts, the decisive one
+being that it blocks precisely the atomic notes such a system exists to produce: two notes
+about the same subject, saying different things, look identical to a similarity check.
