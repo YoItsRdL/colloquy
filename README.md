@@ -1,12 +1,13 @@
 # Colloquy
 
-Stop losing your best AI conversations. They become notes in your vault, and the next one knows what you've been working on.
+AI chat in a side panel. Conversations are saved to your vault as markdown notes, and
+summarised so later ones have the context. Supports Ollama, OpenAI, Anthropic, Google and
+DeepSeek.
 
-Every conversation is written to your vault as markdown — yours, searchable, linkable, and
-still there if this plugin disappears. A few minutes after each one, it reads what you were
-doing and keeps a short note of it, so the next conversation starts already knowing.
-
-Works with a local model through Ollama, or with OpenAI, Anthropic, Google or DeepSeek.
+Every conversation is written to your vault as it happens — searchable, linkable, and still
+readable if this plugin goes away. A few minutes after each one, the plugin reads it and
+keeps a short account of what you were doing, which later conversations are given as
+background.
 
 ## Two things it does that you should know before installing
 
