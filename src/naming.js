@@ -25,6 +25,7 @@ export async function nameConversation(view, candidate) {
   if (moved === path) return;
 
   session.file = moved;
+  view.plugin.sweep.renamed(path, moved);
   // Only if this is still the conversation on screen; otherwise the panel has moved on.
   if (view.session === session) view.where.show(moved);
 }

@@ -57,6 +57,19 @@ export function createSweep(plugin, { idleMs = IDLE_MS } = {}) {
     }, idleMs));
   }
 
+  /**
+   * The first answer renames the conversation, and the clock was started under the name it
+   * had before. Left alone, the timer fires on a path nothing lives at any more and the
+   * conversation waits for the next catch-up instead of being read when it went quiet.
+   */
+  function renamed(from, to) {
+    if (from === to || !timers.has(from)) return;
+    clearTimeout(timers.get(from));
+    timers.delete(from);
+    changed.delete(from);
+    touch(to);
+  }
+
   function stop() {
     for (const timer of timers.values()) clearTimeout(timer);
     timers.clear();
@@ -144,5 +157,5 @@ export function createSweep(plugin, { idleMs = IDLE_MS } = {}) {
     plugin.lastRead = { at: Date.now(), reason };
   }
 
-  return { touch, stop, read, catchUp };
+  return { touch, renamed, stop, read, catchUp };
 }

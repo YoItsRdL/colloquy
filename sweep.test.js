@@ -332,3 +332,35 @@ test("why nothing was read is recorded, even though nobody is interrupted", asyn
   await createSweep(fine.plugin).read(CONVERSATION);
   assert.equal(fine.plugin.lastRead.reason, null, "and success clears it");
 });
+
+/**
+ * The clock is keyed on path and the first answer renames the file. Told nothing, the timer
+ * fires on a name nothing lives at, returns without a word, and the conversation waits for
+ * the next catch-up — which is how 1.0.0 shipped.
+ */
+test("a conversation renamed mid-countdown is still read when it goes quiet", async () => {
+  const { plugin, files } = harness();
+  const named = "00-inbox/2026/08/19/is-the-train-quicker.md";
+  const sweep = createSweep(plugin, { idleMs: 5 });
+
+  sweep.touch(CONVERSATION);
+  files.set(named, files.get(CONVERSATION));
+  files.delete(CONVERSATION);
+  sweep.renamed(CONVERSATION, named);
+  await new Promise((resolve) => setTimeout(resolve, 60));
+
+  assert.equal(records(files).length, 1, "read under the name it ended up with");
+});
+
+test("a clock left on the old name reads nothing at all", async () => {
+  const { plugin, files } = harness();
+  const named = "00-inbox/2026/08/19/is-the-train-quicker.md";
+  const sweep = createSweep(plugin, { idleMs: 5 });
+
+  sweep.touch(CONVERSATION);
+  files.set(named, files.get(CONVERSATION));
+  files.delete(CONVERSATION);
+  await new Promise((resolve) => setTimeout(resolve, 60));
+
+  assert.deepEqual(records(files), [], "which is the failure the line above prevents");
+});
