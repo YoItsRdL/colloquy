@@ -3,7 +3,7 @@
   "name": "Colloquy",
   "version": "1.0.0",
   "minAppVersion": "1.5.7",
-  "description": "AI chat in a side panel. Conversations are saved to your vault as markdown notes, and summarised so later ones have the context. Supports Ollama, OpenAI, Anthropic, Google and DeepSeek.",
+  "description": "An AI that lives in your notes, and remembers them. Every conversation is saved to your vault as markdown, then summarised so the next one starts with the context. Supports Ollama, OpenAI, Anthropic, Google and DeepSeek.",
   "author": "Ibon Escalada",
   "isDesktopOnly": false,
   "authorUrl": "https://github.com/YoItsRdL"
