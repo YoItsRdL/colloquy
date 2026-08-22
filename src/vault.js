@@ -1,12 +1,9 @@
 /**
- * Writing conversations into the vault (ADR-0001, standard 3).
+ * Writing conversations into the vault.
  *
- * Through Obsidian's API rather than the filesystem, so the file explorer, the graph,
- * backlinks and any sync see a conversation the moment it lands. The gateway wrote
- * behind Obsidian's back and the vault only noticed on a rescan.
- *
- * Append-only markdown, and nothing here needs this plugin to read it back. If Obsidian
- * and every provider vanish, the notes are still notes.
+ * Through Obsidian's API rather than the filesystem, so the explorer, the graph and any
+ * sync see a conversation the moment it lands. Append-only markdown: if Obsidian and every
+ * provider vanish, the notes are still notes.
  */
 import { folderFor, foldersToCreate, nameFor, freeName } from "./paths.js";
 
@@ -31,18 +28,11 @@ const freePath = (app, folder, base) =>
   freeName(folder, base, (path) => Boolean(app.vault.getAbstractFileByPath(path)));
 
 /**
- * Frontmatter matching the vault's own schema, and nothing besides.
+ * Seven fields and nothing besides. This used to add `source`, `provider`, `model` and
+ * `started` too, none of which anything read — `started` was `uid` in another format, and
+ * `provider`/`model` froze whichever model answered first while the chips moved on.
  *
- * The schema is seven fields and the rule beside it is "do not invent other fields —
- * unmaintained metadata lies". This wrote five of its own: `source: plugin`, `provider`,
- * `model` and `started`, none of which anything ever read, plus `noticed`, which the sweep
- * does read and which earns its place because the alternative is a plugin-side ledger keyed
- * on paths that get renamed (ADR-0006).
- *
- * The four that went were not merely spare. `started` was `uid` again in another format.
- * `provider` and `model` recorded whichever model answered first and then stayed put while
- * the chips moved on — and every turn in the body already carries the model that produced
- * it, which is the accurate version of the same fact.
+ * `noticed` is added later by the sweep, and earns it: see ADR-0006.
  */
 function header({ question, context, date }) {
   return [
@@ -58,9 +48,6 @@ function header({ question, context, date }) {
     "",
     `# ${question}`,
     "",
-    // Only what is true of any vault. This used to close by telling the reader to run
-    // `/process` and pointing them at `10-notes/` — a command and a folder belonging to the
-    // vault this was built in, written into every conversation anybody else would ever have.
     "> Captured automatically. A few minutes after this goes quiet it is read, and a short",
     `> account of what we were doing is kept in \`${context}/\`, so later conversations have it.`,
     "",
@@ -70,13 +57,7 @@ function header({ question, context, date }) {
   ].join("\n");
 }
 
-/**
- * Starts a conversation file and returns its path.
- *
- * Filed by day — `Conversations/2026/08/19/` — so the name can be about the subject alone.
- * The date used to be both the folder and the first ten characters of every filename in it,
- * which spent the most readable part of a name repeating what the folder already said.
- */
+/** Filed by day, so the filename can be about the subject alone. */
 export async function startConversation(app, { question, root, context, now = new Date() }) {
   for (const folder of foldersToCreate(now, root)) await ensureFolder(app, folder);
 
@@ -86,57 +67,39 @@ export async function startConversation(app, { question, root, context, now = ne
 }
 
 /**
- * Renames a conversation once the model has given it a better name (TKT-0107).
+ * Through `fileManager` rather than `vault`, because that is the call that updates
+ * anything linking to the file. The heading is rewritten with it.
  *
- * Through `fileManager`, not `vault`, because that is the call that updates anything
- * linking to the file. Nothing links to a conversation seconds after it is created, but
- * using the weaker call would make that luck rather than design.
- *
- * The heading is rewritten with it. A file named one thing and titled another is a note
- * that disagrees with itself, and the heading was only ever the question anyway.
- *
- * @returns {Promise<string>} the path now, which is the old one if anything went wrong
+ * @returns the path now, which is the old one if anything went wrong.
  */
 export async function renameConversation(app, path, title) {
   const file = app.vault.getAbstractFileByPath(path);
   if (!file || !title) return path;
 
-  // The folder already carries the date, so the new name is the subject and nothing else.
   const folder = path.slice(0, path.lastIndexOf("/"));
   const wanted = freePath(app, folder, title.slug);
   if (wanted === path) return path;
 
   try {
-    // Read and rewrite in one call rather than as two. Naming happens while the answer is
-    // still arriving and the next turn may already be appending; `modify` would write back
-    // a copy read before that turn and swallow it, where `process` cannot.
+    // Naming happens while the answer is still arriving and the next turn may already be
+    // appending; `modify` would read, then write back over it. `process` cannot.
     await app.vault.process(file, (text) => text.replace(/^# .*$/m, `# ${title.text}`));
     await app.fileManager.renameFile(file, wanted);
     return wanted;
   } catch {
-    // A conversation with a plain name is a working conversation. Renaming is a courtesy
-    // and must never cost the turn it was trying to improve.
-    return path;
+    return path;   // renaming is a courtesy; it must not cost the turn it was improving
   }
 }
 
-/**
- * One finished turn. Appended whole, never per chunk: partial words interleaved into the
- * file would make it unreadable, and the file is the product rather than the screen.
- */
+/** One finished turn, appended whole — partial words would make the file unreadable. */
 export async function appendTurn(app, path, who, text, now = new Date()) {
   const file = app.vault.getAbstractFileByPath(path);
   if (!file) throw new Error(`the conversation file is gone: ${path}`);
   await app.vault.append(file, `**${who}** _(${clock(now)})_\n\n${text.trim()}\n\n`);
 
-  // The turn first, then the date it changed. `updated` was written once at creation and
-  // never again, so a conversation carried on for a week still claimed to be untouched
-  // since the day it started — exactly the unmaintained metadata the vault's own schema
-  // note warns about. Maintaining it is cheaper than explaining it.
-  //
-  // Skipped when it already says today, so a long conversation is not one frontmatter
-  // rewrite per turn — and wrapped, because the turn is the product and a date is a
-  // courtesy that must never cost one.
+  // `updated` was written once at creation and never again, so a conversation carried on
+  // for a week still claimed to be untouched. Skipped when it already says today; wrapped,
+  // because the turn is the product and a date is a courtesy.
   const today = stamp(now);
   if (app.metadataCache?.getFileCache(file)?.frontmatter?.updated === today) return;
   try {

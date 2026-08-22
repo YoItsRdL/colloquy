@@ -1,19 +1,12 @@
 /**
- * Ollama, running on this machine (TKT-0105).
+ * Ollama, running on this machine.
  *
- * Speaks the OpenAI wire format, so the streaming, the error handling and the model
- * listing are all the ones already shipped. What is different is what it needs to be
- * configured with.
+ * Speaks the OpenAI wire format, so streaming, errors and model listing are the ones
+ * already shipped. What differs is configuration: it has no API key, so `keyVar` holds a
+ * URL and `keyKind` says so, which is how the settings screen knows to show an address
+ * field rather than a password box.
  *
- * **It has no API key.** Every other provider is configured by a secret; this one is
- * configured by an address, because the thing being named is a server rather than an
- * account. So `keyVar` holds a URL and `keyKind` says so, which is how the settings
- * screen knows to show a plain field with a sensible default instead of a password box
- * asking for a key that does not exist.
- *
- * The wire format still wants a bearer token and Ollama still ignores it, so a constant
- * is sent rather than inventing a way to omit it — one shape for every provider is worth
- * more than saving a header nobody reads.
+ * The wire format wants a bearer token and Ollama ignores it, so a constant is sent.
  */
 import * as wire from "./openai-wire.js";
 

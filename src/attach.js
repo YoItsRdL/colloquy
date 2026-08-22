@@ -1,13 +1,11 @@
 /**
  * Asking about something in your vault (ADR-0011).
  *
- * Two kinds, because they are genuinely different problems. A note is text, so it folds
- * into the question and every provider understands it without knowing anything happened.
- * An image has to reach the wire, so each adapter renders it in its own shape and a model
- * that cannot see gets told so rather than sent something it will ignore.
+ * Two kinds, because they are different problems. A note is text, so it folds into the
+ * question and every provider reads it. An image has to reach the wire, where each API
+ * wants a different shape.
  *
- * Pure: what counts as attachable, what it costs, and how it becomes a message. Reading
- * the bytes is Obsidian's job and is done by the caller.
+ * Pure — reading the bytes is the caller's job.
  */
 
 /**

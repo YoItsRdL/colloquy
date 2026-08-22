@@ -1,22 +1,13 @@
 /**
- * Noticing what a conversation was about, for a system that is learning about us (ADR-0007).
+ * Noticing what a conversation was about (ADR-0007).
  *
- * Not claims. Claims about the world are what a small local model gets confidently wrong —
- * it told us Claude Opus 5 does not exist while we were talking to it. What it cannot be
- * wrong about is what *we* were doing: the subject we were circling, the constraint we kept
- * coming back to, what we ruled out. That is true whether or not the model's facts were.
- *
- * So the record is written in the first person, from inside the conversation, and it
- * carries context rather than knowledge.
+ * Context, not claims. A small local model gets facts about the world confidently wrong;
+ * what it cannot be wrong about is what we were doing, because it was there.
  */
 
 /**
- * A backstop against a runaway answer, not a style rule.
- *
- * It was 120, which is about four sentences — and it threw away a perfectly good account
- * for running slightly over, leaving nothing recorded at all. A record a little longer than
- * intended beats no record, so this now only catches output that has clearly stopped
- * answering the question and started retelling the transcript.
+ * A backstop against a runaway answer, not a style rule. At 120 it threw away good accounts
+ * for running slightly over, which left nothing recorded at all.
  */
 const MAX_WORDS = 220;
 
@@ -24,29 +15,15 @@ const MAX_WORDS = 220;
 const OURS = /\b(we|we're|we've|our|us|you|you're|your)\b/i;
 
 /**
- * An account written from outside, which is a way of starting a sentence rather than a
- * word to ban.
- *
- * This matched anywhere at first, and threw away a good record for the phrase "we
- * ultimately guided the conversation towards…" — which is someone who was there, describing
- * what they did. Anchored to the start of a sentence it still catches "The conversation
- * outlines…" and "The user was asking…", which are the failures it was written for.
+ * Writing from outside is a way of starting a sentence, not a word to ban. Unanchored, this
+ * threw away "we ultimately guided the conversation towards…" — somebody who was there.
  */
 const DISTANT = /(^|[.!?]\s+)(the|this)\s+(conversation|discussion|exchange|user|chat|thread|dialogue)\b/i;
 
 /**
- * The instructions, which come *before* the conversation rather than after it.
- *
- * Both halves of this were learned the hard way from gemma3:4b. Worked examples are copied
- * out verbatim: an example drawn from the same subject supplied the opening sentence of the
- * record it was meant to be shaping, and when it was changed to a neutral subject the model
- * wrote about that subject instead — inventing a conversation about coaches to Malaga in
- * place of the one it had been given. So there are no example sentences here at all, only
- * rules, and nothing in this prompt is a sentence worth stealing.
- *
- * And the conversation goes last. Whatever sits closest to the answer carries the most
- * weight, and that should be the thing being described rather than the instructions for
- * describing it.
+ * No example sentences, and the conversation goes last. Both learned from gemma3:4b: it
+ * copied worked examples out verbatim, and once wrote about the example's subject instead
+ * of the conversation it had been given.
  */
 const BEFORE = [
   "You are recording what a conversation says about the people in it, for a system that is",
@@ -80,18 +57,12 @@ const AFTER = [
 ].join("\n");
 
 /**
- * What the model returned, and — when that is nothing usable — which rule said so.
+ * What the model returned, and which rule refused it when nothing usable came back. This
+ * runs unattended, so the reason is the only evidence anybody gets.
  *
- * The reason is carried out rather than thrown away because this runs unattended: the only
- * evidence anybody ever gets that the sweep is unhappy is one line on the settings screen,
- * and "could not read it" on repeat tells you nothing you can act on. "The account was
- * written from outside the conversation" does.
- *
- * @returns {{context: string|null, why: string|null}} `context` is the account, `""` when
- * the conversation genuinely said nothing about us, or `null` when nothing usable came
- * back. Those three are kept apart because "nothing to record" is an ordinary outcome and
- * "the model did not answer" is not — reporting the second as the first is how a broken
- * sweep looks like a quiet one.
+ * @returns {{context: string|null, why: string|null}} `""` means it looked and found
+ * nothing, `null` means it did not answer. Reporting the second as the first is how a
+ * broken sweep looks like a quiet one.
  */
 export function inspect(raw) {
   const text = String(raw ?? "").replace(/<think>[\s\S]*?<\/think>/gi, "");

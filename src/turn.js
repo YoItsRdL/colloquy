@@ -1,32 +1,15 @@
 /**
- * One exchange: ask, stream, record (ADR-0001, ADR-0009).
+ * One exchange: ask, stream, record (ADR-0009).
  *
- * One provider, one model, the one you chose. There used to be a chain here that walked to
- * a second provider when the first refused, classified the refusal into a taxonomy, kept a
- * register of which models were cooling off, and offered to continue somewhere that cost
- * money. It was written when every hosted provider was out of credit and a local model was
- * not an option; it answered a question nobody has any more, at the price of a person never
- * being sure which model had actually replied.
- *
- * What is left is what a person needs: the answer, or a plain account of why there is none.
+ * One provider, one model, the one you chose. There is no fallback chain any more — see
+ * ADR-0009 for what it cost and why it went.
  */
 
-/**
- * What the model is sent: the conversation, with any background in front of it.
- *
- * Prepended here rather than pushed into the history, so it never reaches the transcript
- * and cannot be sent twice — the file records what was said, and background was not said
- * by anybody.
- */
+/** Background rides in front of the history rather than inside it, so it is sent once. */
 const messagesFor = (session) =>
   (session.context ? [{ role: "user", text: session.context }, ...session.history] : session.history);
 
-/**
- * Chunks from an adapter, whichever way it can produce them.
- *
- * An adapter without `stream()` yields its whole reply as one chunk, so nothing above
- * branches on provider capability.
- */
+/** An adapter without `stream()` yields its whole reply as one chunk. */
 async function* chunksFrom({ provider, model, key }, messages, signal) {
   if (typeof provider.stream === "function") {
     yield* provider.stream({ model, messages, key, signal });
@@ -36,17 +19,12 @@ async function* chunksFrom({ provider, model, key }, messages, signal) {
 }
 
 /**
- * A refusal that reached the vault reading "Failed to fetch" and nothing else.
+ * "Failed to fetch" is what a browser says for no connection, a blocked origin, or an
+ * error too malformed to read — three words naming none of them, written into a note
+ * somebody re-reads weeks later.
  *
- * That is what a browser says when a request never produced a usable response — no
- * connection, a blocked origin, or an error the provider returned without the headers a
- * browser needs to read it. Three words that name none of those, written into a note
- * someone will re-read weeks later.
- *
- * So it is widened into a sentence, and deliberately not into a diagnosis: which of those
- * happened is not knowable from here, and guessing would be worse than saying so. Every
- * other message is passed through exactly as the provider wrote it — it knows what went
- * wrong and this does not.
+ * Widened into a sentence, and deliberately not into a diagnosis. Every other message is
+ * passed through as the provider wrote it.
  */
 function explain(detail, config) {
   if (!/^(Failed to fetch|fetch failed|Load failed|NetworkError.*)$/i.test(detail.trim())) {
@@ -59,14 +37,8 @@ function explain(detail, config) {
 }
 
 /**
- * Runs a turn and reports progress as it goes.
- *
- * A partial reply is kept. Whatever arrived before a stream broke is still what the model
- * said, and it is usually the most useful thing on the screen when something has gone
- * wrong — discarding it to keep the failure tidy would be tidying away the answer.
- *
- * @param {{onChunk: Function}} watch
- * @returns {{reply: string, answered: object|null, detail: string|null}}
+ * Runs a turn. A partial reply is kept: whatever arrived before a stream broke is still
+ * what the model said, and usually the most useful thing on screen when something failed.
  */
 export async function runTurn(config, session, watch = {}, signal) {
   let reply = "";
@@ -77,9 +49,7 @@ export async function runTurn(config, session, watch = {}, signal) {
     }
     return { reply, answered: config, stopped: false, detail: null };
   } catch (err) {
-    // Stopping is not failing. The person asked for it, so there is nothing to report and
-    // nothing to apologise for — what arrived before they stopped is kept and treated as
-    // the answer, because it is.
+    // Stopping is not failing — the person asked for it, so there is nothing to report.
     if (signal?.aborted) return { reply, answered: config, stopped: true, detail: null };
 
     return { reply, answered: null, stopped: false, detail: explain(String(err?.message ?? err), config) };

@@ -1,17 +1,9 @@
 /**
- * Provider and model, as two chips beside the composer (TKT-0101).
+ * Provider and model, as two chips beside the composer.
  *
- * Two controls rather than one list, because they are two questions. Which provider
- * answers is about money and which account; which model is about how capable and how
- * fast. A single list forced them into one act and made the cheap question look
- * identical to the expensive one.
- *
- * The second chip only ever lists the chosen provider's models, so it is as long as one
- * catalogue instead of all of them — with four keys configured that was 114 rows.
- *
- * Built on Obsidian's own `Menu`. The gateway hand-rolled this popover and had to
- * hand-roll arrow keys, Escape, focus return and dismissal with it; every one of those is
- * behaviour the platform already has, and a reimplementation of them is a worse one.
+ * Two controls rather than one list, because they are two questions: which provider is
+ * about money, which model is about capability. One list made the cheap question look
+ * identical to the expensive one, and ran to 114 rows with four keys configured.
  */
 import { Menu, setIcon } from "obsidian";
 import { listModels } from "./models.js";

@@ -1,14 +1,9 @@
 /**
  * Handing back what earlier conversations noticed (ADR-0008).
  *
- * The half that makes the record memory rather than a diary. Accounts were being written
- * and read by nothing, which is the same defect the `noticed:` marker had before the
- * catch-up pass existed: a store that is only ever written to is not a store.
- *
- * What goes across is deliberately weak. It is offered as background that may be wrong and
- * may be stale, never as instruction — because these records are an agent's reading of a
- * conversation, and a reading can be skewed. The one thing a wrong record must never do is
- * arrive with the authority of something we said.
+ * What goes across is deliberately weak: background that may be wrong and may be stale,
+ * never instruction. These are an agent's reading of a conversation, and the one thing a
+ * wrong one must not do is arrive with the authority of something we said.
  */
 import { recentContext } from "./context.js";
 import { foldersOf, DEFAULT_FOLDERS } from "./folders.js";

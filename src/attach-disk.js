@@ -1,15 +1,9 @@
 /**
- * Attaching something that is not in the vault yet (ADR-0011, amended).
+ * Attaching something that is not in the vault yet (ADR-0011).
  *
- * ADR-0011 said the vault and only the vault, on the grounds that what you want to ask
- * about is usually already in it. That is often true and it is not a reason to refuse the
- * times it is not — a photo on the desktop, something just downloaded, a screenshot that
- * never made it in.
- *
- * What arrives is copied into the vault first, using Obsidian's own attachment path, so it
- * behaves from then on exactly like anything else: the transcript can link to it, the file
- * explorer can see it, and a sync carries it. A file sent but not saved would leave the
- * conversation referring to something on a disk somewhere that nothing else can reach.
+ * Copied into the vault on the way in, at Obsidian's own attachment path, so it behaves
+ * like anything else afterwards. Sent but not saved would leave the conversation
+ * referring to a file nothing in the vault can reach.
  */
 import { Notice } from "obsidian";
 import { kindOf, mimeOf, refuse } from "./attach.js";

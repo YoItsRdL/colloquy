@@ -1,14 +1,11 @@
 /**
  * Where what we learned about ourselves is kept (ADR-0007).
  *
- * A record of what happened, not durable knowledge — which is why it is filed apart from
- * wherever a vault keeps its notes. A statement about the people in a conversation, sitting
- * in the folder reserved for claims about the world, is a category error that whatever
- * reads the vault next will quietly propagate.
+ * A record of what happened rather than durable knowledge, so it is filed apart from
+ * wherever a vault keeps its notes.
  *
- * One record per conversation, rewritten when the conversation grows. A conversation picked
- * up a week later is still one thing that happened, and two half-accounts of it would be
- * worse than one whole one.
+ * One record per conversation, rewritten when the conversation grows — two half-accounts
+ * of one thing are worse than one whole one.
  */
 const pad = (n) => String(n).padStart(2, "0");
 

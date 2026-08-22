@@ -1,9 +1,8 @@
 /**
  * Choosing something from the vault to ask about (ADR-0011).
  *
- * The vault, not the filesystem. This is a plugin for a thing that already holds your
- * notes and your screenshots, and an OS file dialog would step outside it to fetch what is
- * usually already inside — then leave a copy of it somewhere the vault cannot see.
+ * The vault half of the paperclip; `attach-disk.js` is the other. This one is first because
+ * it is usually the answer — the app is already full of your notes and screenshots.
  */
 import { FuzzySuggestModal, Notice } from "obsidian";
 import { kindOf, mimeOf, refuse } from "./attach.js";

@@ -1,18 +1,12 @@
 /**
  * The settings screen (ADR-0004).
  *
- * Three sections, in the order a first run needs them: the keys, the models installed on
- * this machine, and what happens by itself. The first two live in their own files, because
- * they are about different things — credentials and disk — and one class knowing all of
- * them was how this file reached three hundred lines.
+ * Three sections, in the order a first run needs them: keys, local models, and what
+ * happens by itself.
  *
- * A fourth section used to configure a fallback chain: which provider to try when the
- * chosen one refused, and which paid one to offer after that. It went with the chain
- * (ADR-0009). Whichever provider the chips name is the one that answers.
- *
- * Provider and model are deliberately absent. They are per-question choices and already
- * have controls beside the composer, where the question is. A setting that duplicates a
- * control is two truths waiting to disagree.
+ * Provider and model are deliberately absent — they are per-question choices with controls
+ * beside the composer, and a setting duplicating a control is two truths waiting to
+ * disagree.
  */
 import { PluginSettingTab, Setting } from "obsidian";
 import { all as allAdapters, defaultProvider } from "./providers/index.js";
