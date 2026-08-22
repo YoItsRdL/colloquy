@@ -55,3 +55,17 @@ test("an unusable title leaves both the file and the clock alone", async () => {
   assert.equal(session.file, OLD, "the working name stands");
   assert.deepEqual(renamed, [], "nothing moved, so there is nothing to move");
 });
+
+/**
+ * The working name is made from the question and the title from the answer, so the two
+ * agreeing is ordinary rather than rare. It used to produce "hello-2.md": the file counted
+ * as occupying its own name, so the equal-name guard never fired.
+ */
+test("a title that matches the working name moves nothing", async () => {
+  const { view, session, candidate, renamed, files } = harness({ title: "hello" });
+  await nameConversation(view, candidate);
+
+  assert.equal(session.file, OLD, "and certainly not hello-2.md");
+  assert.equal(files.has(OLD), true, "the file is where it was");
+  assert.deepEqual(renamed, [], "nothing moved, so there is nothing to move");
+});

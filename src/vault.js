@@ -23,9 +23,15 @@ async function ensureFolder(app, path) {
   }
 }
 
-/** The rule lives in paths.js; this supplies it with what the vault already holds. */
-const freePath = (app, folder, base) =>
-  freeName(folder, base, (path) => Boolean(app.vault.getAbstractFileByPath(path)));
+/**
+ * The rule lives in paths.js; this supplies it with what the vault already holds.
+ *
+ * A rename passes the file's own path as `mine`. Without that the file counts as occupying
+ * the name it already has, every title that agrees with the working name comes back as
+ * "-2", and the equal-name guard below never sees the case it was written for.
+ */
+const freePath = (app, folder, base, mine = null) =>
+  freeName(folder, base, (path) => path !== mine && Boolean(app.vault.getAbstractFileByPath(path)));
 
 /**
  * Seven fields and nothing besides. This used to add `source`, `provider`, `model` and
@@ -77,7 +83,7 @@ export async function renameConversation(app, path, title) {
   if (!file || !title) return path;
 
   const folder = path.slice(0, path.lastIndexOf("/"));
-  const wanted = freePath(app, folder, title.slug);
+  const wanted = freePath(app, folder, title.slug, path);
   if (wanted === path) return path;
 
   try {
