@@ -26,6 +26,8 @@ function fakeVault() {
       append: async (file, text) => files.set(file.path, (files.get(file.path) ?? "") + text),
       read: async (file) => files.get(file.path) ?? "",
       modify: async (file, text) => files.set(file.path, text),
+      // Obsidian reads and writes in one call, which is why the code prefers it.
+      process: async (file, fn) => { files.set(file.path, fn(files.get(file.path) ?? "")); },
     },
     fileManager: {
       renameFile: async (file, to) => {

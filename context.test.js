@@ -21,6 +21,8 @@ function fakeVault(seed = {}) {
       createFolder: async (p) => { if (folders.has(p)) throw new Error("exists"); folders.add(p); },
       create: async (p, text) => { files.set(p, text); return fileFor(p); },
       modify: async (file, text) => files.set(file.path, text),
+      // Obsidian reads and writes in one call, which is why the code prefers it.
+      process: async (file, fn) => { files.set(file.path, fn(files.get(file.path) ?? "")); },
     },
   };
   return { app, files, folders };

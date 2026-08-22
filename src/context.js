@@ -67,7 +67,11 @@ export async function writeContext(app, { context, source, root }, now = new Dat
   ].join("\n");
 
   const existing = app.vault.getAbstractFileByPath(path);
-  if (existing) await app.vault.modify(existing, text);
+  // `process` rather than `modify`: this runs in the background, minutes after anybody
+  // last touched anything, and it is the call that cannot lose a concurrent edit to the
+  // same file. Read-then-write with `modify` can, and the whole point of this rewrite is
+  // that it replaces an account rather than racing one.
+  if (existing) await app.vault.process(existing, () => text);
   else await app.vault.create(path, text);
 
   return path;

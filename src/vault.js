@@ -107,9 +107,10 @@ export async function renameConversation(app, path, title) {
   if (wanted === path) return path;
 
   try {
-    const text = await app.vault.read(file);
-    // Only the first heading, and only if it is the one this plugin wrote.
-    await app.vault.modify(file, text.replace(/^# .*$/m, `# ${title.text}`));
+    // Read and rewrite in one call rather than as two. Naming happens while the answer is
+    // still arriving and the next turn may already be appending; `modify` would write back
+    // a copy read before that turn and swallow it, where `process` cannot.
+    await app.vault.process(file, (text) => text.replace(/^# .*$/m, `# ${title.text}`));
     await app.fileManager.renameFile(file, wanted);
     return wanted;
   } catch {

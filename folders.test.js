@@ -46,6 +46,20 @@ test("characters a filesystem will refuse are dropped", () => {
   assert.equal(cleanFolder("notes."), "notes", "a trailing dot is invisible and refused");
 });
 
+/**
+ * The same folder name can be two different strings that look identical: macOS decomposes
+ * an accent into letter-plus-mark where Windows composes it into one character. Left alone,
+ * the folder gets created twice on a synced vault, or looked for and not found.
+ */
+test("a folder named the same way twice is the same folder", () => {
+  const composed = "Conversación";          // ó as one character
+  const decomposed = "Conversación";       // o followed by a combining accent
+
+  assert.notEqual(composed, decomposed, "the two spellings really are different strings");
+  assert.equal(cleanFolder(composed), cleanFolder(decomposed));
+  assert.equal(cleanFolder(decomposed), composed, "and both settle on the composed form");
+});
+
 test("surrounding whitespace is somebody's typing, not part of the name", () => {
   assert.equal(cleanFolder("  notes / chats  "), "notes/chats");
 });

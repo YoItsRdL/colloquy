@@ -7,7 +7,7 @@
  * in a name. Saying "this will be `notes/chats`" before anything is written costs a line
  * and settles it.
  */
-import { Setting } from "obsidian";
+import { Setting, normalizePath } from "obsidian";
 import { DEFAULT_FOLDERS, cleanFolder, willBe } from "./folders.js";
 
 const FIELDS = [
@@ -26,10 +26,13 @@ const FIELDS = [
 ];
 
 export function renderFolders(tab, containerEl) {
-  containerEl.createEl("h3", { text: "Where things go" });
-  containerEl.createEl("p", { cls: "setting-item-description" })
-    .setText("Folders inside your vault. They are created when first needed, and moving one " +
-      "here does not move what is already filed under the old one.");
+  // `setHeading()` rather than an `<h3>`: the guidelines ask for it so that a section here
+  // is styled by whatever theme the reader chose, exactly like every other plugin's.
+  new Setting(containerEl)
+    .setName("Where things go")
+    .setDesc("Folders inside your vault. They are created when first needed, and moving one " +
+      "here does not move what is already filed under the old one.")
+    .setHeading();
 
   const folders = tab.plugin.settings.folders ?? {};
 
@@ -56,9 +59,12 @@ export function renderFolders(tab, containerEl) {
 
         text.onChange(async (value) => {
           show(value);
-          // Stored as typed and cleaned on the way out, so a half-typed folder on the way
-          // to a real one is never treated as the folder.
-          tab.plugin.settings.folders = { ...tab.plugin.settings.folders, [field.key]: value };
+          // Obsidian's own normalisation on the way in, so what is stored is already the
+          // shape the vault API expects. `cleanFolder` still runs at every use — this
+          // settles slashes and unicode, that one refuses `..` and the characters Windows
+          // will not take, and neither is a substitute for the other.
+          const stored = value.trim() ? normalizePath(value) : "";
+          tab.plugin.settings.folders = { ...tab.plugin.settings.folders, [field.key]: stored };
           await tab.plugin.save();
         });
       });

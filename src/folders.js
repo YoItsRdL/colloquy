@@ -40,6 +40,11 @@ export const DEFAULT_FOLDERS = {
  */
 export function cleanFolder(input) {
   const parts = String(input ?? "")
+    // The same composed form Obsidian's own `normalizePath` settles on. Without it a folder
+    // named in an accented or non-Latin script can be two different strings that look
+    // identical — macOS decomposes what Windows composes — and the same folder is then
+    // created twice, or looked for and not found.
+    .normalize("NFC")
     .replace(/\\/g, "/")
     .split("/")
     .map((part) => part.trim().replace(/[:*?"<>|]/g, "").replace(/\.+$/, ""))
