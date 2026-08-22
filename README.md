@@ -1,9 +1,9 @@
 # Colloquy
 
-**An AI that lives in your notes, and remembers them.**
+**Build a knowledge base out of your AI conversations.**
 
-Every conversation is saved to your vault as markdown, then summarised so the next one
-starts with the context. Supports Ollama, OpenAI, Anthropic, Google and DeepSeek.
+Each one is saved to your vault as markdown, then summarised so the next starts with the
+context. Supports Ollama, OpenAI, Anthropic, Google and DeepSeek.
 
 The conversations are written as they happen — searchable, linkable, and still readable if
 this plugin goes away. A few minutes after each one, the plugin reads it back and keeps a
