@@ -84,6 +84,10 @@ and never leaves your machine except as the request you asked for.
 that were reversed. ADR-0007 explains why an earlier version that extracted "durable notes"
 was removed entirely: it kept producing confident, false claims.
 
+## What changed when
+
+[`CHANGELOG.md`](CHANGELOG.md), one entry per release.
+
 ## Building it
 
 ```
