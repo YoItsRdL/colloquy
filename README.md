@@ -1,8 +1,10 @@
 # Colloquy
 
-Ask a model anything from inside Obsidian. Every exchange lands in your vault as markdown —
-not in a chat history somewhere else — and the markdown remembers what you were working on,
-so the next conversation starts knowing it.
+AI chat that becomes notes in your vault, and remembers what you've been working on.
+
+Every conversation is written to your vault as markdown — yours, searchable, linkable, and
+still there if this plugin disappears. A few minutes after each one, it reads what you were
+doing and keeps a short note of it, so the next conversation starts already knowing.
 
 Works with a local model through Ollama, or with OpenAI, Anthropic, Google or DeepSeek.
 

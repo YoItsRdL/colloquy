@@ -2,7 +2,7 @@
   "name": "colloquy",
   "version": "1.0.0",
   "type": "module",
-  "description": "Ask a model anything from inside Obsidian. Every exchange lands in your vault as markdown, and the markdown remembers.",
+  "description": "AI chat that becomes notes in your vault, and remembers what you've been working on.",
   "scripts": {
     "build": "node build.mjs",
     "watch": "node build.mjs --watch",
