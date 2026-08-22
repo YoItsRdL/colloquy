@@ -2,7 +2,7 @@
   "name": "colloquy",
   "version": "1.0.0",
   "type": "module",
-  "description": "AI chat that becomes notes in your vault, and remembers what you've been working on.",
+  "description": "Stop losing your best AI conversations. They become notes in your vault, and the next one knows what you've been working on.",
   "scripts": {
     "build": "node build.mjs",
     "watch": "node build.mjs --watch",

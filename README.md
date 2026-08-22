@@ -1,6 +1,6 @@
 # Colloquy
 
-AI chat that becomes notes in your vault, and remembers what you've been working on.
+Stop losing your best AI conversations. They become notes in your vault, and the next one knows what you've been working on.
 
 Every conversation is written to your vault as markdown — yours, searchable, linkable, and
 still there if this plugin disappears. A few minutes after each one, it reads what you were
