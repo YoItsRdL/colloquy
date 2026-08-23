@@ -5,8 +5,8 @@
  * stylesheet. That is not a compromise: a panel that ignores the reader's theme is the
  * one thing that would make this feel bolted on rather than part of the app.
  *
- * The gateway's interface decisions carry over — the human turn shown exactly as typed,
- * the model's rendered, the reply labelled with whichever model actually answered — but
+ * The gateway's interface decisions carry over, the human turn shown exactly as typed,
+ * the model's rendered, the reply labelled with whichever model actually answered, but
  * none of its CSS does.
  */
 import { ItemView } from "obsidian";
@@ -52,7 +52,7 @@ export class ConversationView extends ItemView {
     const controls = this.composer.controls;
 
     // Which provider and model answer are facts nobody can infer from the panel, and ones
-    // worth changing per question — a capable model for a hard one, a cheap one for a
+    // worth changing per question, a capable model for a hard one, a cheap one for a
     // lookup. That is the whole reason these are controls rather than labels.
     this.chips = createChips({ container: controls, plugin: this.plugin });
 
@@ -63,8 +63,8 @@ export class ConversationView extends ItemView {
 
   /**
    * Shows only what currently means something. Called when the panel opens, when a
-   * conversation starts or is picked up, and by the settings screen when a key changes —
-   * the four moments at which the answer here can differ from the last time it was asked.
+   * conversation starts or is picked up, and by the settings screen when a key changes.
+   * The four moments at which the answer here can differ from the last time it was asked.
    */
   refresh() {
     const empty = !this.thread.el.children.length;
@@ -89,7 +89,7 @@ export class ConversationView extends ItemView {
    * Stops the answer that is arriving.
    *
    * Whatever has already been said is kept and written, because it is what the model said
-   * — and the usual reason for stopping is that enough of it has arrived to know the rest
+   *, and the usual reason for stopping is that enough of it has arrived to know the rest
    * is not wanted.
    */
   stop() {

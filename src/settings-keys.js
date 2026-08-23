@@ -16,7 +16,7 @@ export function renderKeys(tab, containerEl) {
   new Setting(containerEl).setName("Keys").setHeading();
   containerEl.createEl("p", { cls: "setting-item-description" }).setText(
     "Stored by Obsidian on this device, never shown again once saved, and never " +
-    "committed — the store is gitignored and the build fails if that stops being true.",
+    "committed. The store is gitignored and the build fails if that stops being true.",
   );
 
   for (const key of tab.keys) keyRow(tab, containerEl, key);
@@ -71,14 +71,14 @@ function keyRow(tab, containerEl, key) {
 function confirmRemoval(tab, containerEl, key) {
   new Setting(containerEl)
     .setName(`Remove the ${key.label} key?`)
-    .setDesc("It is not recoverable from here — you would need the key again.")
+    .setDesc("It is not recoverable from here. You would need the key again.")
     .addButton((button) =>
       button.setButtonText("Remove").setWarning().onClick(async () => {
         setKey(tab.plugin.settings, key.keyVar, "");
         tab.removing = null;
 
         // Removing the key for the provider currently in use would leave the selection
-        // pointing at something that cannot answer — and with the dropdown gone from
+        // pointing at something that cannot answer, and with the dropdown gone from
         // this screen, nothing here could correct it. So it is corrected now.
         if (tab.plugin.settings.provider === key.name) {
           const left = status(allAdapters(), tab.plugin.settings).find((k) => k.configured);

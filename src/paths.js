@@ -1,7 +1,7 @@
 /**
  * Where a conversation lives, and what it is called.
  *
- * Pure: no Obsidian, no filesystem. The date is a folder rather than a filename prefix —
+ * Pure: no Obsidian, no filesystem. The date is a folder rather than a filename prefix,
  * as a prefix it spent the first ten characters of every name in a folder saying what the
  * folder already said.
  */

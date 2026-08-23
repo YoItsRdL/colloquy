@@ -3,7 +3,7 @@
  *
  * Everything is rebuilt from the file, because the file is the record and there is nothing
  * behind it. That is what lets a conversation edited by hand, or written on another machine
- * and synced here, resume exactly like one this panel just wrote — so these tests hand it
+ * and synced here, resume exactly like one this panel just wrote, so these tests hand it
  * markdown and read the screen that comes back.
  */
 import { test } from "node:test";
@@ -28,7 +28,7 @@ is it better by train?
 
 **gemma3:4b** _(13:02)_
 
-**Yes** — it is faster door to door.
+**Yes**. It is faster door to door.
 
 **error** _(13:05)_
 
@@ -137,7 +137,7 @@ test("picking one up mid-answer is refused rather than queued", async () => {
 
 /**
  * Nothing is lost and nothing is asked: the previous conversation is a note in the vault.
- * Saying where it went is the point — that is the question this moment raises.
+ * Saying where it went is the point. That is the question this moment raises.
  */
 test("starting afresh clears the panel and says where the last one went", async () => {
   notices.length = 0;
@@ -155,7 +155,7 @@ test("starting afresh clears the panel and says where the last one went", async 
 
 /**
  * Whatever was attached belonged to the question that was never asked. Carrying it into a
- * new conversation would send it somewhere it was never meant for — and pay for it.
+ * new conversation would send it somewhere it was never meant for, and pay for it.
  */
 test("starting afresh drops what was attached to the question never asked", () => {
   const view = panel();

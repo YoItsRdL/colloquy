@@ -70,7 +70,7 @@ test("keysOf hands back a copy, so a turn cannot mutate the store", () => {
 
 /**
  * An address is not a secret, so a provider that names its own default is configured
- * without anyone typing it — but only where that default could be true (ADR-0012).
+ * without anyone typing it, but only where that default could be true (ADR-0012).
  */
 const local = [{ name: "ollama", label: "Ollama", keyVar: "OLLAMA_URL", keyKind: "url", defaultKey: "http://localhost:11434/v1" }];
 
@@ -82,7 +82,7 @@ test("a local provider is configured by its own default, without ceremony", () =
 
 /**
  * Nothing listens on a phone's own localhost. Assuming it there names a provider on the
- * chip that cannot answer, and fails every question with advice — start the server — that
+ * chip that cannot answer, and fails every question with advice (start the server) that
  * cannot be taken on that device.
  */
 test("on a phone the local default is not assumed", () => {

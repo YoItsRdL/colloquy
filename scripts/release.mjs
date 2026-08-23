@@ -4,7 +4,7 @@
  *   node scripts/release.mjs
  *
  * Two of these catch mistakes that fail silently. A tag written `v1.0.0` does not match the
- * manifest and Obsidian simply never offers the release — no error, no install. And the
+ * manifest and Obsidian simply never offers the release, no error, no install. And the
  * manifest at the repository root is what the installer reads to decide what to fetch, so
  * when it drifts from the one in the release assets, people are offered a version that is
  * not there.

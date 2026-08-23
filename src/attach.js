@@ -5,7 +5,7 @@
  * question and every provider reads it. An image has to reach the wire, where each API
  * wants a different shape.
  *
- * Pure — reading the bytes is the caller's job.
+ * Pure, reading the bytes is the caller's job.
  */
 
 /**
@@ -48,7 +48,7 @@ export function refuse(file) {
   const kind = kindOf(file.name);
   if (!kind) return `${file.name} is not a kind of file a model can read here.`;
   if (kind === "image" && file.size > MAX_IMAGE_BYTES) {
-    return `${file.name} is ${Math.round(file.size / 1024 / 1024)}MB — images have to be under 4MB.`;
+    return `${file.name} is ${Math.round(file.size / 1024 / 1024)}MB, images have to be under 4MB.`;
   }
   return null;
 }

@@ -2,7 +2,7 @@
  * The OpenAI chat-completions wire format, which several providers speak.
  *
  * Not a provider. It exists because OpenAI and DeepSeek differ only in a hostname and a
- * key variable, and two copies of a streaming parser would drift — the failure this
+ * key variable, and two copies of a streaming parser would drift, the failure this
  * project has already had once. Adapters stay one-per-provider (AGENTS.md standard 2);
  * this is the format they share, and it lives inside providers/ where wire knowledge
  * belongs.
@@ -53,7 +53,7 @@ const body = (model, messages, stream, extra) => JSON.stringify({
 });
 
 /**
- * Provider errors arrive as JSON. Keep the part a person can act on — and the machine
+ * Provider errors arrive as JSON. Keep the part a person can act on, and the machine
  * readable part, which is sometimes the only thing that distinguishes two situations.
  *
  * "You exceeded your current quota, please check your plan and billing details" is what

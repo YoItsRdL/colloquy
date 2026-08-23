@@ -47,7 +47,7 @@ export function cleanTitle(raw) {
   // A model refusing, apologising, or narrating is not a title. Contractions included,
   // because "I'm sorry" is the commonest refusal and does not start with a bare "I".
   //
-  // This will occasionally reject a real title — "Here documents in bash" is a genuine
+  // This will occasionally reject a real title, "Here documents in bash" is a genuine
   // subject. That costs nothing: the conversation keeps the plain name it already has,
   // which is the safe direction to be wrong in.
   if (/^(i\b|i'm|sure\b|here\b|okay\b|certainly\b|as an ai)/i.test(text)) return null;

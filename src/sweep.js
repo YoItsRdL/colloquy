@@ -2,7 +2,7 @@
  * Reading conversations without being asked (ADR-0006).
  *
  * Triggered by idleness rather than a timer over the vault, so a conversation is read once
- * it is finished — and while the GPU is free, which it is not mid-question.
+ * it is finished, and while the GPU is free, which it is not mid-question.
  */
 import { observeConversation } from "./observe.js";
 import { writeContext } from "./context.js";
@@ -77,7 +77,7 @@ export function createSweep(plugin, { idleMs = IDLE_MS } = {}) {
   }
 
   /**
-   * Picks up conversations the idle clock never got to — an evening with Ollama off, a
+   * Picks up conversations the idle clock never got to, an evening with Ollama off, a
    * crash, a quit before the timer fired. Without it the marker is write-only.
    *
    * Bounded per run: this starts with the app, and an inbox of two hundred should not mean
@@ -114,7 +114,7 @@ export function createSweep(plugin, { idleMs = IDLE_MS } = {}) {
   }
 
   /**
-   * Failures are silent by design — this runs unasked, so nothing here is worth
+   * Failures are silent by design. This runs unasked, so nothing here is worth
    * interrupting somebody about. The reason is kept, which is what lets the settings screen
    * tell quiet apart from broken.
    */

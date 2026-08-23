@@ -4,7 +4,7 @@
  * Three sections, in the order a first run needs them: keys, local models, and what
  * happens by itself.
  *
- * Provider and model are deliberately absent — they are per-question choices with controls
+ * Provider and model are deliberately absent. They are per-question choices with controls
  * beside the composer, and a setting duplicating a control is two truths waiting to
  * disagree.
  */
@@ -44,7 +44,7 @@ export class SettingsTab extends PluginSettingTab {
       .setName("Read conversations automatically")
       .setDesc(
         `A few minutes after you stop, the conversation is read and a short account of ` +
-        `what you were doing is written to ${foldersOf(this.plugin.settings).context}/ — so later ` +
+        `what you were doing is written to ${foldersOf(this.plugin.settings).context}/, so later ` +
         "conversations have the context. It records what you were working on, never facts the model " +
         "asserted. Only runs on a local model, because reading every conversation on a " +
         "paid one is a bill that grows without you pressing anything.",
@@ -73,7 +73,7 @@ export class SettingsTab extends PluginSettingTab {
       .setDesc(
         "Sends a short summary of your recent conversations along with each question, so " +
         "the model knows what you have been working on. It goes to whichever provider " +
-        "answers — including a paid one, if that is what the chips are set to. Turn this " +
+        "answers, including a paid one, if that is what the chips are set to. Turn this " +
         "off and every conversation starts from nothing.",
       )
       .addToggle((toggle) => {
@@ -89,7 +89,7 @@ export class SettingsTab extends PluginSettingTab {
       .setDesc(
         "A new conversation is named after the question, which is often \"hello\". Once " +
         "answered, the model that answered is asked for a better one. It costs one extra " +
-        "request per conversation — free locally, a fraction of a cent otherwise.",
+        "request per conversation: free locally, a fraction of a cent otherwise.",
       )
       .addToggle((toggle) => {
         toggle.setValue(this.plugin.settings.autoName !== false);

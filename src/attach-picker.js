@@ -2,7 +2,7 @@
  * Choosing something from the vault to ask about (ADR-0011).
  *
  * The vault half of the paperclip; `attach-disk.js` is the other. This one is first because
- * it is usually the answer — the app is already full of your notes and screenshots.
+ * it is usually the answer. The app is already full of your notes and screenshots.
  */
 import { FuzzySuggestModal, Notice } from "obsidian";
 import { kindOf, mimeOf, refuse } from "./attach.js";
@@ -22,7 +22,7 @@ function base64Of(buffer) {
 /**
  * Reads a vault file into something a turn can carry.
  *
- * @returns the attachment, or null with the reason already shown — the caller has nothing
+ * @returns the attachment, or null with the reason already shown. The caller has nothing
  * useful to add to "that file is 12MB".
  */
 export async function readAttachment(app, file) {

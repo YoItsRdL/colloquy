@@ -6,13 +6,13 @@
  */
 import { DEFAULT_FOLDERS } from "./folders.js";
 
-/** `**me** _(13:01)_` — who spoke, and the line the turn starts after. */
+/** `**me** _(13:01)_`, who spoke, and the line the turn starts after. */
 const SPEAKER = /^\*\*(.+?)\*\* _\(\d{1,2}:\d{2}\)_$/;
 
 /**
  * Everything said, in order. Anything before the first speaker is this plugin's own header.
  *
- * A turn labelled `error` is dropped — it belongs in the transcript a person reads, not in
+ * A turn labelled `error` is dropped. It belongs in the transcript a person reads, not in
  * the history a model is asked to continue from.
  */
 export function readTranscript(text) {

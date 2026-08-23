@@ -20,7 +20,7 @@ import { attachMemory } from "./memory.js";
  * A turn: shown as it arrives, written once it is whole.
  *
  * @param {{retry?: string}} options `retry` carries the question being asked again of a
- *   different provider — already in the history and already in the file, so it is neither
+ *   different provider, already in the history and already in the file, so it is neither
  *   pushed nor written twice.
  */
 export async function ask(view, { retry = null } = {}) {
@@ -33,7 +33,7 @@ export async function ask(view, { retry = null } = {}) {
   if (!retry) clearAttachments(view);
 
   view.busy = true;
-  // Stoppable from the moment it starts, not once a first token has arrived — the wait
+  // Stoppable from the moment it starts, not once a first token has arrived, the wait
   // before the first token is the longest part and the one most worth escaping.
   view.turn = new AbortController();
   view.composer.sending(true, view.sendButton);
@@ -103,7 +103,7 @@ export async function ask(view, { retry = null } = {}) {
       view.thread.render(reply, outcome.reply);
 
       // Deliberately not awaited. Naming asks the model a second question, and a
-      // reasoning model took sixty-six seconds over it here — awaiting that would leave
+      // reasoning model took sixty-six seconds over it here, awaiting that would leave
       // Send disabled for a minute after the answer had already arrived. The answer is
       // on disk; the name can catch up whenever it is ready.
       nameConversation(view, outcome.answered ?? config);

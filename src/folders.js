@@ -13,7 +13,7 @@ export const DEFAULT_FOLDERS = {
 /**
  * A folder someone typed, made safe to write under.
  *
- * @returns the cleaned folder, or "" if nothing usable is left — which the caller reads as
+ * @returns the cleaned folder, or "" if nothing usable is left, which the caller reads as
  * "keep the default", never as "write to the vault root".
  */
 export function cleanFolder(input) {

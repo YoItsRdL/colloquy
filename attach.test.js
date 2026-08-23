@@ -23,11 +23,11 @@ test("what a model can read is what can be attached", () => {
 test("anything else is refused rather than sent and ignored", () => {
   assert.equal(kindOf("recording.mp3"), null);
   assert.equal(kindOf("archive.zip"), null);
-  assert.equal(kindOf("paper.pdf"), null, "not yet — a PDF needs extracting, not encoding");
+  assert.equal(kindOf("paper.pdf"), null, "not yet. A PDF needs extracting, not encoding");
   assert.match(refuse({ name: "recording.mp3", size: 10 }), /not a kind of file/);
 });
 
-/** Said in the words of the thing refused, not as a code — the size is the whole point. */
+/** Said in the words of the thing refused, not as a code. The size is the whole point. */
 test("an image too large to send says how large it is", () => {
   const why = refuse({ name: "screenshot.png", size: MAX_IMAGE_BYTES + 1 });
   assert.match(why, /screenshot\.png/);

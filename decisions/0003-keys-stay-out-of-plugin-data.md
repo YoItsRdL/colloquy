@@ -1,7 +1,7 @@
-# ADR-0003 — Keys stay in the vault's .env, never in plugin data
+# ADR-0003: Keys stay in the vault's .env, never in plugin data
 
-**Status:** Superseded by [ADR-0004](0004-keys-live-in-plugin-data.md)
-— the hazard named here is real, but the conclusion was wrong: it made key entry
+**Status:** Superseded by [ADR-0004](0004-keys-live-in-plugin-data.md). The hazard named
+here is real, but the conclusion was wrong: it made key entry
 impossible on mobile, which is the platform ADR-0001 chose a plugin to reach. Kept rather
 than deleted, because reasoning that turned out wrong is worth being able to read.
 **Date:** 2026-08-18
@@ -13,7 +13,7 @@ settings screen existed because a server could not read a file nobody had handed
 
 ## Context
 
-The obvious place for a plugin's API keys is plugin data — `.obsidian/plugins/<id>/data.json`,
+The obvious place for a plugin's API keys is plugin data, `.obsidian/plugins/<id>/data.json`,
 which Obsidian manages and most plugins use.
 
 In this vault that is a trap. `.obsidian/` is **tracked in git**: only `workspace*` and
@@ -22,8 +22,8 @@ would be committed and pushed to GitHub on the next commit, through a mechanism 
 would think to check, in a directory nobody reads diffs for.
 
 The streaming spike tested the alternative, and it works: `app.vault.adapter.read()`
-reaches a `.env` beside the server — a dotfile, inside a directory Obsidian hides from its
-own file explorer — and returned the key on the first attempt.
+reaches a `.env` beside the server, a dotfile, inside a directory Obsidian hides from its
+own file explorer, and returned the key on the first attempt.
 
 ## Decision
 
@@ -32,11 +32,11 @@ own file explorer — and returned the key on the first attempt.
 That file is already gitignored, already the single place secrets live, and already what
 every other part of this repository reads. One store, one rule, one thing to get wrong.
 
-**No field ever offers to save a key** — not in settings, not in a modal. A field that
+**No field ever offers to save a key**, not in settings, not in a modal. A field that
 writes a secret into a tracked directory is worse than no field, because it looks like
 the supported path.
 
-**Plugin data holds preferences only** — the chosen provider and model — and nothing that
+**Plugin data holds preferences only**, the chosen provider and model, and nothing that
 would matter if it were published.
 
 ## Consequences
@@ -65,4 +65,4 @@ store with a second ignore rule to keep correct forever. The existing one is alr
 correct.
 
 **The OS keychain.** Unavailable on mobile, and reaching one from a plugin needs Electron
-APIs mobile does not have — which standard 7 forbids.
+APIs mobile does not have, which standard 7 forbids.

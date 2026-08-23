@@ -89,7 +89,7 @@ test("the frontmatter carries the date the filename no longer does", async () =>
 
 /**
  * The vault's schema is seven fields, and the rule beside it is "do not invent other
- * fields — unmaintained metadata lies". This wrote `source`, `provider`, `model` and
+ * fields, unmaintained metadata lies". This wrote `source`, `provider`, `model` and
  * `started` as well, and nothing ever read any of them: `started` was `uid` again in
  * another format, and `provider`/`model` froze whichever model answered first while the
  * chips moved on.

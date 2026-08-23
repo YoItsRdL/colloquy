@@ -3,7 +3,7 @@
  *
  * The assertions are about restraint. This is the only place vault content is sent to a
  * provider without the person having typed it, so what goes and what does not is the whole
- * of the design — and it must cost nothing at all in a vault that has none.
+ * of the design, and it must cost nothing at all in a vault that has none.
  */
 import { test } from "node:test";
 import assert from "node:assert/strict";
@@ -52,7 +52,7 @@ test("the frontmatter this plugin wrote is not sent with it", async () => {
   assert.doesNotMatch(block, /author: agent/);
 });
 
-/** A vault with nothing noticed yet must cost nothing — no block, no request, no tokens. */
+/** A vault with nothing noticed yet must cost nothing, no block, no request, no tokens. */
 test("an empty vault sends nothing at all", async () => {
   assert.equal(await recall(fakeVault(), { root: LOG }), null);
   assert.equal(await recall(fakeVault({ [RECENT]: record("") }), { root: LOG }), null, "and neither does an empty record");
@@ -91,7 +91,7 @@ test("a budget drops whole records rather than cutting one in half", async () =>
 
 /**
  * Held on the session rather than pushed into its history: the transcript records what was
- * said, and this was not said by anybody — and a preamble in the history would be re-sent
+ * said, and this was not said by anybody, and a preamble in the history would be re-sent
  * with every turn, growing the request for as long as the conversation lasted.
  */
 test("background attaches once and never reaches the transcript", async () => {

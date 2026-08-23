@@ -1,6 +1,6 @@
 /* The conversation view.
    Every colour, font and radius is an Obsidian variable. A panel that carries its own
-   palette looks bolted on the moment someone changes theme — and people change theme. */
+   palette looks bolted on the moment someone changes theme, and people change theme. */
 
 .colloquy-view {
   display: flex;
@@ -19,7 +19,7 @@
 .colloquy-turn { margin-bottom: var(--size-4-6); }
 .colloquy-turn:last-child { margin-bottom: 0; }
 
-/* What you asked, as an object on the page — the answers are the page itself.
+/* What you asked, as an object on the page. The answers are the page itself.
 
    This is the only asymmetry in the thread and it is the one that matters: a question and
    an answer set in the same grey text at the same size cannot be told apart while
@@ -43,7 +43,7 @@
   margin-bottom: var(--size-2-2);
 }
 
-/* The answers are the content, so they are set at the size this vault reads notes at —
+/* The answers are the content, so they are set at the size this vault reads notes at,
    whatever the reader chose in Appearance, rather than a number picked here. A sidebar
    inherits Obsidian's chrome sizing, which is right for a file tree and a paragraph too
    small for prose. */
@@ -91,7 +91,7 @@
   margin-top: var(--size-4-2);
 }
 
-/* The filename yields, the controls never do — min-width:0 is what lets a long name
+/* The filename yields, the controls never do, min-width:0 is what lets a long name
    shrink instead of pushing Send out of the panel.
 
    Scoped like the chips so Obsidian's button styling does not turn a quiet label into a
@@ -116,7 +116,7 @@
   cursor: pointer;
 }
 
-/* It opens the note, so it reads like a link on approach — and only then, because a
+/* It opens the note, so it reads like a link on approach, and only then, because a
    permanent link colour would compete with Send for the eye. */
 .colloquy-view .colloquy-where:hover:not(:disabled) {
   color: var(--text-accent);
@@ -140,7 +140,7 @@
 /* Quiet until reached for. Each states a fact most of the time and becomes a control only
    when someone reaches for it, so neither competes with the sentence being written.
 
-   Scoped under .colloquy-view so it outranks Obsidian's own button styling — a chip that
+   Scoped under .colloquy-view so it outranks Obsidian's own button styling, a chip that
    inherits a raised button becomes the loudest thing in a row whose only real action is
    Send. */
 .colloquy-view .colloquy-chip {
@@ -183,7 +183,7 @@
 .colloquy-chip-caret svg { width: 0.75em; height: 0.75em; }
 
 /* Answering as something other than what was chosen. Marked by weight and a rule under
-   the label rather than by a colour, because it is a fact and not a warning — nothing has
+   the label rather than by a colour, because it is a fact and not a warning. Nothing has
    gone wrong, and the stored choice is untouched. */
 .colloquy-view .colloquy-chip.is-fallback {
   color: var(--text-normal);
@@ -200,7 +200,7 @@
 .colloquy-view .colloquy-chip:disabled .colloquy-chip-caret { display: none; }
 
 
-/* The panel's own action bar. Not Obsidian's view header — that can be hidden entirely
+/* The panel's own action bar. Not Obsidian's view header. That can be hidden entirely
    by the tab-title setting in a sidebar leaf, and an action nobody can find is one that
    does not exist. */
 .colloquy-bar {
@@ -233,7 +233,7 @@
 }
 
 /* Centred against the text rather than left on its baseline. A flex wrapper with no
-   alignment of its own leaves the glyph wherever its box happens to fall — a pixel or two
+   alignment of its own leaves the glyph wherever its box happens to fall, a pixel or two
    low at every size, and unmistakable once the text around it grew. */
 .colloquy-new-icon {
   display: inline-flex;
@@ -250,7 +250,7 @@
 }
 
 /* A label gives a button its width; an icon has to be given one. This was twenty pixels
-   across — a target you had to aim at. */
+   across. A target you had to aim at. */
 .colloquy-view .colloquy-new.is-icon-only {
   justify-content: center;
   min-width: var(--size-4-8);
@@ -258,7 +258,7 @@
   padding: 0;
 }
 
-/* Capture and revisit on the left, decide on the right — the reading order they happen
+/* Capture and revisit on the left, decide on the right, the reading order they happen
    in. Only the last control is pushed over, so adding a third does not scatter them. */
 .colloquy-bar .colloquy-new:last-child { margin-left: auto; }
 
@@ -305,7 +305,7 @@
   color: var(--text-faint);
 }
 
-/* Merging is offered with the same weight as creating, per ADR-0005 — so these are real
+/* Merging is offered with the same weight as creating, per ADR-0005, so these are real
    rows rather than a footnote, but quiet enough that the page has one obvious next step. */
 .colloquy-review-related .setting-item {
   padding: var(--size-2-3) 0;
@@ -322,7 +322,7 @@
 /* A fact the person would otherwise have no way to learn, so it is coloured as one. */
 .colloquy-warning { color: var(--text-warning); }
 
-/* How many claims are waiting. Absent at zero rather than showing it — the resting state
+/* How many claims are waiting. Absent at zero rather than showing it, the resting state
    of this queue is empty, and a badge reading "0" makes the normal case look like a task. */
 .colloquy-waiting.is-waiting {
   margin-left: var(--size-2-1);
@@ -334,7 +334,7 @@
   line-height: 1.5;
 }
 
-/* What the review actually produced. Links, not paths — the question after deciding is
+/* What the review actually produced. Links, not paths. The question after deciding is
    "where is it", and the answer should be one click rather than a search. */
 .colloquy-review-landed {
   margin-top: var(--size-4-3);
@@ -417,7 +417,7 @@
 
 /* Selectable, because the answers are the point.
 
-   Obsidian sets `user-select: none` across the workspace chrome — correct for tab bars and
+   Obsidian sets `user-select: none` across the workspace chrome, correct for tab bars and
    ribbons, and inherited by anything that does not say otherwise. A panel full of prose you
    might want to quote is exactly the thing that has to say otherwise.
 
@@ -433,7 +433,7 @@
 .colloquy-body { cursor: text; }
 
 /* What a typed folder will actually become. Shown only when it differs from what was
-   typed — repeating somebody's own input back at them is noise. */
+   typed, repeating somebody's own input back at them is noise. */
 .colloquy-folder-preview:not(:empty) {
   margin-top: var(--size-2-1);
   font-size: var(--font-ui-smaller);
@@ -441,7 +441,7 @@
 }
 
 /* What the question is about, above the box it is typed in. Absent entirely when there is
-   nothing attached — an empty row that reserves its own space is a permanent reminder of a
+   nothing attached. An empty row that reserves its own space is a permanent reminder of a
    feature you are not using. */
 .colloquy-attached { display: none; }
 
@@ -487,7 +487,7 @@
 
 .colloquy-view .colloquy-attachment-x:hover { color: var(--text-normal); }
 
-/* The paperclip: quiet, and first in the row — but the same size and the same target as
+/* The paperclip: quiet, and first in the row, but the same size and the same target as
    every other icon-only control here. It was 18px in a 26px box while the bar buttons were
    16px in 32, which is the sort of difference nobody names and everybody sees. */
 .colloquy-view .colloquy-attach {
@@ -524,8 +524,8 @@
    narrow window is not a touchscreen, and a tablet in landscape is not a desktop.
 
    Everything here is about the finger rather than the pointer. Nothing above is
-   hover-dependent — the seven hover rules in this file all change a colour that was
-   already legible — so touch loses no affordance, only precision. */
+   hover-dependent, the seven hover rules in this file all change a colour that was
+   already legible, so touch loses no affordance, only precision. */
 
 .is-mobile .colloquy-view .colloquy-chip,
 .is-mobile .colloquy-view .colloquy-where,
@@ -559,7 +559,7 @@
   /* Under 16px, iOS zooms the whole page when the field takes focus, and leaves it
      zoomed. This is not a type-size preference; it is the only value that prevents it. */
   font-size: max(16px, var(--font-text-size));
-  /* The keyboard takes half the screen, so the box starts smaller and stops sooner —
+  /* The keyboard takes half the screen, so the box starts smaller and stops sooner,
      otherwise the thread it is meant to sit under has nowhere left to be. */
   min-height: 3em;
   max-height: 25vh;
@@ -573,7 +573,7 @@
 }
 
 /* Wrapping only helps once the controls stop shrinking. Left to shrink they collapse to
-   "Olla…", "qwen3:…" and a lone "/" where the filename was — a row that fits by saying
+   "Olla…", "qwen3:…" and a lone "/" where the filename was, a row that fits by saying
    nothing. Fixed to their content, they move to the next line instead. */
 .is-mobile .colloquy-view .colloquy-chip {
   flex: 0 0 auto;
@@ -598,7 +598,7 @@
    missing now, what was already said still stands and is never covered over.
 
    When a provider *is* configured this shows nothing at all. An empty thread above a
-   composer needs no explaining — it is a blank page, which is what it looks like. */
+   composer needs no explaining. It is a blank page, which is what it looks like. */
 
 .colloquy-ready { display: none; }
 
@@ -652,6 +652,6 @@
 .is-mobile .colloquy-ready-action { min-height: 44px; }
 
 /* The one action sits at the end of its line, always. It used to be put there by the
-   filename beside it absorbing the slack — which stopped being true the moment that moved
+   filename beside it absorbing the slack, which stopped being true the moment that moved
    to a line of its own, leaving Send stranded mid-row next to the chips. */
 .colloquy-view .colloquy-send { margin-left: auto; }

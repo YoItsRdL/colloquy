@@ -132,7 +132,7 @@ test("a download reports progress in the row it was started from", async () => {
     puller.find((e) => e.tagName === "input").enter("qwen3:8b");
     await puller.find((e) => e.tagName === "button").onclick();
 
-    assert.match(descOf(puller), /downloading — 50%/);
+    assert.match(descOf(puller), /downloading, 50%/);
     assert.match(notices.join(" "), /qwen3:8b is ready/);
     assert.ok(tab.redraws >= 1, "and the list is rebuilt with it in");
   } finally {

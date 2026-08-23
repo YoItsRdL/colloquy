@@ -35,7 +35,7 @@ const freePath = (app, folder, base, mine = null) =>
 
 /**
  * Seven fields and nothing besides. This used to add `source`, `provider`, `model` and
- * `started` too, none of which anything read — `started` was `uid` in another format, and
+ * `started` too, none of which anything read, `started` was `uid` in another format, and
  * `provider`/`model` froze whichever model answered first while the chips moved on.
  *
  * `noticed` is added later by the sweep, and earns it: see ADR-0006.
@@ -97,7 +97,7 @@ export async function renameConversation(app, path, title) {
   }
 }
 
-/** One finished turn, appended whole — partial words would make the file unreadable. */
+/** One finished turn, appended whole, partial words would make the file unreadable. */
 export async function appendTurn(app, path, who, text, now = new Date()) {
   const file = app.vault.getAbstractFileByPath(path);
   if (!file) throw new Error(`the conversation file is gone: ${path}`);

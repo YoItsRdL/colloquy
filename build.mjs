@@ -55,7 +55,7 @@ if (process.argv.includes("--watch")) {
   const ctx = await context(options);
   await ctx.watch();
   install();
-  console.log(`watching${installTo ? ` — installing to ${installTo}` : ""}`);
+  console.log(`watching${installTo ? `, installing to ${installTo}` : ""}`);
 } else {
   await build(options);
   install();

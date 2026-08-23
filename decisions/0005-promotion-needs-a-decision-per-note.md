@@ -1,4 +1,4 @@
-# ADR-0005 — The plugin may write notes, one human decision at a time
+# ADR-0005: The plugin may write notes, one human decision at a time
 
 **Status:** Superseded by [ADR-0007](0007-context-about-us-not-claims-about-the-world.md)
 **Date:** 2026-08-19
@@ -10,10 +10,10 @@ scope entirely.
 
 Capture works. Conversations land in `00-inbox/` and stay there, and every one of them
 carries a line pointing at a promotion step run by hand elsewhere. That step exists and is
-good — it searches
+good, it searches
 before it writes, defaults to merging rather than creating, and treats an unprocessed
 inbox as an acceptable outcome. But it lives in a terminal, so the trail goes cold at the
-point the conversation was captured — the judgment about what it was worth happens
+point the conversation was captured. The judgment about what it was worth happens
 somewhere else, later, if at all.
 
 The reason the original scope forbade this was sound: promotion is a judgment step, and
@@ -54,21 +54,21 @@ a different provider to do this.
 **The source is not touched at all.** Reading a conversation does not change what it is
 worth, so promotion neither moves nor deletes it. Conversations are already filed by the
 day they happened; archiving them on the way out would buy nothing but a second place to
-look, and it would answer a question — is this still worth having? — that this screen has
+look, and it would answer a question (is this still worth having?) that this screen has
 no business answering. A conversation stays in `00-inbox/` until the person moves it or
 deletes it themselves.
 
 ## Consequences
 
 **Good.** The judgment happens where the material is, in the app, seconds after reading
-it — rather than in a terminal, later, if at all.
+it, rather than in a terminal, later, if at all.
 
 **Good.** Search-before-create becomes something the person sees rather than something an
 agent claims to have done.
 
 **Bad.** This duplicates part of what that manual step already does, and the two can drift. The
 mitigation is that they share the same rules by being written from the same notes, not by
-sharing code — and the manual step remains the more capable of the two, because it can read and
+sharing code, and the manual step remains the more capable of the two, because it can read and
 merge across the whole vault without asking permission for each step.
 
 **Bad.** The scope rule that made this plugin easy to reason about is now qualified. "It

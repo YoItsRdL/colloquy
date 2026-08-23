@@ -14,17 +14,17 @@ export function createComposer(container, { onSend, onStop, onAttach }) {
   const el = container.createDiv({ cls: "colloquy-composer" });
 
   // Above the box, because an attachment is part of the question rather than a setting on
-  // it — and because a row that grew underneath would shift the controls as you added to
+  // it, and because a row that grew underneath would shift the controls as you added to
   // it, moving Send out from under the cursor.
   const attached = el.createDiv({ cls: "colloquy-attached" });
 
   const input = el.createEl("textarea", {
-    attr: { rows: 2, placeholder: "Ask anything — it lands in your inbox" },
+    attr: { rows: 2, placeholder: "Ask anything. It lands in your inbox" },
   });
   const controls = el.createDiv({ cls: "colloquy-controls" });
 
   input.addEventListener("keydown", (event) => {
-    // Enter sends, Shift+Enter is a newline — the convention everywhere else that has a
+    // Enter sends, Shift+Enter is a newline. The convention everywhere else that has a
     // box like this, and the one people's hands already know.
     if (event.key === "Enter" && !event.shiftKey) {
       event.preventDefault();
@@ -67,7 +67,7 @@ export function createComposer(container, { onSend, onStop, onAttach }) {
    * The one action, which is two actions.
    *
    * Send becomes Stop while an answer is arriving rather than going grey, because a
-   * disabled button in the one place you are looking says only "wait" — and a local model
+   * disabled button in the one place you are looking says only "wait", and a local model
    * can take half a minute to decide it has nothing useful to say. The same control, in
    * the same place, is what makes the wait feel like something you are in rather than
    * something happening to you.

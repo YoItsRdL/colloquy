@@ -25,7 +25,7 @@ export const keyHint = "Where Ollama is listening. The default is right if it ru
  *
  * A reasoning model like qwen3 thinks before it answers, which costs about four seconds
  * before the first token on a GTX 1070. `reasoning_effort: "none"` cuts that to 231ms and
- * was tried for exactly that reason — and it does not remove the thinking, it moves it
+ * was tried for exactly that reason, and it does not remove the thinking, it moves it
  * into the answer. The reply began "Okay, the user asked… Hmm, they want a super concise
  * definition", which is the model talking to itself, written into someone's vault.
  *
@@ -46,7 +46,7 @@ export const models = (opts) => wire.models(wireFor(opts.key), { ...opts, key: I
  *
  * Ollama serves this on its own endpoints rather than the OpenAI-compatible ones, so the
  * `/v1` suffix comes off. Doing it over HTTP rather than by running `ollama pull` is what
- * keeps standard 7 intact — no process is spawned, so nothing here is desktop-only.
+ * keeps standard 7 intact. No process is spawned, so nothing here is desktop-only.
  *
  * Optional by design: `library` is what the settings screen looks for, so a provider that
  * cannot manage its own models simply does not offer to. Nothing outside providers/ needs

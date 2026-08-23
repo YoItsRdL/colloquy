@@ -1,7 +1,7 @@
 /**
  * Where what we learned about ourselves is kept (ADR-0007).
  *
- * `60-log/conversations/`, beside the session log the vault already defines — these are
+ * `60-log/conversations/`, beside the session log the vault already defines. These are
  * records of what happened, and filing them as knowledge would put statements about us in
  * the folder reserved for claims about the world.
  */

@@ -1,7 +1,7 @@
 /**
  * The model id validator (TKT-0109).
  *
- * Thirty lines with no test, which refused every Ollama model — `qwen3:4b` was rejected
+ * Thirty lines with no test, which refused every Ollama model, `qwen3:4b` was rejected
  * before a request was ever made, and it took running the thing to find out. This is the
  * cheapest test in the project and it should have existed first.
  *

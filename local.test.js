@@ -2,7 +2,7 @@
  * A provider configured by an address rather than a secret (TKT-0105).
  *
  * Ollama has no API key. Everything here gated on having one, so the interesting
- * assertions are about the seam that had to widen — and about the property that must not
+ * assertions are about the seam that had to widen, and about the property that must not
  * widen with it: a secret is still never handed back to the interface.
  */
 import { test } from "node:test";
@@ -20,7 +20,7 @@ test("it declares an address, not a key", () => {
 });
 
 test("it is usable with nothing typed", () => {
-  // The address is right often enough that asking for it first would be ceremony — and a
+  // The address is right often enough that asking for it first would be ceremony, and a
   // provider that needs no account should not need a setup step to prove it.
   const keys = keysOf({ keys: {} }, allAdapters());
   assert.equal(keys.OLLAMA_URL, ollama.defaultKey);

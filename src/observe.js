@@ -16,7 +16,7 @@ const OURS = /\b(we|we're|we've|our|us|you|you're|your)\b/i;
 
 /**
  * Writing from outside is a way of starting a sentence, not a word to ban. Unanchored, this
- * threw away "we ultimately guided the conversation towards…" — somebody who was there.
+ * threw away "we ultimately guided the conversation towards…". Somebody who was there.
  */
 const DISTANT = /(^|[.!?]\s+)(the|this)\s+(conversation|discussion|exchange|user|chat|thread|dialogue)\b/i;
 
@@ -29,7 +29,7 @@ const BEFORE = [
   "You are recording what a conversation says about the people in it, for a system that is",
   "learning about them over time.",
   "",
-  "Write two to four sentences in the first person plural — we, us, our, you — as somebody",
+  "Write two to four sentences in the first person plural (we, us, our, you) as somebody",
   "who was there. Never write 'the conversation', 'the user' or 'this discussion'.",
   "",
   "Record only:",
@@ -77,7 +77,7 @@ export function inspect(raw) {
         const parsed = JSON.parse(text.slice(i, j + 1));
         if (typeof parsed?.context === "string") found = parsed.context.trim();
         break;
-      } catch { /* not a whole object — keep looking */ }
+      } catch { /* not a whole object, keep looking */ }
     }
   }
 
@@ -85,7 +85,7 @@ export function inspect(raw) {
   if (!found) return { context: "", why: null };   // it looked and found nothing. A real answer.
 
   // Everything below is the model answering badly, which is not the same as it answering
-  // "nothing" — returning "" for these would mark the conversation read and record silence,
+  // "nothing", returning "" for these would mark the conversation read and record silence,
   // losing it for good. null sends it back round instead.
   if (DISTANT.test(found)) return { context: null, why: "the account was written from outside the conversation" };
   if (!OURS.test(found)) return { context: null, why: "the account never mentions us" };
@@ -103,7 +103,7 @@ export const readContext = (raw) => inspect(raw).context;
  * @returns the same shape as {@link inspect}.
  *
  * Errors propagate. Nothing has been written at this point, so there is no half-done state
- * to protect — and swallowing the failure would put "nothing to record" in a log when the
+ * to protect, and swallowing the failure would put "nothing to record" in a log when the
  * truth was that nothing was asked.
  */
 export async function observeConversation(candidate, conversation) {

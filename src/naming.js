@@ -3,7 +3,7 @@ import { proposeTitle, slugFrom } from "./title.js";
 import { renameConversation } from "./vault.js";
 
 /**
- * Once per conversation, on the first answered turn — naming it again would move a file
+ * Once per conversation, on the first answered turn, naming it again would move a file
  * somebody may already have opened or linked.
  *
  * Never awaited: a reasoning model took sixty-six seconds to title "hello", which would

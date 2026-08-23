@@ -1,7 +1,7 @@
 /**
  * Picking a conversation up where it was left (TKT-0110).
  *
- * A lifecycle step rather than part of running a turn, like naming — so it lives beside the
+ * A lifecycle step rather than part of running a turn, like naming, so it lives beside the
  * view rather than inside it.
  *
  * Everything is rebuilt from the file, because the file is the record and there is no
@@ -16,7 +16,7 @@ import { clearAttachments } from "./attaching.js";
 
 /** Offers the conversations that exist, and picks up whichever one is chosen. */
 export function pickConversation(view) {
-  if (view.busy) return new Notice("Still answering — one moment.");
+  if (view.busy) return new Notice("Still answering, one moment.");
   new ConversationPicker(view.app, foldersOf(view.plugin.settings).conversations,
     (file) => resumeConversation(view, file)).open();
 }
@@ -28,7 +28,7 @@ export function pickConversation(view) {
  * would move a file that may already be linked from a note.
  */
 export async function resumeConversation(view, file) {
-  if (view.busy) return new Notice("Still answering — one moment.");
+  if (view.busy) return new Notice("Still answering, one moment.");
 
   const history = readTranscript(await view.app.vault.read(file));
   view.session = { history, file: file.path, model: null, provider: null };
@@ -42,7 +42,7 @@ export async function resumeConversation(view, file) {
   }
 
   // After the markdown is actually on the page, not before. Every turn scrolls to the end
-  // as it is added, but rendering grows the thread underneath afterwards — so without this
+  // as it is added, but rendering grows the thread underneath afterwards, so without this
   // a resumed conversation opens somewhere in the middle of the last answer.
   await Promise.all(rendering);
   view.thread.toEnd();
@@ -57,14 +57,14 @@ export async function resumeConversation(view, file) {
  * Starts a fresh conversation.
  *
  * Nothing is lost and nothing is asked: the previous one is a note in the vault, and the
- * only thing being cleared is the view of it. Saying where it went is the point — that is
+ * only thing being cleared is the view of it. Saying where it went is the point. That is
  * the question this moment raises, and the answer is reassuring.
  *
  * Refused mid-turn, because clearing the thread while a reply is arriving would orphan it:
  * the file would keep the answer and the screen would not.
  */
 export function startConversationAfresh(view) {
-  if (view.busy) return new Notice("Still answering — one moment.");
+  if (view.busy) return new Notice("Still answering, one moment.");
 
   const previous = view.where.path;
   view.session = null;

@@ -3,7 +3,7 @@
  *
  * In Obsidian's own plugin data, which is the native place and the only one reachable on
  * a phone. That directory is tracked in this repository, so the store is gitignored and
- * the gate fails if it ever becomes tracked — the protection is a check, not a habit.
+ * the gate fails if it ever becomes tracked. The protection is a check, not a habit.
  *
  * Values are never returned to the interface. `status()` says whether a key exists; only
  * a turn ever sees one, and only on its way to a provider.
@@ -23,7 +23,7 @@ export function keysOf(settings, adapters = [], { mobile = Platform.isMobile } =
   //
   // Not on a phone, though: nothing is listening on a phone's own localhost, so assuming
   // it there configures a provider that cannot answer, names it on the chip, and fails
-  // every question with advice — start the server — that cannot be taken on that device.
+  // every question with advice (start the server) that cannot be taken on that device.
   // An address typed in by hand still works, which is the case that matters: Ollama on a
   // desktop, reached over the network (ADR-0012).
   for (const adapter of adapters) {
@@ -67,7 +67,7 @@ export function setKey(settings, keyVar, value) {
   }
   // Whitespace is the usual damage from a copy-paste, and a key with a stray newline
   // fails with an error that says nothing about why.
-  if (/\s/.test(clean)) throw new KeyError("that does not look like a key — it contains whitespace");
+  if (/\s/.test(clean)) throw new KeyError("that does not look like a key: it contains whitespace");
   if (clean.length > 500) throw new KeyError("that is too long to be a key");
 
   settings.keys[keyVar] = clean;

@@ -2,15 +2,15 @@
  * Noticing what a conversation was about (ADR-0007).
  *
  * The rules here exist because the prompt alone does not hold. A small model asked for a
- * first-person account will still hand back "The conversation outlines…" — that exact
- * sentence is what this replaced — so the voice is checked rather than requested.
+ * first-person account will still hand back "The conversation outlines…", that exact
+ * sentence is what this replaced, so the voice is checked rather than requested.
  */
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { readContext, inspect, observeConversation } from "./src/observe.js";
 
 const said = (context) => JSON.stringify({ context });
-const GOOD = "We were weighing local models against Claude, mostly on cost — you would rather not spend more on API credits.";
+const GOOD = "We were weighing local models against Claude, mostly on cost. You would rather not spend more on API credits.";
 
 test("a first-person account survives intact", () => {
   assert.equal(readContext(said(GOOD)), GOOD);
@@ -84,7 +84,7 @@ test("an account long enough to be a summary is refused", () => {
 /**
  * This runs unattended, so one line on the settings screen is the only evidence anybody
  * ever gets that it is unhappy. "Could not read it", on repeat, tells you nothing you can
- * act on — which rule refused it does.
+ * act on, which rule refused it does.
  */
 test("a refusal says which rule refused it", () => {
   assert.match(inspect("no json here at all").why, /format/i);

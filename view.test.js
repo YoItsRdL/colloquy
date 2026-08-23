@@ -13,7 +13,7 @@ import { ConversationView } from "./src/view.js";
 const FOLDERS = { conversations: "00-inbox", context: "60-log/conversations" };
 
 /** A vault that records what was written to it, and a model that says what it is told to. */
-function panel({ chunks = ["Yes", " — by train."], key = "http://localhost:11434/v1", title = "By Train" } = {}) {
+function panel({ chunks = ["Yes", ", by train."], key = "http://localhost:11434/v1", title = "By Train" } = {}) {
   const files = new Map();
   const asked = [];
 
@@ -107,7 +107,7 @@ test("a whole turn reaches the screen and the file", async () => {
   const [path, text] = conversation(files);
   assert.match(text, /\*\*me\*\*/);
   assert.match(text, /is it better by train\?/);
-  assert.match(text, /Yes — by train\./, "written whole, not chunk by chunk");
+  assert.match(text, /Yes, by train\./, "written whole, not chunk by chunk");
   assert.deepEqual(touched, [path], "and the idle clock starts");
   assert.equal(view.where.path, path, "the panel says where it went");
 });
@@ -198,7 +198,7 @@ test("a missing key names the screen it is fixed on", async () => {
 // ── stopping ─────────────────────────────────────────────────────────────────────
 
 /**
- * Whatever has already been said is kept, because it is what the model said — and the
+ * Whatever has already been said is kept, because it is what the model said, and the
  * usual reason for stopping is that enough has arrived to know the rest is not wanted.
  */
 test("stopping keeps what had already arrived", async () => {

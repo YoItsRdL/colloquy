@@ -37,7 +37,7 @@ const body = (messages) => JSON.stringify({
 });
 
 // The key travels in a header, not the query string. As a query parameter it would ride
-// along in any echoed URL — and errors are written into transcripts, which get
+// along in any echoed URL, and errors are written into transcripts, which get
 // committed. See standards/code.md, Secrets.
 const headers = (key) => ({ "content-type": "application/json", "x-goog-api-key": key });
 
@@ -67,7 +67,7 @@ export async function complete({ model, messages, key, signal }) {
 }
 
 /**
- * Streaming variant (ADR-0004). Optional by contract — the server's fallback is what
+ * Streaming variant (ADR-0004). Optional by contract. The server's fallback is what
  * keeps a provider without one behaving identically from the client's side.
  *
  * Parsed by hand rather than with a library, per ADR-0002. It is one framing rule:
@@ -127,7 +127,7 @@ function summarise(raw) {
 }
 
 /**
- * What this provider offers (ADR-0005). Filtered to models that can actually answer —
+ * What this provider offers (ADR-0005). Filtered to models that can actually answer:
  * the list includes embedding and vision-only models that would fail on use.
  */
 export async function models({ key, signal }) {

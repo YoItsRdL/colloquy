@@ -1,8 +1,8 @@
 /**
  * Assembling a turn's configuration (TKT-0002, ADR-0009).
  *
- * Almost nothing left to assemble. This file used to test a fallback chain — which provider
- * a turn walked to when the first refused, and which paid one it offered afterwards — and
+ * Almost nothing left to assemble. This file used to test a fallback chain, which provider
+ * a turn walked to when the first refused, and which paid one it offered afterwards, and
  * all of it went with the chain. What survives is the one rule that still has a decision in
  * it: a preference naming something that no longer exists must not stop the plugin.
  */
@@ -27,7 +27,7 @@ test("no model chosen means the provider's own default", () => {
 
 /**
  * A stored provider can name something removed in an update. Throwing here would mean a
- * plugin that will not start because of a preference — and a plugin that will not start is
+ * plugin that will not start because of a preference, and a plugin that will not start is
  * one that has taken its conversation history with it.
  */
 test("a provider that no longer exists falls back to the default rather than throwing", () => {

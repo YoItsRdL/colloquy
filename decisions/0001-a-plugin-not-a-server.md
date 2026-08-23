@@ -1,4 +1,4 @@
-# ADR-0001 — A plugin, not a server
+# ADR-0001: A plugin, not a server
 
 **Status:** Accepted
 **Date:** 2026-08-18
@@ -21,8 +21,8 @@ The gateway was a local web server with a browser interface. It worked. The prob
 what it kept needing.
 
 Binding to a port creates a boundary that must then be defended. That produced a shared
-token for LAN access, then rate limiting, then — when the token stopped feeling adequate
-for something holding four API keys and the whole vault — an attempt at Google sign-in.
+token for LAN access, then rate limiting, then, when the token stopped feeling adequate
+for something holding four API keys and the whole vault, an attempt at Google sign-in.
 That attempt is where the architecture showed itself: Google refuses to redirect to a
 raw IP over plain HTTP, so the phone case could never be secured that way, and on
 localhost the sign-in would have guarded a door into a room the person was already
@@ -81,7 +81,7 @@ markdown file that outlives both.
 were sound designs, but they were CSS against a private stylesheet, and Obsidian has its
 own.
 
-**Accepted risk.** Streaming on mobile is unproven — the WebView enforces CORS that
+**Accepted risk.** Streaming on mobile is unproven, the WebView enforces CORS that
 Electron does not. The fallback is a whole reply instead of a progressive one, which is a
 degradation and not a failure: the note on disk is identical either way.
 
@@ -89,7 +89,7 @@ degradation and not a failure: the note on disk is identical either way.
 
 **Finish Google sign-in on localhost.** Complete and green on a branch. Rejected because
 it protects a door into a room the person is already in, while doing nothing for the
-phone — the case that actually needed it.
+phone, the case that actually needed it.
 
 **Keep the gateway and add a plugin that talks to it.** Two components, one of which
 still has a port and therefore still needs everything this decision deletes.

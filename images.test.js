@@ -1,7 +1,7 @@
 /**
  * An image on the wire, three ways (ADR-0011).
  *
- * Each API wants a different shape and none of them says so politely — a wrong shape comes
+ * Each API wants a different shape and none of them says so politely. A wrong shape comes
  * back as a generic 400, or worse, as an answer that quietly ignored the picture. These
  * assert the shapes against each provider's documented form.
  *

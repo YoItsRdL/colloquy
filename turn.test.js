@@ -43,7 +43,7 @@ test("what answered is what was asked, because there is nothing else it could be
 
 /**
  * The whole of the change. There is no second provider to try, no verdict to record, and
- * nothing to offer — the provider said why, and that is what reaches the person.
+ * nothing to offer. The provider said why, and that is what reaches the person.
  */
 test("a refusal is reported in the provider's own words and goes no further", async () => {
   const out = await runTurn(streaming([new Error("deepseek 402: insufficient balance")]), session());
@@ -65,7 +65,7 @@ test("a partial answer survives the failure that interrupted it", async () => {
 });
 
 /**
- * "Failed to fetch" is what a browser says when a request produced nothing readable — no
+ * "Failed to fetch" is what a browser says when a request produced nothing readable, no
  * connection, a blocked origin, or a refusal without the headers to read it. Three words
  * naming none of them, written into a note somebody re-reads weeks later.
  *
@@ -98,7 +98,7 @@ test("a metered provider that answers nothing is not diagnosed", async () => {
 });
 
 /**
- * Stopping is not failing. The person asked for it, so there is nothing to report — and
+ * Stopping is not failing. The person asked for it, so there is nothing to report, and
  * what arrived before they stopped is the answer, because it is what the model said.
  */
 test("a turn the person stopped keeps what arrived and reports no error", async () => {

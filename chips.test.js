@@ -51,7 +51,7 @@ test("with nothing to choose between, the provider chip does not invite a click"
 });
 
 /**
- * A model belongs to the provider that listed it, so it cannot travel — sending one
+ * A model belongs to the provider that listed it, so it cannot travel, sending one
  * provider's model to another fails on the first turn.
  */
 test("changing provider drops the model that belonged to the old one", async () => {
@@ -109,7 +109,7 @@ test("a fresh install already points at the local provider", () => {
 
 /**
  * The label deliberately drops part of a model id to fit, so the whole of it has to be
- * somewhere — otherwise two models that shorten alike are indistinguishable.
+ * somewhere, otherwise two models that shorten alike are indistinguishable.
  */
 test("the model chip keeps the whole id in its tooltip", () => {
   const ui = chipsFor({ provider: "gemini", model: "gemini-2.5-flash-preview-09-2025", keys: { GEMINI_API_KEY: "g" } });

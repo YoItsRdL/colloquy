@@ -7,8 +7,8 @@
 import { resolve as resolveProvider, defaultProvider } from "./providers/index.js";
 
 /**
- * A stored provider that no longer exists falls back to the default rather than throwing —
- * a plugin that will not start because of a stale preference has taken its own history
+ * A stored provider that no longer exists falls back to the default rather than throwing.
+ * A plugin that will not start because of a stale preference has taken its own history
  * with it.
  */
 export function buildConfig(settings, keys) {

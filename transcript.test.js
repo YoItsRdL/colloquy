@@ -1,7 +1,7 @@
 /**
  * Reading a conversation back out of the file it was written to (TKT-0110).
  *
- * The file is the only record — there is no session store — so this parser is what stands
+ * The file is the only record. There is no session store, so this parser is what stands
  * between "pick up where you left off" and starting again from nothing. It is tested
  * against what `appendTurn` actually writes, not against a shape invented here.
  */
@@ -60,7 +60,7 @@ test("an empty conversation is empty rather than broken", () => {
 
 /**
  * The model label changes mid-conversation whenever a fallback chain moves, so the speaker
- * cannot be matched against a known name — only "me" is the person.
+ * cannot be matched against a known name, only "me" is the person.
  */
 test("a reply is a reply whichever model gave it", async () => {
   const text = await written([
@@ -72,7 +72,7 @@ test("a reply is a reply whichever model gave it", async () => {
 
 /**
  * A failure is worth keeping in the transcript a person reads and worth leaving out of the
- * history a model is asked to continue from — it is a fact about a provider, not about the
+ * history a model is asked to continue from. It is a fact about a provider, not about the
  * subject.
  */
 test("a recorded failure is not fed back to the model", async () => {
@@ -89,7 +89,7 @@ test("a multi-paragraph answer keeps its shape", async () => {
 
 /**
  * The file is the interface between one sitting and the next, so a conversation somebody
- * edited by hand — or wrote themselves — has to load like any other.
+ * edited by hand, or wrote themselves, has to load like any other.
  */
 test("a conversation written by hand loads too", () => {
   const byHand = "# Notes\n\n**me** _(9:05)_\n\nwhat about buses\n\n**claude** _(9:06)_\n\nSlower.\n";
@@ -121,8 +121,8 @@ test("conversations are offered most recently touched first", () => {
 });
 
 /**
- * There were two answers to "where do conversations live" — this function's own default and
- * the shipped one — and they disagreed. Only the fact that every caller passes a root kept
+ * There were two answers to "where do conversations live", this function's own default and
+ * the shipped one, and they disagreed. Only the fact that every caller passes a root kept
  * that hidden, which is the kind of thing that surfaces the first time one does not.
  */
 test("there is one answer to where conversations live", () => {

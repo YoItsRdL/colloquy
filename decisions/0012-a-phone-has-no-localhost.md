@@ -1,4 +1,4 @@
-# ADR-0012 — A phone has no localhost
+# ADR-0012: A phone has no localhost
 
 **Status:** Accepted
 **Date:** 2026-08-23
@@ -18,7 +18,7 @@ ever will be. The consequences all followed from treating it as configured:
 - The provider chip named Ollama, because a configured provider outranks an unconfigured
   one, so the panel looked ready.
 - Every question failed with *"Ollama is not answering at http://localhost:11434/v1. It is
-  usually not running: start it and try again."* — accurate, actionable on a desktop, and
+  usually not running: start it and try again."*, accurate, actionable on a desktop, and
   impossible to act on from a phone.
 - The settings screen offered a model library for a server that cannot exist, and reported
   it as unreachable rather than inapplicable.
@@ -32,7 +32,7 @@ default.
 exactly as before.
 
 The result on a phone with nothing configured is that no provider is configured, which is
-true, and the first question fails with *"No key for … Add one in Settings → Colloquy"* —
+true, and the first question fails with *"No key for … Add one in Settings → Colloquy"*,
 which names the screen it is fixed on.
 
 ## Alternatives considered
@@ -42,7 +42,7 @@ the chip would still name a provider that cannot answer, and the settings screen
 still offer to manage models for a server that cannot run. The message was a symptom.
 
 **Make the local provider desktop-only outright.** Overreaches. Ollama on a desktop reached
-over the network is a real setup and the one worth protecting — a phone on the same wifi
+over the network is a real setup and the one worth protecting, a phone on the same wifi
 pointed at `192.168.1.4:11434` works, and always did. Only the localhost assumption is
 wrong, so only the assumption is removed.
 

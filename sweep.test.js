@@ -14,7 +14,7 @@ const FOLDERS = { conversations: "00-inbox", context: "60-log/conversations" };
 const CONVERSATION = "00-inbox/2026/08/19/trains.md";
 const good = '{"context":"We were working out whether the train beats the bus, and you would rather not change twice."}';
 
-/** A plugin, a vault, and a model — enough of each to watch the sweep behave. */
+/** A plugin, a vault, and a model, enough of each to watch the sweep behave. */
 function harness({ reply = good, keyKind = "url" } = {}) {
   const files = new Map([[CONVERSATION, "a conversation about trains"]]);
   const front = new Map();
@@ -124,7 +124,7 @@ test("an unreadable answer leaves the conversation for another time", async () =
 });
 
 /**
- * A conversation with nothing in it is the normal case, and it is genuinely finished —
+ * A conversation with nothing in it is the normal case, and it is genuinely finished:
  * unlike a failure, it must not be read again on every future sweep.
  */
 test("a conversation worth nothing is still marked read", async () => {
@@ -136,7 +136,7 @@ test("a conversation worth nothing is still marked read", async () => {
 });
 
 /**
- * The marker was called `processed`, which is also what `/process` does to a conversation —
+ * The marker was called `processed`, which is also what `/process` does to a conversation:
  * promote it into a note and archive it. Two different meanings under one key, on the same
  * files, is a trap for whoever reads that frontmatter next.
  */
@@ -206,7 +206,7 @@ test("two reads cannot overlap", async () => {
 });
 
 /**
- * One read at a time keeps a 4B model off the GPU the person is about to use — but a busy
+ * One read at a time keeps a 4B model off the GPU the person is about to use, but a busy
  * flag that *drops* the second conversation is silent loss, not backpressure.
  */
 test("a conversation arriving mid-read waits rather than being dropped", async () => {
@@ -221,7 +221,7 @@ test("a conversation arriving mid-read waits rather than being dropped", async (
 
 /**
  * Without this the `noticed:` marker is write-only. An evening when Ollama was off, a
- * quit before the timer fired, a crash — and nothing in the system would ever look at
+ * quit before the timer fired, a crash, and nothing in the system would ever look at
  * those conversations again.
  */
 test("conversations the idle clock never reached are picked up later", async () => {
@@ -268,7 +268,7 @@ test("only conversations are caught up, not notes somebody wrote", async () => {
 
 /**
  * This runs when the app opens. An inbox of two hundred must not mean ten minutes of GPU
- * the moment somebody opens their vault — the rest waits for the next time.
+ * the moment somebody opens their vault, the rest waits for the next time.
  */
 test("a large backlog is read in bounded batches, and says what is left", async () => {
   const { plugin, files, asked } = harness();
@@ -336,7 +336,7 @@ test("why nothing was read is recorded, even though nobody is interrupted", asyn
 /**
  * The clock is keyed on path and the first answer renames the file. Told nothing, the timer
  * fires on a name nothing lives at, returns without a word, and the conversation waits for
- * the next catch-up — which is how 1.0.0 shipped.
+ * the next catch-up, which is how 1.0.0 shipped.
  */
 test("a conversation renamed mid-countdown is still read when it goes quiet", async () => {
   const { plugin, files } = harness();

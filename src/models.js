@@ -2,7 +2,7 @@
  * What the configured provider offers (ADR-0005).
  *
  * Asked of the provider rather than listed here, because a list in source is wrong
- * within a quarter and wrong silently — it keeps offering a model that no longer
+ * within a quarter and wrong silently. It keeps offering a model that no longer
  * answers, and omits ones that do.
  *
  * Cached for the process lifetime. Model lists change on the scale of weeks; fetching
@@ -78,7 +78,7 @@ export function isCooling(providerName, model) {
  * Every provider with a key, and what each offers (TKT-0704).
  *
  * One provider failing to list must not empty the menu, so a failure falls back to that
- * provider's default model — the same answer given for an adapter that cannot list at
+ * provider's default model. The same answer given for an adapter that cannot list at
  * all. A provider offering one usable option is more use than a menu that will not open.
  */
 export async function listAll(config, { signal } = {}) {

@@ -38,7 +38,7 @@ export function createChips({ container, plugin, onChange }) {
   /**
    * The provider in use, and never one that cannot answer.
    *
-   * A stored choice can outlive its key — the adapter still resolves, so the chip would
+   * A stored choice can outlive its key. The adapter still resolves, so the chip would
    * name a provider confidently while every turn failed with "no key". Falling back to one
    * that has a key means the chip and the turn agree.
    */
@@ -59,7 +59,7 @@ export function createChips({ container, plugin, onChange }) {
     providerControl.label.setText(provider?.label ?? provider?.name ?? "No provider");
     providerChip.disabled = available().length < 2;   // nothing to choose between
 
-    const id = settings().model ?? provider?.defaultModel ?? "—";
+    const id = settings().model ?? provider?.defaultModel ?? "no model";
     modelControl.label.setText(shorten(id, provider));
     modelChip.disabled = !provider;
 
@@ -76,7 +76,7 @@ export function createChips({ container, plugin, onChange }) {
         item.setChecked(adapter.name === chosen?.name);
         item.onClick(async () => {
           if (adapter.name === chosen?.name) return;
-          // A model belongs to the provider that listed it, so it cannot travel — sending
+          // A model belongs to the provider that listed it, so it cannot travel, sending
           // one provider's model to another fails on the first turn.
           settings().provider = adapter.name;
           settings().model = null;
@@ -127,8 +127,9 @@ export function createChips({ container, plugin, onChange }) {
 
   /**
    * Hidden rather than disabled when no provider is configured. A disabled control still
-   * takes its space and still reads as something that ought to work; "No provider" beside
-   * "—" was two of them saying nothing, on the row where the one action lives.
+   * takes its space and still reads as something that ought to work. "No provider" beside
+   * an empty model name was two of them saying nothing, on the row where the one action
+   * lives.
    */
   function toggle(show) {
     providerChip.toggleClass("is-hidden", !show);

@@ -11,10 +11,10 @@ Dates are release dates. Reasoning that outlived a single release lives in
 - **A phone no longer claims Ollama is configured.** It assumed `localhost`, which on a
   phone is nothing at all, so the panel looked ready and then failed every question with
   advice that could not be taken on that device. It now says no key is set, and names the
-  screen to set one on. An address typed in by hand — Ollama on your desktop, over your
-  network — works exactly as before (ADR-0012).
+  screen to set one on. An address typed in by hand (Ollama on your desktop, reached over
+  your network) works exactly as before (ADR-0012).
 
-## 1.0.2 — 2026-08-23
+## 1.0.2 (2026-08-23)
 
 - **Removing a key did nothing.** The confirmation's Remove button cleared the key in
   memory, never wrote that to disk, and left the confirmation on screen looking untouched,
@@ -23,7 +23,7 @@ Dates are release dates. Reasoning that outlived a single release lives in
 - **A local provider that is not running now says so.** "The request did not complete, and
   it returned nothing to explain why" listed two possibilities and left you to work out
   which. For a provider addressed by a URL there is a likeliest cause worth naming, and the
-  address is printed with it — a server that *is* running means the address is wrong.
+  address is printed with it. A server that *is* running means the address is wrong.
 - A way to say thanks, if it has been useful: in settings, in the plugin browser, and on
   the repository.
 
@@ -31,7 +31,7 @@ Under the surface: every module that talks to Obsidian is now tested. That was s
 files and about 1,400 lines with no coverage at all, and it is where both of the bugs above
 were living.
 
-## 1.0.1 — 2026-08-22
+## 1.0.1 (2026-08-22)
 
 Two defects in the rename that follows the first answer, both found by installing the
 released 1.0.0 into a real vault rather than testing a development build.
@@ -40,7 +40,7 @@ released 1.0.0 into a real vault rather than testing a development build.
   title, and the three-minute idle clock was left pointing at the name the file had before.
   It fired on a path nothing lived at, returned without recording a reason, and the
   conversation waited for the next catch-up instead. Context notes were only ever written
-  when Obsidian started — while the callout inside every conversation promised "a few
+  when Obsidian started, while the callout inside every conversation promised "a few
   minutes after this goes quiet".
 - **A title matching the working name renamed the file anyway.** The filename comes from
   the question and the title from the answer, so the two agreeing is ordinary rather than
@@ -49,7 +49,7 @@ released 1.0.0 into a real vault rather than testing a development build.
 Anyone who ran 1.0.0 kept everything: those conversations were read on the next launch,
 just not when they went quiet.
 
-## 1.0.0 — 2026-08-22
+## 1.0.0 (2026-08-22)
 
 First public release.
 

@@ -37,7 +37,7 @@ test("nothing can climb out of the vault", () => {
 
 /**
  * A vault synced between machines is only as portable as its least tolerant filesystem, and
- * Windows refuses these outright — a folder that works here and fails there is worse than
+ * Windows refuses these outright. A folder that works here and fails there is worse than
  * one that never worked.
  */
 test("characters a filesystem will refuse are dropped", () => {
@@ -65,7 +65,7 @@ test("surrounding whitespace is somebody's typing, not part of the name", () => 
 });
 
 /**
- * Nothing usable must read as "keep the default", never as "write to the vault root" — a
+ * Nothing usable must read as "keep the default", never as "write to the vault root", a
  * cleared field should not scatter conversations across the top of somebody's vault.
  */
 test("nothing usable falls back to the default rather than to the vault root", () => {

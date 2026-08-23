@@ -16,7 +16,7 @@ const PREAMBLE = [
   "Background on the person you are talking to, gathered from earlier conversations.",
   "",
   "It was written by a small model reading those conversations, so treat it as a hint",
-  "rather than fact — it may be wrong, out of date, or about something else entirely.",
+  "rather than fact. It may be wrong, out of date, or about something else entirely.",
   "Do not repeat it back, do not mention that you have it, and ignore anything in it that",
   "does not bear on what is actually being asked.",
   "",
@@ -28,7 +28,7 @@ const bodyOf = (text) => String(text ?? "").replace(/^---\r?\n[\s\S]*?\r?\n---\r
 /**
  * What earlier conversations noticed, as one block of background.
  *
- * @returns the block, or null when there is nothing worth sending — which is the ordinary
+ * @returns the block, or null when there is nothing worth sending, which is the ordinary
  * case for a new vault and must cost nothing.
  */
 export async function recall(app, { root = DEFAULT_FOLDERS.context, limit = MAX_RECORDS, budget = MAX_CHARS } = {}) {
@@ -55,7 +55,7 @@ export async function recall(app, { root = DEFAULT_FOLDERS.context, limit = MAX_
  *
  * Held on the session rather than pushed into its history, so it never reaches the file:
  * the transcript is a record of what was said, and this was not said by anybody. It is
- * also why it cannot accumulate — a preamble pushed into history would be sent again with
+ * also why it cannot accumulate. A preamble pushed into history would be sent again with
  * every turn, growing the request for as long as the conversation lasts.
  */
 export async function attachMemory(app, session, { enabled = true, settings } = {}) {

@@ -1,7 +1,7 @@
 /**
  * Holding what a question is about, until it is asked (ADR-0011).
  *
- * Two routes to the same list — the vault, and the rest of the machine — and one rule
+ * Two routes to the same list, the vault, and the rest of the machine, and one rule
  * underneath both: whatever is attached must be reachable from the transcript afterwards.
  * A file that was sent but never landed in the vault leaves a conversation pointing at
  * nothing.
@@ -69,7 +69,7 @@ test("choosing from the vault opens a picker, and what is picked is held", async
   assert.equal(view.focused, 1, "with the cursor back where the question goes");
 });
 
-/** The same file twice is a slip, not an instruction — it would be sent and paid for twice. */
+/** The same file twice is a slip, not an instruction. It would be sent and paid for twice. */
 test("the same file attached twice is held once", async () => {
   menus.length = 0;
   modals.length = 0;

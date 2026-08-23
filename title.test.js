@@ -2,7 +2,7 @@
  * Naming a conversation after the fact (TKT-0107).
  *
  * The rules that matter are the refusals. A model asked for a title will sometimes return
- * a sentence, an apology, its own reasoning, or the word "Title:" followed by one — and a
+ * a sentence, an apology, its own reasoning, or the word "Title:" followed by one, and a
  * wrong name is worse than the plain one already on the file, because the plain one at
  * least says what was asked.
  */

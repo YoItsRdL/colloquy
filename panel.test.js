@@ -2,7 +2,7 @@
  * The three pieces of panel furniture: where the conversation is being written, the action
  * bar above it, and the transcript itself.
  *
- * Small modules, but each carries a decision worth holding still — a control that must not
+ * Small modules, but each carries a decision worth holding still. A control that must not
  * look clickable before there is anything to click, a transcript that must not yank the
  * page while somebody is reading it, and a human turn that must never be run through a
  * markdown renderer.

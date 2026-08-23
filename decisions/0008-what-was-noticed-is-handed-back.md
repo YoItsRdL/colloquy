@@ -1,4 +1,4 @@
-# ADR-0008 — What was noticed is handed back, as a hint
+# ADR-0008: What was noticed is handed back, as a hint
 
 **Status:** Accepted
 **Date:** 2026-08-19
@@ -9,7 +9,7 @@ established the records but left nothing reading them.
 
 ADR-0007 has the sweep write an account of each conversation to
 `60-log/conversations/`. Nothing read them. That is the same defect the `noticed:` marker
-had before the catch-up pass existed — a store only ever written to is not a store, and the
+had before the catch-up pass existed. A store only ever written to is not a store, and the
 stated purpose of these records was "so the system keeps learning about us". A record
 nothing reads back learns nobody anything.
 
@@ -24,7 +24,7 @@ skewed; the one thing a wrong record must never do is arrive with the authority 
 something we actually said.
 
 **On the session, not in the history.** The transcript records what was said, and this was
-not said by anybody — so it never reaches the file. It is also why it cannot accumulate: a
+not said by anybody, so it never reaches the file. It is also why it cannot accumulate: a
 preamble pushed into the history would be re-sent with every turn, growing the request for
 as long as the conversation lasted.
 
@@ -43,13 +43,13 @@ are set to a paid provider it goes there. Saying so is not optional.
 **Good.** The loop closes. Asked "what did we decide about local models?" in a conversation
 with no history, the model answered from a record written by an earlier one.
 
-**Good.** The cost is bounded and visible — a couple of thousand characters at the front of
+**Good.** The cost is bounded and visible, a couple of thousand characters at the front of
 the first request of a conversation, and nothing after that.
 
 **Bad.** Errors can now compound. ADR-0007 accepts that a record may carry a claim the model
 got wrong; handing it back makes that claim an input to the next conversation. The
 mitigations are that it is labelled untrusted, that it is capped, and that it can be turned
-off — none of which make it impossible.
+off, none of which make it impossible.
 
 **Bad.** Conversations are no longer independent. A strange answer may now be caused by
 something recorded days ago, and the only way to see it is to read

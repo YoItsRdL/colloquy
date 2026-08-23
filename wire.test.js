@@ -1,7 +1,7 @@
 /**
  * The streaming parsers (TKT-0109).
  *
- * Three of them — one per wire format — and until now none had a test. They are the code
+ * Three of them. One per wire format, and until now none had a test. They are the code
  * every reply passes through, and their failure mode is quiet: a mishandled record does
  * not throw, it silently drops a sentence from a note.
  *

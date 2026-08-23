@@ -1,10 +1,10 @@
 /**
  * What the panel shows before it can answer anything (ADR-0012).
  *
- * The state this replaced was three controls saying nothing — "No provider", "—", "Not
- * written yet" — under a bright Send that could not send. Every one of them was honest and
- * none of them helped, so the rule these tests hold is: nothing on screen that cannot be
- * used, and one thing that can.
+ * The state this replaced was three controls saying nothing: a provider chip naming none,
+ * a model chip naming none, and a filename saying it had not been written, under a bright
+ * Send that could not send. Every one was honest and none helped, so the rule these tests
+ * hold is: nothing on screen that cannot be used, and one thing that can.
  */
 import { test } from "node:test";
 import assert from "node:assert/strict";
@@ -17,7 +17,7 @@ const BARE = { keys: {} };
 
 /**
  * On a desktop the local provider carries a default address, so something can always
- * answer and this state is unreachable — correctly. It exists for the device that has no
+ * answer and this state is unreachable, correctly. It exists for the device that has no
  * localhost to assume (ADR-0012), so that is the device these run on.
  */
 const onAPhone = (fn) => async (...args) => {
@@ -124,7 +124,7 @@ test("with a key set, the controls are there and Send works", async () => {
 });
 
 /**
- * It used to say "Not written yet" — a whole row on a phone, answering a question nobody
+ * It used to say "Not written yet", a whole row on a phone, answering a question nobody
  * had yet asked.
  */
 test("where the conversation is being written is not shown until it is", async () => {

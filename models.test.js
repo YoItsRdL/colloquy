@@ -40,7 +40,7 @@ test("an adapter without models() reports its default alone", async () => {
   assert.deepEqual(models, [{ id: "fallback" }], "one option, not an empty menu");
 });
 
-test("results are cached — a menu open does not spend a request", async () => {
+test("results are cached. A menu open does not spend a request", async () => {
   let calls = 0;
   const config = {
     model: "m",
@@ -76,8 +76,8 @@ test("the heuristic never hides the model actually in use", async () => {
 
 test("a version number is not mistaken for a modality", async () => {
   const models = await listModels(configWith([
-    { id: "model-3-image-preview" },   // an image model — hidden
-    { id: "model-3.5-turbo" },         // a version — kept
+    { id: "model-3-image-preview" },   // an image model, hidden
+    { id: "model-3.5-turbo" },         // a version, kept
     { id: "claude-sonnet-5" },
   ]));
   const ids = models.map((m) => m.id);
@@ -170,7 +170,7 @@ test("providers are asked concurrently, not one after another", async () => {
 
 test("models that are not conversational at all are filtered out", async () => {
   // A provider that lists a hundred entries mostly lists things that cannot hold a
-  // conversation. Still modality names, never version numbers — see the heuristic.
+  // conversation. Still modality names, never version numbers, see the heuristic.
   const listed = ["chat-5", "whisper-1", "dall-e-3", "omni-moderation-latest",
                   "chat-audio-preview", "chat-transcribe", "chat-realtime-preview"];
   const models = await listAll({

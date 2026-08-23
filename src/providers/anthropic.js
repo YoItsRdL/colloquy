@@ -1,7 +1,7 @@
 /**
  * Anthropic adapter. All Anthropic-specific knowledge lives here and nowhere else.
  *
- * Its wire format disagrees with Gemini's at almost every point — a different auth
+ * Its wire format disagrees with Gemini's at almost every point, a different auth
  * header, a required max_tokens, content blocks instead of parts, and typed streaming
  * events rather than whole candidates. Translating all of that inside this file is the
  * test of ADR-0001: if the seam is real, nothing outside providers/ notices.
@@ -83,7 +83,7 @@ export async function complete({ model, messages, key, signal }) {
 /**
  * Streaming (ADR-0004).
  *
- * Anthropic sends typed events, most of which carry no text — message_start, ping,
+ * Anthropic sends typed events, most of which carry no text, message_start, ping,
  * content_block_start, message_delta. Only content_block_delta does. Ignoring the rest
  * rather than failing on them is the difference between a working stream and one that
  * dies on the first keepalive.

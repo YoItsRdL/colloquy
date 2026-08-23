@@ -5,7 +5,7 @@
  * here and this file still names no provider.
  *
  * Its own section because it is about disk and downloads rather than credentials or
- * configuration — gigabytes, progress, and a deletion worth confirming.
+ * configuration, gigabytes, progress, and a deletion worth confirming.
  */
 import { Setting, Modal, Notice } from "obsidian";
 import { all as allAdapters } from "./providers/index.js";
@@ -85,7 +85,7 @@ function renderPuller(tab, containerEl, adapter, key) {
   let wanted = "";
   const row = new Setting(containerEl)
     .setName("Download a model")
-    .setDesc("Named as the provider names it — qwen3:8b, gemma3:4b.");
+    .setDesc("Named as the provider names it: qwen3:8b, gemma3:4b.");
 
   let button;
   row.addText((text) => {
@@ -102,7 +102,7 @@ function renderPuller(tab, containerEl, adapter, key) {
           const pct = total ? Math.round((completed / total) * 100) : null;
           // In the description, where the eye already is, rather than in a notice that
           // would have to be replaced hundreds of times.
-          row.setDesc(pct === null ? status : `${status} — ${pct}%`);
+          row.setDesc(pct === null ? status : `${status}, ${pct}%`);
         });
         new Notice(`${wanted} is ready`);
         tab.display();

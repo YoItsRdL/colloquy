@@ -32,7 +32,7 @@ which is gitignored and never rendered back to the screen.
 person to approve. Every part of it worked and what it produced was not worth having: a 4B
 local model asked for claims about the world wrote *"Claude Opus 5 does not exist"* while
 that model was answering the question. The review queue, the drafts layer and the promotion
-flow were all deleted. What is recorded now is what *we* were doing — which the model was
+flow were all deleted. What is recorded now is what *we* were doing, which the model was
 present for and cannot be wrong about.
 
 ## Reading them

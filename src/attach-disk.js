@@ -47,8 +47,8 @@ export function chooseFromDisk(app, onPicked) {
 /**
  * Copies a chosen file into the vault and reads it as an attachment.
  *
- * The name Obsidian would have given it — `getAvailablePathForAttachment` honours whatever
- * attachment folder the person configured, and avoids collisions — so a file attached here
+ * The name Obsidian would have given it, `getAvailablePathForAttachment` honours whatever
+ * attachment folder the person configured, and avoids collisions, so a file attached here
  * lands where the same file dropped into a note would have.
  */
 async function bringIntoVault(app, file) {

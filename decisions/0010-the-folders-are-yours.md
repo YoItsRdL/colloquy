@@ -1,4 +1,4 @@
-# ADR-0010 — The folders are the vault owner's, not this plugin's
+# ADR-0010: The folders are the vault owner's, not this plugin's
 
 **Status:** Accepted
 **Date:** 2026-08-19
@@ -6,7 +6,7 @@
 ## Context
 
 Every path this plugin wrote to was a constant in the source: `00-inbox` for conversations,
-`60-log/conversations` for what was noticed. Those are one vault's scheme — a numbered
+`60-log/conversations` for what was noticed. Those are one vault's scheme, a numbered
 system its owner designed, documented in its own `CLAUDE.md`, and good for them.
 
 Nobody else has it. An Obsidian vault might be flat, or PARA, or Zettelkasten with a
@@ -21,11 +21,11 @@ different numbering, or in a language where "inbox" is not the word. A plugin th
 where the account of it is kept. Nothing else is written anywhere.
 
 **What ships as the default is plain, and this vault carries its own scheme as a setting.**
-`Conversations/` and `Conversations/context/` — named for what they hold rather than for a
+`Conversations/` and `Conversations/context/`, named for what they hold rather than for a
 numbering system. `00-inbox` as a placeholder would tell every new user that a numbered
 vault is expected, which is one person's taste presented as a requirement. The account
 folder sits inside the conversation folder so everything this plugin writes is one folder
-somebody can move or delete in a single gesture — which in turn means the sweep has to
+somebody can move or delete in a single gesture, which in turn means the sweep has to
 exclude it explicitly, or it would read its own accounts and write accounts of those.
 
 **The sharding underneath is not configurable.** A folder per day for conversations, per
@@ -61,7 +61,7 @@ than untangling anything. `folderFor(date)` became `folderFor(date, root)` and t
 that covered the rule still cover it.
 
 **Bad.** Two folders can now be set to the same place, which would put context records among
-the conversations they describe. Nothing stops it, because nothing about it is harmful —
+the conversations they describe. Nothing stops it, because nothing about it is harmful:
 they are distinguishable by frontmatter, and forbidding it would be a rule protecting
 against tidiness rather than damage.
 
@@ -72,7 +72,7 @@ which is worse.
 ## Alternatives rejected
 
 **A folder picker.** Obsidian has no folder-picker primitive, and the plugin would have to
-build one — a modal over the vault tree — to save typing a path most people paste anyway.
+build one (a modal over the vault tree) to save typing a path most people paste anyway.
 
 **One root, with fixed names beneath it.** Simpler to configure and wrong for the vault this
 was built in, where conversations belong in the inbox and records belong in the log. Those

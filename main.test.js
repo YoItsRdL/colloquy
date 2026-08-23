@@ -114,7 +114,7 @@ test("preferences are written, and nothing else is", async () => {
 
 /**
  * Starting a local model is the last thing that should compete with opening the vault, so
- * the catch-up waits — and it must be cancellable, or a quit inside that window leaves a
+ * the catch-up waits, and it must be cancellable, or a quit inside that window leaves a
  * timer holding a plugin that has already unloaded.
  */
 test("the catch-up waits half a minute, and only then", async (t) => {

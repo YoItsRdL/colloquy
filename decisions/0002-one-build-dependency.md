@@ -1,4 +1,4 @@
-# ADR-0002 — One build dependency, and none at runtime
+# ADR-0002: One build dependency, and none at runtime
 
 **Status:** Accepted
 **Date:** 2026-08-18
@@ -7,7 +7,7 @@ which forbade dependencies of any kind.
 
 ## Context
 
-Obsidian loads exactly one file per plugin, and mobile has no module resolution — no
+Obsidian loads exactly one file per plugin, and mobile has no module resolution, no
 `require` of a relative path, no import map. So the choice is a bundler, or one enormous
 source file.
 
@@ -35,8 +35,8 @@ compromise, and cannot drift underneath a vault that has to still work in ten ye
 
 **Good.** The seam survives packaging. Files stay small and one-responsibility.
 
-**Good.** The property people actually cared about — nothing third-party executing next
-to the vault and the keys — is intact.
+**Good.** The property people actually cared about, nothing third-party executing next
+to the vault and the keys, is intact.
 
 **Bad.** `node_modules` now exists in this repository, and a fresh clone needs an install
 before it can build. Gitignored, and the built plugin is committed so the vault works
@@ -47,7 +47,7 @@ day's work and the source is unaffected, because nothing imports it.
 
 ## Alternatives rejected
 
-**One large main.js, no build.** Proven possible — the streaming spike was plain
+**One large main.js, no build.** Proven possible. The streaming spike was plain
 CommonJS. Rejected because it dissolves the module boundaries that make provider code
 replaceable, to avoid a tool that runs on a laptop and never ships.
 
@@ -55,5 +55,5 @@ replaceable, to avoid a tool that runs on a laptop and never ships.
 admitting a dependency. This is the kind of purity that costs more than it saves.
 
 **Ship unbundled and mark the plugin desktop-only.** Relative `require` works under
-Electron. It would trade mobile — the single largest gain of ADR-0001 — for the
+Electron. It would trade mobile (the single largest gain of ADR-0001) for the
 appearance of having no build step.

@@ -1,4 +1,4 @@
-# ADR-0009 — One provider, and a plain error when it fails
+# ADR-0009: One provider, and a plain error when it fails
 
 **Status:** Accepted
 **Date:** 2026-08-19
@@ -8,7 +8,7 @@ provider), both carried into this plugin and referenced throughout it until now.
 ## Context
 
 A turn used to walk a chain. If the chosen provider refused, the refusal was classified into
-a taxonomy — `unavailable`, `exhausted`, `unfunded`, `fatal` — a register recorded which
+a taxonomy (`unavailable`, `exhausted`, `unfunded`, `fatal`) a register recorded which
 model was cooling off and until when, the turn moved to the next free model, and if the
 whole free chain was spent it offered to continue somewhere that charged. The chips then
 marked themselves to show that what answered was not what had been asked for.
@@ -22,7 +22,7 @@ chain now answers a question nobody has, and it charges for the privilege:
 
 - **It is confusing.** The most common report was not knowing which model had actually
   replied. The chips had a marked state and a tooltip explaining that a choice had survived
-  a substitution — an interface for a situation that should not arise.
+  a substitution. An interface for a situation that should not arise.
 - **It is a lot of machinery.** A module of verdicts and registers, a chain parser, a
   settings screen to configure the chain, an escalation offer rendered into the thread, a
   retry path through the view, and the tests for all of it.
@@ -39,7 +39,7 @@ refused is what appears, and what is written to the conversation file. It knows 
 wrong and this code does not.
 
 **One exception, and it is not a diagnosis.** A browser reporting "Failed to fetch" has said
-nothing usable — that is what it returns for no connection, a blocked origin, or a refusal
+nothing usable. That is what it returns for no connection, a blocked origin, or a refusal
 too hard to read. It is widened into a sentence naming those possibilities and explicitly
 not choosing between them, because which one happened is not knowable from here.
 
@@ -48,7 +48,7 @@ model said, and it is usually the most useful thing on the screen when something
 wrong.
 
 **Nothing is offered, retried, or substituted.** Changing provider is what the chips are
-for. If a provider is out of credit, the person picks another one — which is one click, and
+for. If a provider is out of credit, the person picks another one, which is one click, and
 is a decision about their money.
 
 ## Consequences
@@ -63,7 +63,7 @@ settings screen, the escalation path through the view and the thread, and their 
 **Bad.** A conversation now stops when the provider does. Where the chain would have carried
 on for free, the person retypes nothing but does have to change a chip and ask again.
 
-**Bad.** The rate-limit handling goes with it — a provider saying "retry in 20s" used to be
+**Bad.** The rate-limit handling goes with it. A provider saying "retry in 20s" used to be
 waited out. Now that message reaches the person, who waits or switches. That is more honest
 and less convenient.
 

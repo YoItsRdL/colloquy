@@ -1,7 +1,7 @@
 # Line endings.
 #
 # Without this, git converts on checkout and the working tree drifts from the index on a
-# Windows machine — three conversations showed as modified with no change in them, which
+# Windows machine: three conversations showed as modified with no change in them, which
 # is noise that hides the diffs that matter.
 #
 # Vault content and source are normalised to LF in the repository. What lands on disk is

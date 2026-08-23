@@ -1,7 +1,7 @@
 /**
  * The transcript on screen.
  *
- * A human turn is shown exactly as typed — it was written, not generated — and only the
+ * A human turn is shown exactly as typed. It was written, not generated, and only the
  * model's is rendered as markdown.
  */
 import { MarkdownRenderer } from "obsidian";

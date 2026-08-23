@@ -2,8 +2,8 @@
  * Enough of Obsidian's API to load the plugin's UI under `node --test`.
  *
  * Not a mock library and not a browser. It is a real tree of fake elements, because the
- * bugs worth catching here are about what ends up on the screen — a button that was never
- * appended, a row that never redrew — and a registry of recorded calls cannot see those.
+ * bugs worth catching here are about what ends up on the screen. A button that was never
+ * appended, a row that never redrew, and a registry of recorded calls cannot see those.
  * Tests walk the tree the way a person reads the screen.
  *
  * It covers what `src/` actually uses and nothing else. Anything missing should throw

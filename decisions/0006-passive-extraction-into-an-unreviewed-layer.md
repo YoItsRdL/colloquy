@@ -1,4 +1,4 @@
-# ADR-0006 — Conversations are read automatically, into a layer nobody believes yet
+# ADR-0006: Conversations are read automatically, into a layer nobody believes yet
 
 **Status:** Accepted, and amended by [ADR-0007](0007-context-about-us-not-claims-about-the-world.md)
 **Date:** 2026-08-19
@@ -7,7 +7,7 @@ decision before anything was written at all.
 
 ## Context
 
-ADR-0005 put a person in front of every proposal, and it works — the first real run caught
+ADR-0005 put a person in front of every proposal, and it works, the first real run caught
 a false claim (*"Claude Opus 5 does not exist"*) that a 4B local model was confident about,
 and the second run correctly offered to merge rather than duplicate it.
 
@@ -23,12 +23,12 @@ argument for asking first.
 
 **We saw exactly what unattended writing produces.** Both local models are confidently
 wrong about the same thing, because the conversations are about the edge of what they know.
-`gemma3` additionally returns topics where the vault demands claims — *"Qwen3 vs. Claude 3
+`gemma3` additionally returns topics where the vault demands claims, *"Qwen3 vs. Claude 3
 Comparison"* is a topic, not a claim, and a topic is the first thing any promotion rule
 refuses.
 
 So the question is not whether to automate, but what the automated output is allowed to
-claim. The assistants this was modelled on — ChatGPT, Gemini — do not passively write a
+claim. The assistants this was modelled on (ChatGPT, Gemini) do not passively write a
 knowledge base. They write a personalization store: short, disposable, wiped in one click,
 never read as truth. Their passive layer is safe because of where it lands, not because
 anyone reviewed it.
@@ -41,7 +41,7 @@ not the knowledge base.**
 **Reading is automatic; believing is not.** A few minutes after the last turn, the
 conversation is read and any claims are written to `15-drafts/YYYY/MM/` with
 `type: draft` and `reviewed: false`. Nothing reaches `10-notes/` without a person choosing
-it, so the property ADR-0005 was protecting is intact — what changed is that the person is
+it, so the property ADR-0005 was protecting is intact, what changed is that the person is
 no longer the reason the work happens.
 
 **An unreviewed draft is never linked as though it were established.** Drafts carry their
@@ -58,7 +58,7 @@ set to a provider that charges per request, the sweep does not run and says so.
 conversation's own frontmatter records it, so the marker survives the rename that follows
 the first answer and cannot drift from the file the way a plugin-side ledger of paths
 would. Because the marker is on the file rather than in the plugin, a catch-up pass can run
-whenever, as often as it likes, without doing anything twice — so one runs at startup for
+whenever, as often as it likes, without doing anything twice, so one runs at startup for
 anything the idle clock never reached.
 
 Without that pass the marker would be write-only, and a single evening with Ollama switched
@@ -71,7 +71,7 @@ a re-read. Nothing else in the vault may link into it or depend on it.
 
 ## Consequences
 
-**Good.** Capture is now genuinely free — ask a question, and by the time you look again
+**Good.** Capture is now genuinely free, ask a question, and by the time you look again
 the claims are waiting. Capture that costs nothing is the property that decides whether a
 notes system survives its first month.
 
@@ -91,7 +91,7 @@ rather than by convention.
 
 **Accepted risk.** Somebody will eventually read a draft and treat it as a note, because it
 looks like one. `reviewed: false` in the frontmatter and a separate tree are what stand
-between that person and a false claim — and both are visible rather than enforced.
+between that person and a false claim, and both are visible rather than enforced.
 
 ## Alternatives rejected
 
@@ -99,8 +99,8 @@ between that person and a false claim — and both are visible rather than enfor
 sitting in the vault already: the first automatic run wrote something false. At 2.4 seconds
 per conversation, that failure mode arrives at machine speed.
 
-**A memory file instead of notes.** What the assistants actually do, and genuinely safer —
-the model cannot be wrong about what you said, only about what it knows. Rejected for now
+**A memory file instead of notes.** What the assistants actually do, and genuinely safer: the
+model cannot be wrong about what you said, only about what it knows. Rejected for now
 because it does not grow the knowledge base, which is the point. Worth revisiting as a
 separate feature rather than a substitute for this one.
 

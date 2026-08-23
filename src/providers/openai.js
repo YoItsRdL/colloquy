@@ -1,5 +1,5 @@
 /**
- * OpenAI adapter. Everything OpenAI-specific is this file's few constants — the wire
+ * OpenAI adapter. Everything OpenAI-specific is this file's few constants, the wire
  * format itself is shared with any provider that speaks it (openai-wire.mjs).
  */
 import * as wire from "./openai-wire.js";

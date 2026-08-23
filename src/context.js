@@ -4,7 +4,7 @@
  * A record of what happened rather than durable knowledge, so it is filed apart from
  * wherever a vault keeps its notes.
  *
- * One record per conversation, rewritten when the conversation grows — two half-accounts
+ * One record per conversation, rewritten when the conversation grows, two half-accounts
  * of one thing are worse than one whole one.
  */
 const pad = (n) => String(n).padStart(2, "0");
@@ -17,7 +17,7 @@ export const logFolder = (date, root) => `${root}/${date.getFullYear()}/${pad(da
 /**
  * Makes a folder and everything above it.
  *
- * A folder that already exists is the normal case, not a problem — two writes racing on the
+ * A folder that already exists is the normal case, not a problem. Two writes racing on the
  * same day would otherwise fail the second one for arriving second.
  */
 export async function ensureFolder(app, folder) {
@@ -77,7 +77,7 @@ export async function writeContext(app, { context, source, root }, now = new Dat
 /**
  * What has been noticed about us, most recent first.
  *
- * This is the half that makes it memory rather than a diary — a record nothing ever reads
+ * This is the half that makes it memory rather than a diary. A record nothing ever reads
  * back is just a log with ambitions.
  */
 export function recentContext(app, root, limit = 12) {

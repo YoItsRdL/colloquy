@@ -2,13 +2,13 @@
  * What the panel shows before it can answer anything.
  *
  * A panel with no provider configured used to show a full set of controls that could not
- * be used and a Send button that could not send: three controls saying nothing — "No
- * provider", "—", "Not written yet" — under the most prominent thing on screen being the
- * one thing guaranteed to fail. Every one of them was honest and none of them helped.
+ * be used and a Send button that could not send: a provider chip naming none, a model chip
+ * naming none, and a filename saying it had not been written, under the most prominent
+ * thing on screen being the one guaranteed to fail. Every one was honest; none helped.
  *
  * So the controls are hidden until they mean something, and this takes their place: what
  * is missing, and the one action that fixes it. When a provider *is* configured, an empty
- * thread shows nothing at all — a blank page above a composer needs no explaining.
+ * thread shows nothing at all. A blank page above a composer needs no explaining.
  */
 import { setIcon, Notice } from "obsidian";
 import { status } from "./keys.js";
@@ -39,7 +39,7 @@ export function createReady(container, { app, plugin }) {
   el.createDiv({ cls: "colloquy-ready-title", text: "Nothing to answer with yet" });
   el.createDiv({
     cls: "colloquy-ready-body",
-    text: "Add a key for a provider — or, if you run Ollama on your computer, its address.",
+    text: "Add a key for a provider, or the address of Ollama if you run it on your computer.",
   });
 
   const button = el.createEl("button", { cls: "colloquy-ready-action mod-cta", text: "Open settings" });
@@ -55,7 +55,7 @@ export function createReady(container, { app, plugin }) {
     el.toggleClass("is-shown", instead);
     // The panel says so too, because this replaces the conversation and the composer
     // rather than sitting above them. A thread with nothing in it still claims half the
-    // height, and a composer that cannot send is three more controls that cannot be used —
+    // height, and a composer that cannot send is three more controls that cannot be used,
     // including an Enter key that would send anyway, around the button that says it will
     // not.
     container.toggleClass("is-unconfigured", instead);

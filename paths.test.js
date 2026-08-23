@@ -3,7 +3,7 @@
  *
  * These are the first tests vault-side path logic has ever had. It was previously inline
  * in the code that wrote files, which is why "2026-08-19-calpe-malaga-train-bus" shipped
- * — a name whose first ten characters repeated the folder it was already in.
+ *, a name whose first ten characters repeated the folder it was already in.
  */
 import { test } from "node:test";
 import assert from "node:assert/strict";

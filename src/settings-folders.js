@@ -14,8 +14,8 @@ const FIELDS = [
   {
     key: "conversations",
     name: "Conversations",
-    desc: "Where a conversation is written as you have it. Filed by day underneath — " +
-      "2026/08/19 — so one folder never holds four years of them.",
+    desc: "Where a conversation is written as you have it. Filed by day underneath " +
+      "(2026/08/19), so one folder never holds four years of them.",
   },
   {
     key: "context",
@@ -60,7 +60,7 @@ export function renderFolders(tab, containerEl) {
         text.onChange(async (value) => {
           show(value);
           // Obsidian's own normalisation on the way in, so what is stored is already the
-          // shape the vault API expects. `cleanFolder` still runs at every use — this
+          // shape the vault API expects. `cleanFolder` still runs at every use, this
           // settles slashes and unicode, that one refuses `..` and the characters Windows
           // will not take, and neither is a substitute for the other.
           const stored = value.trim() ? normalizePath(value) : "";

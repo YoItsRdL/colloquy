@@ -28,7 +28,7 @@ export function createWhere(container, { app }) {
    * is not shown at all.
    *
    * It used to say "Not written yet", on the reasoning that an empty control reads as one
-   * that failed to load. True of a control that is always present — but it is a whole row
+   * that failed to load. True of a control that is always present, but it is a whole row
    * on a phone, spent answering a question nobody had yet asked. Absent says the same
    * thing and costs nothing.
    */

@@ -17,7 +17,7 @@ export function showAttachments(view) {
   });
 }
 
-/** The same file twice is a slip, not an instruction — it would be sent and paid for twice. */
+/** The same file twice is a slip, not an instruction. It would be sent and paid for twice. */
 function hold(view, attachment) {
   if (!attachment) return;
   if (!view.attachments.some((a) => a.path === attachment.path)) view.attachments.push(attachment);
@@ -28,8 +28,8 @@ function hold(view, attachment) {
 /**
  * Where the thing you want to ask about is.
  *
- * Two routes rather than one. The vault is first because it is usually the answer — this is
- * a plugin for an app already full of your notes and screenshots — but insisting on it
+ * Two routes rather than one. The vault is first because it is usually the answer. This is
+ * a plugin for an app already full of your notes and screenshots, but insisting on it
  * would refuse the photo on your desktop for no better reason than where it happens to be.
  */
 export function pickAttachment(view, event) {
@@ -53,7 +53,7 @@ export function pickAttachment(view, event) {
   else menu.showAtPosition({ x: 0, y: 0 });
 }
 
-/** Empties the row — after a question is sent with them, or when one is abandoned. */
+/** Empties the row, after a question is sent with them, or when one is abandoned. */
 export function clearAttachments(view) {
   view.attachments = [];
   showAttachments(view);
