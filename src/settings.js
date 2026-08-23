@@ -16,6 +16,8 @@ import { renderLibrary } from "./settings-models.js";
 import { renderFolders } from "./settings-folders.js";
 import { foldersOf } from "./folders.js";
 
+const SUPPORT = "https://buymeacoffee.com/ibonescalap";
+
 export const DEFAULTS = { provider: defaultProvider, model: null, keys: {}, folders: {}, autoName: true, autoRead: true, useMemory: true };
 
 export class SettingsTab extends PluginSettingTab {
@@ -34,6 +36,7 @@ export class SettingsTab extends PluginSettingTab {
     renderLibrary(this, containerEl);
     renderFolders(this, containerEl);
     this.renderNaming(containerEl);
+    this.renderSupport(containerEl);
   }
 
   renderNaming(containerEl) {
@@ -97,4 +100,12 @@ export class SettingsTab extends PluginSettingTab {
       });
   }
 
+  // Last on the screen, and once. A plugin that asks for money above the settings you
+  // came for is asking at the wrong moment.
+  renderSupport(containerEl) {
+    new Setting(containerEl)
+      .setName("Support")
+      .setDesc("Colloquy is free and stays free. If it has been useful, a coffee is a kind way to say so.")
+      .addButton((button) => button.setButtonText("Buy me a coffee").onClick(() => window.open(SUPPORT)));
+  }
 }

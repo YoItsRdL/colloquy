@@ -6,5 +6,6 @@
   "description": "Build a knowledge base out of your AI conversations. Each one is saved to your vault as markdown, then summarised so the next starts with the context. Supports Ollama, OpenAI, Anthropic, Google and DeepSeek.",
   "author": "Ibon Escalada",
   "isDesktopOnly": false,
-  "authorUrl": "https://github.com/YoItsRdL"
+  "authorUrl": "https://github.com/YoItsRdL",
+  "fundingUrl": "https://buymeacoffee.com/ibonescalap"
 }

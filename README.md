@@ -99,6 +99,11 @@ node build.mjs --vault "/path/to/a/test/vault"
 No runtime dependencies. One build dependency, esbuild, and the build script is short enough
 to read in full.
 
+## Support
+
+Colloquy is free and stays free. If it has been useful,
+[a coffee](https://buymeacoffee.com/ibonescalap) is a kind way to say so.
+
 ## Licence
 
 MIT.
