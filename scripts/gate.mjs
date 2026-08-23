@@ -53,7 +53,7 @@ try {
 
 // ── tests ────────────────────────────────────────────────────────────────────────
 try {
-  const out = run("node", ["--test", ...readdirSync(ROOT).filter((f) => f.endsWith(".test.js"))]);
+  const out = run("node", ["--import", "./test/register.mjs", "--test", ...readdirSync(ROOT).filter((f) => f.endsWith(".test.js"))]);
   const failed = /# fail (\d+)/.exec(out)?.[1] ?? "0";
   report("tests", failed === "0", failed === "0" ? "" : `${failed} failing`);
 } catch (err) {
