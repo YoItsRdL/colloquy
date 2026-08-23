@@ -8,17 +8,26 @@
  * Values are never returned to the interface. `status()` says whether a key exists; only
  * a turn ever sees one, and only on its way to a provider.
  */
+import { Platform } from "obsidian";
+
 const SAFE_NAME = /^[A-Z][A-Z0-9_]*$/;
 
 export class KeyError extends Error {}
 
 /** @returns {Record<string,string>} every key set, for a turn to pick from. */
-export function keysOf(settings, adapters = []) {
+export function keysOf(settings, adapters = [], { mobile = Platform.isMobile } = {}) {
   const stored = { ...(settings.keys ?? {}) };
   // An adapter that names its own default is configured without anyone typing it. Ollama
   // needs an address, not a secret, and "http://localhost:11434/v1" is the right answer
   // often enough that asking for it first would be ceremony.
+  //
+  // Not on a phone, though: nothing is listening on a phone's own localhost, so assuming
+  // it there configures a provider that cannot answer, names it on the chip, and fails
+  // every question with advice — start the server — that cannot be taken on that device.
+  // An address typed in by hand still works, which is the case that matters: Ollama on a
+  // desktop, reached over the network (ADR-0012).
   for (const adapter of adapters) {
+    if (mobile) continue;
     if (adapter.keyVar && adapter.defaultKey && !stored[adapter.keyVar]) {
       stored[adapter.keyVar] = adapter.defaultKey;
     }

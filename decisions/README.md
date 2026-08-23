@@ -19,6 +19,7 @@ entire feature was ripped out than from any description of what remains.
 | [0009](0009-one-provider-and-a-plain-error.md) | One provider, and a plain error when it fails | Accepted |
 | [0010](0010-the-folders-are-yours.md) | The folders are the vault owner's | Accepted |
 | [0011](0011-asking-about-something-in-your-vault.md) | Attachments from the vault, or from anywhere into it | Accepted |
+| [0012](0012-a-phone-has-no-localhost.md) | A phone has no localhost | Accepted |
 
 ## The two reversals, in short
 

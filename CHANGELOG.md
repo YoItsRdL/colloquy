@@ -3,6 +3,17 @@
 Dates are release dates. Reasoning that outlived a single release lives in
 [`decisions/`](decisions/) instead.
 
+## Unreleased
+
+- **Usable on a phone.** Controls that were a pointer's size are a thumb's, the row of them
+  wraps instead of running off the edge, the box no longer makes iOS zoom the page when you
+  tap it, and nothing sits under the home indicator.
+- **A phone no longer claims Ollama is configured.** It assumed `localhost`, which on a
+  phone is nothing at all, so the panel looked ready and then failed every question with
+  advice that could not be taken on that device. It now says no key is set, and names the
+  screen to set one on. An address typed in by hand — Ollama on your desktop, over your
+  network — works exactly as before (ADR-0012).
+
 ## 1.0.2 — 2026-08-23
 
 - **Removing a key did nothing.** The confirmation's Remove button cleared the key in

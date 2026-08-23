@@ -84,7 +84,10 @@
 .colloquy-controls {
   display: flex;
   align-items: center;
-  gap: var(--size-4-2);
+  /* Wrapped, because five controls do not fit across a phone or a narrow sidebar, and a
+     row that overflows puts Send somewhere it cannot be reached. */
+  flex-wrap: wrap;
+  gap: var(--size-4-2) var(--size-4-2);
   margin-top: var(--size-4-2);
 }
 
@@ -513,4 +516,58 @@
   margin-top: var(--size-2-2);
   font-size: var(--font-ui-smaller);
   color: var(--text-faint);
+}
+
+/* ── On a phone ────────────────────────────────────────────────────────────────────
+
+   Obsidian puts `.is-mobile` on the body, which is the only reliable way to know: a
+   narrow window is not a touchscreen, and a tablet in landscape is not a desktop.
+
+   Everything here is about the finger rather than the pointer. Nothing above is
+   hover-dependent — the seven hover rules in this file all change a colour that was
+   already legible — so touch loses no affordance, only precision. */
+
+.is-mobile .colloquy-view .colloquy-chip,
+.is-mobile .colloquy-view .colloquy-where,
+.is-mobile .colloquy-view .colloquy-new,
+.is-mobile .colloquy-view .colloquy-attach,
+.is-mobile .colloquy-view .colloquy-controls button {
+  /* 44px is the smallest target both platforms document as reliably hittable. The
+     desktop sizes here are 24 to 32, which is a pointer's tolerance, not a thumb's. */
+  min-height: 44px;
+}
+
+.is-mobile .colloquy-view .colloquy-chip,
+.is-mobile .colloquy-view .colloquy-new {
+  padding: var(--size-2-2) var(--size-4-2);
+}
+
+.is-mobile .colloquy-view .colloquy-attach,
+.is-mobile .colloquy-view .colloquy-new.is-icon-only {
+  min-width: 44px;
+}
+
+/* The × on an attachment was a 4px-wide target beside the name it removes: on a phone
+   that is a coin toss between deleting the attachment and doing nothing. */
+.is-mobile .colloquy-view .colloquy-attachment-x {
+  min-width: 44px;
+  min-height: 44px;
+  padding: 0;
+}
+
+.is-mobile .colloquy-composer textarea {
+  /* Under 16px, iOS zooms the whole page when the field takes focus, and leaves it
+     zoomed. This is not a type-size preference; it is the only value that prevents it. */
+  font-size: max(16px, var(--font-text-size));
+  /* The keyboard takes half the screen, so the box starts smaller and stops sooner —
+     otherwise the thread it is meant to sit under has nowhere left to be. */
+  min-height: 3em;
+  max-height: 25vh;
+  /* The handle is a pointer affordance. On touch it is either invisible or in the way. */
+  resize: none;
+}
+
+/* The home indicator sits where this row ends. Without this the last control is under it. */
+.is-mobile .colloquy-view .colloquy-composer {
+  padding-bottom: max(var(--size-4-3), env(safe-area-inset-bottom));
 }

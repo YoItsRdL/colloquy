@@ -73,10 +73,13 @@ and never leaves your machine except as the request you asked for.
 - **A small local model gets things wrong.** The accounts it writes are one model's reading
   of a conversation. They live in a log, are marked `author: agent`, and are handed back as
   a hint that says it may be wrong — never as fact.
-- **Mobile is untested.** Nothing here uses Node, Electron or the filesystem, so it should
-  run — but "should" is not "does", and nobody has put it on a phone yet. A local model at
-  `localhost` certainly will not be there; on mobile it would need an API key. If you try
-  it, an issue saying what happened would be genuinely useful.
+- **A phone needs an API key.** Everything works there — the panel, attachments, resuming,
+  the conversations in your vault — but a phone has no `localhost` for Ollama to be on, so
+  the free local route is a desktop one. Point it at Ollama on your own machine over the
+  network and that works too (ADR-0012).
+- **Nothing is read automatically on a phone.** The unprompted reading only ever runs on a
+  provider that charges nothing per request, which on a phone means one reached over your
+  network. Conversations you have on a phone are read the next time the desktop is open.
 
 ## Why it works the way it does
 

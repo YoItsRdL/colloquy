@@ -67,3 +67,33 @@ test("keysOf hands back a copy, so a turn cannot mutate the store", () => {
   taken.ONE_API_KEY = "changed";
   assert.equal(settings.keys.ONE_API_KEY, "first");
 });
+
+/**
+ * An address is not a secret, so a provider that names its own default is configured
+ * without anyone typing it — but only where that default could be true (ADR-0012).
+ */
+const local = [{ name: "ollama", label: "Ollama", keyVar: "OLLAMA_URL", keyKind: "url", defaultKey: "http://localhost:11434/v1" }];
+
+test("a local provider is configured by its own default, without ceremony", () => {
+  const keys = keysOf({ keys: {} }, local, { mobile: false });
+
+  assert.equal(keys.OLLAMA_URL, "http://localhost:11434/v1");
+});
+
+/**
+ * Nothing listens on a phone's own localhost. Assuming it there names a provider on the
+ * chip that cannot answer, and fails every question with advice — start the server — that
+ * cannot be taken on that device.
+ */
+test("on a phone the local default is not assumed", () => {
+  const keys = keysOf({ keys: {} }, local, { mobile: true });
+
+  assert.equal(keys.OLLAMA_URL, undefined, "so nothing claims to be configured that is not");
+});
+
+/** The case that matters on a phone: Ollama on a desktop, reached over the network. */
+test("on a phone an address typed in by hand is still used", () => {
+  const keys = keysOf({ keys: { OLLAMA_URL: "http://192.168.1.4:11434/v1" } }, local, { mobile: true });
+
+  assert.equal(keys.OLLAMA_URL, "http://192.168.1.4:11434/v1");
+});
