@@ -13,6 +13,7 @@ const streaming = (chunks) => ({
   provider: {
     name: "ollama",
     label: "Ollama",
+    keyKind: "url",
     async *stream() {
       for (const chunk of chunks) {
         if (chunk instanceof Error) throw chunk;
@@ -67,13 +68,33 @@ test("a partial answer survives the failure that interrupted it", async () => {
  * "Failed to fetch" is what a browser says when a request produced nothing readable — no
  * connection, a blocked origin, or a refusal without the headers to read it. Three words
  * naming none of them, written into a note somebody re-reads weeks later.
+ *
+ * For a provider hosted on your own machine there is a likeliest cause worth naming, and
+ * the address is worth printing: a server that is running means the address is wrong.
  */
-test("a bare browser failure is widened into a sentence, and not into a diagnosis", async () => {
+test("a local provider that answers nothing is reported as not running", async () => {
   const out = await runTurn(streaming([new Error("Failed to fetch")]), session());
 
-  assert.match(out.detail, /Ollama/);
-  assert.match(out.detail, /returned nothing to explain why/);
+  assert.match(out.detail, /Ollama is not answering/);
+  assert.match(out.detail, /http:\/\/localhost:11434\/v1/, "the address, so a wrong one is visible");
+  assert.match(out.detail, /not running/);
+});
+
+/**
+ * A hosted provider is not something anyone can go and start, so the same failure there
+ * has no likeliest cause worth asserting.
+ */
+test("a metered provider that answers nothing is not diagnosed", async () => {
+  const remote = streaming([new Error("Failed to fetch")]);
+  remote.provider.name = "anthropic";
+  remote.provider.label = "Claude";
+  remote.provider.keyKind = "secret";
+
+  const out = await runTurn(remote, session());
+
+  assert.match(out.detail, /Claude/);
   assert.match(out.detail, /usually no connection/, "the possibilities, not a guess between them");
+  assert.doesNotMatch(out.detail, /not running/);
 });
 
 /**

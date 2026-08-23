@@ -30,10 +30,21 @@ function explain(detail, config) {
   if (!/^(Failed to fetch|fetch failed|Load failed|NetworkError.*)$/i.test(detail.trim())) {
     return detail;
   }
-  return `The request to ${config.provider.label ?? config.provider.name} did not ` +
-    "complete, and it returned nothing to explain why. That is usually no connection, or " +
-    "a provider refusing so hard that the reply cannot be read — retrying often works, " +
-    "and repeating a failure quickly often makes it worse.";
+  const label = config.provider.label ?? config.provider.name;
+
+  // A provider addressed by a URL runs on a machine the person asking controls, and
+  // nothing readable coming back from it almost always means it is not running. Saying so
+  // — with the address, so a wrong one is visible — beats listing the possibilities and
+  // leaving them to guess between them.
+  if (config.provider.keyKind === "url") {
+    return `${label} is not answering at ${config.key}. It is usually not running: start ` +
+      "it and try again. If it is running, that address is pointing somewhere else.";
+  }
+
+  return `The request to ${label} did not complete, and it returned nothing to explain ` +
+    "why. That is usually no connection, or a provider refusing so hard that the reply " +
+    "cannot be read — retrying often works, and repeating a failure quickly often makes " +
+    "it worse.";
 }
 
 /**
