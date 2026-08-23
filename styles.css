@@ -609,9 +609,18 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: var(--size-4-2);
-  padding: var(--size-4-6) var(--size-4-4);
+  gap: var(--size-4-3);
+  padding: var(--size-4-8) var(--size-4-5);
   text-align: center;
+  overflow-y: auto;
+}
+
+/* There is nothing to read and nothing that can be sent, so neither is there. Without this
+   the empty thread keeps its half of the height and pushes all of the above into the
+   bottom half of the panel, against the composer's edge. */
+.colloquy-view.is-unconfigured .colloquy-thread,
+.colloquy-view.is-unconfigured .colloquy-composer {
+  display: none;
 }
 
 .colloquy-ready-icon {
@@ -630,15 +639,15 @@
 }
 
 .colloquy-ready-body {
-  /* Narrower than the panel: a line that runs the full width of a sidebar is hard to
-     come back from at the end of it. */
-  max-width: 28ch;
+  /* Narrower than the panel: a line that runs the full width of a sidebar is hard to come
+     back from at the end of it, and at 28ch this still reached both edges of a phone. */
+  max-width: 24ch;
   font-size: var(--font-ui-small);
   color: var(--text-muted);
   line-height: var(--line-height-normal);
 }
 
-.colloquy-ready-action { margin-top: var(--size-2-2); }
+.colloquy-ready-action { margin-top: var(--size-4-2); }
 
 .is-mobile .colloquy-ready-action { min-height: 44px; }
 

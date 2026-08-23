@@ -137,3 +137,27 @@ test("where the conversation is being written is not shown until it is", async (
   assert.ok(!view.where.el.hasClass("is-hidden"));
   assert.equal(view.where.el.textContent, "trains");
 });
+
+/**
+ * The empty thread keeps its half of the panel unless it is told not to, which pushed all
+ * of this into the bottom half against the composer's edge. And a composer that cannot
+ * send still has a live Enter key, around the button saying it will not.
+ */
+test("the panel is only the one thing, not the one thing above two dead ones", onAPhone(async () => {
+  const view = panel(BARE);
+  await view.onOpen();
+
+  assert.ok(view.contentEl.hasClass("is-unconfigured"), "so the thread and composer stand down");
+}));
+
+test("and it stands aside the moment something can answer", onAPhone(async () => {
+  const view = panel(BARE);
+  await view.onOpen();
+  assert.ok(view.contentEl.hasClass("is-unconfigured"));
+
+  view.plugin.settings.keys = { ANTHROPIC_API_KEY: "a" };
+  view.refresh();
+
+  assert.ok(!view.contentEl.hasClass("is-unconfigured"), "without a restart");
+  assert.equal(view.sendButton.disabled, false);
+}));

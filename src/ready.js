@@ -51,7 +51,14 @@ export function createReady(container, { app, plugin }) {
    */
   function show(empty) {
     const ready = canAnswer(plugin.settings);
-    el.toggleClass("is-shown", !ready && empty);
+    const instead = !ready && empty;
+    el.toggleClass("is-shown", instead);
+    // The panel says so too, because this replaces the conversation and the composer
+    // rather than sitting above them. A thread with nothing in it still claims half the
+    // height, and a composer that cannot send is three more controls that cannot be used —
+    // including an Enter key that would send anyway, around the button that says it will
+    // not.
+    container.toggleClass("is-unconfigured", instead);
     return ready;
   }
 
