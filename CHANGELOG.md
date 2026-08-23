@@ -3,6 +3,23 @@
 Dates are release dates. Reasoning that outlived a single release lives in
 [`decisions/`](decisions/) instead.
 
+## 1.0.2 — 2026-08-23
+
+- **Removing a key did nothing.** The confirmation's Remove button cleared the key in
+  memory, never wrote that to disk, and left the confirmation on screen looking untouched,
+  so the key came back on the next reload. It called two functions left behind by the
+  fallback chain removed in ADR-0009 and threw before it reached the end.
+- **A local provider that is not running now says so.** "The request did not complete, and
+  it returned nothing to explain why" listed two possibilities and left you to work out
+  which. For a provider addressed by a URL there is a likeliest cause worth naming, and the
+  address is printed with it — a server that *is* running means the address is wrong.
+- A way to say thanks, if it has been useful: in settings, in the plugin browser, and on
+  the repository.
+
+Under the surface: every module that talks to Obsidian is now tested. That was sixteen
+files and about 1,400 lines with no coverage at all, and it is where both of the bugs above
+were living.
+
 ## 1.0.1 — 2026-08-22
 
 Two defects in the rename that follows the first answer, both found by installing the
