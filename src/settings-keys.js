@@ -86,8 +86,10 @@ function confirmRemoval(tab, containerEl, key) {
           tab.plugin.settings.model = null;
         }
 
-        // A chain step behind a key that is gone can never run.
-        await tab.setEntries(tab.entries().filter((entry) => !entry.startsWith(`${key.name}/`)));
+        await tab.plugin.save();
+        // Redrawn for the same reason saving one is: the screen should show what is
+        // stored rather than what was asked for.
+        tab.display();
       }))
     .addButton((button) =>
       button.setButtonText("Cancel").onClick(() => {
