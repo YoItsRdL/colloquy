@@ -641,3 +641,8 @@
 .colloquy-ready-action { margin-top: var(--size-2-2); }
 
 .is-mobile .colloquy-ready-action { min-height: 44px; }
+
+/* The one action sits at the end of its line, always. It used to be put there by the
+   filename beside it absorbing the slack — which stopped being true the moment that moved
+   to a line of its own, leaving Send stranded mid-row next to the chips. */
+.colloquy-view .colloquy-send { margin-left: auto; }

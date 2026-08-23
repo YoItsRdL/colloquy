@@ -73,7 +73,7 @@ export function createComposer(container, { onSend, onStop, onAttach }) {
    * something happening to you.
    */
   function addSend() {
-    const button = controls.createEl("button", { text: "Send", cls: "mod-cta" });
+    const button = controls.createEl("button", { text: "Send", cls: "colloquy-send mod-cta" });
     button.onclick = () => (button.hasClass("is-stopping") ? onStop?.() : onSend());
     return button;
   }

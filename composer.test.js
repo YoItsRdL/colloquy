@@ -137,3 +137,17 @@ test("an empty row is marked empty, so it can take up no space", () => {
   assert.ok(!row.hasClass("has-any"));
   assert.deepEqual(chips(composer), []);
 });
+
+/**
+ * The one action is at the end of its line, always. It used to be put there by the filename
+ * beside it absorbing the slack, which stopped being true when that moved to its own line.
+ */
+test("Send is the control the row ends on", () => {
+  const { composer } = composerWith();
+  composer.addAttach();
+  const send = composer.addSend();
+
+  assert.ok(send.hasClass("colloquy-send"), "named, so the stylesheet can anchor it");
+  const buttons = composer.controls.findAll((e) => e.tagName === "button");
+  assert.equal(buttons.at(-1), send, "and last in the row");
+});
