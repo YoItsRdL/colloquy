@@ -571,3 +571,19 @@
 .is-mobile .colloquy-view .colloquy-composer {
   padding-bottom: max(var(--size-4-3), env(safe-area-inset-bottom));
 }
+
+/* Wrapping only helps once the controls stop shrinking. Left to shrink they collapse to
+   "Olla…", "qwen3:…" and a lone "/" where the filename was — a row that fits by saying
+   nothing. Fixed to their content, they move to the next line instead. */
+.is-mobile .colloquy-view .colloquy-chip {
+  flex: 0 0 auto;
+  max-width: 100%;
+}
+
+/* And the filename goes below them, full width. It is state rather than a control, it is
+   the longest thing in the row, and it is the one item that can afford the space. */
+.is-mobile .colloquy-view .colloquy-where {
+  flex: 1 0 100%;
+  order: 1;
+  text-align: left;
+}
