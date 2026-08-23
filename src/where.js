@@ -24,11 +24,17 @@ export function createWhere(container, { app }) {
   el.onclick = () => reveal();
 
   /**
-   * Before the first turn there is no file, and an empty control reads as something that
-   * failed to load — so it says so, and stops looking clickable, because it is not.
+   * Before the first turn there is no file, so there is nothing to report and the control
+   * is not shown at all.
+   *
+   * It used to say "Not written yet", on the reasoning that an empty control reads as one
+   * that failed to load. True of a control that is always present — but it is a whole row
+   * on a phone, spent answering a question nobody had yet asked. Absent says the same
+   * thing and costs nothing.
    */
   function show(next) {
     path = next;
+    el.toggleClass("is-hidden", !path);
     el.toggleClass("is-pending", !path);
     el.disabled = !path;
     // Without the extension: every conversation is a .md, so it says nothing.

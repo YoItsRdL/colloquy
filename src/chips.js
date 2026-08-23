@@ -125,7 +125,17 @@ export function createChips({ container, plugin, onChange }) {
     menu.showAtMouseEvent(event);
   };
 
+  /**
+   * Hidden rather than disabled when no provider is configured. A disabled control still
+   * takes its space and still reads as something that ought to work; "No provider" beside
+   * "—" was two of them saying nothing, on the row where the one action lives.
+   */
+  function toggle(show) {
+    providerChip.toggleClass("is-hidden", !show);
+    modelChip.toggleClass("is-hidden", !show);
+  }
+
   paint();
-  return { paint };
+  return { paint, toggle };
 }
 

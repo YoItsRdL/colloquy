@@ -48,6 +48,7 @@ export async function resumeConversation(view, file) {
   view.thread.toEnd();
 
   view.where.show(file.path);
+  view.refresh?.();
   view.composer.focus();
   if (!history.length) new Notice("That conversation has nothing in it yet.");
 }
@@ -73,6 +74,7 @@ export function startConversationAfresh(view) {
   // Whatever was attached belonged to the question that was never asked. Carrying it into
   // a new conversation would send it somewhere it was never meant for.
   clearAttachments(view);
+  view.refresh?.();
   view.composer.focus();
 
   if (previous) new Notice(`Saved as ${previous.split("/").pop()}`);

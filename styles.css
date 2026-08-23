@@ -587,3 +587,57 @@
   order: 1;
   text-align: left;
 }
+
+/* Hidden, not merely disabled. A disabled control still occupies its space and still reads
+   as something that ought to work. */
+.colloquy-view .is-hidden { display: none; }
+
+/* ── Before there is anything to answer with ──────────────────────────────────────
+
+   Shown in place of the conversation, and only when there is no conversation: whatever is
+   missing now, what was already said still stands and is never covered over.
+
+   When a provider *is* configured this shows nothing at all. An empty thread above a
+   composer needs no explaining — it is a blank page, which is what it looks like. */
+
+.colloquy-ready { display: none; }
+
+.colloquy-ready.is-shown {
+  display: flex;
+  flex: 1;
+  min-height: 0;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--size-4-2);
+  padding: var(--size-4-6) var(--size-4-4);
+  text-align: center;
+}
+
+.colloquy-ready-icon {
+  color: var(--text-faint);
+  line-height: 0;
+}
+.colloquy-ready-icon svg {
+  width: var(--icon-xl, 32px);
+  height: var(--icon-xl, 32px);
+}
+
+.colloquy-ready-title {
+  font-size: var(--font-ui-medium);
+  font-weight: var(--font-medium);
+  color: var(--text-normal);
+}
+
+.colloquy-ready-body {
+  /* Narrower than the panel: a line that runs the full width of a sidebar is hard to
+     come back from at the end of it. */
+  max-width: 28ch;
+  font-size: var(--font-ui-small);
+  color: var(--text-muted);
+  line-height: var(--line-height-normal);
+}
+
+.colloquy-ready-action { margin-top: var(--size-2-2); }
+
+.is-mobile .colloquy-ready-action { min-height: 44px; }

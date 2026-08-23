@@ -87,6 +87,7 @@ function confirmRemoval(tab, containerEl, key) {
         }
 
         await tab.plugin.save();
+        tab.plugin.refreshPanel?.();
         // Redrawn for the same reason saving one is: the screen should show what is
         // stored rather than what was asked for.
         tab.display();
@@ -104,6 +105,7 @@ async function commit(tab, key, field) {
   try {
     setKey(tab.plugin.settings, key.keyVar, value);
     await tab.plugin.save();
+    tab.plugin.refreshPanel?.();
     // Redrawn rather than patched, so every row shows the stored truth rather than an
     // optimistic guess about it.
     tab.display();
