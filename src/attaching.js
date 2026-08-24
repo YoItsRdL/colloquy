@@ -7,7 +7,7 @@
  */
 import { Menu } from "obsidian";
 import { AttachPicker, readAttachment } from "./attach-picker.js";
-import { chooseFromDisk } from "./attach-disk.js";
+import { chooseFromDisk, bringIntoVault } from "./attach-disk.js";
 
 /** Redraws the row, with removal wired to the list it is drawn from. */
 export function showAttachments(view) {
@@ -51,6 +51,26 @@ export function pickAttachment(view, event) {
 
   if (event) menu.showAtMouseEvent(event);
   else menu.showAtPosition({ x: 0, y: 0 });
+}
+
+/**
+ * Whatever was on the clipboard that is not text.
+ *
+ * The third route to the same list, and the one people reach for first: a screenshot goes
+ * to the clipboard already, and going by way of saving it, finding it, and opening a file
+ * dialog is three steps to arrive where Ctrl+V arrives.
+ *
+ * Copied into the vault like anything else from outside it, so the transcript can link to
+ * something that is actually there.
+ */
+export async function pasteAttachments(view, event) {
+  const files = Array.from(event?.clipboardData?.files ?? []);
+  // Pasted text is still pasted text. Only a file takes the event away from the box.
+  if (!files.length) return false;
+  event.preventDefault();
+
+  for (const file of files) hold(view, await bringIntoVault(view.app, file));
+  return true;
 }
 
 /** Empties the row, after a question is sent with them, or when one is abandoned. */

@@ -58,9 +58,9 @@ and never leaves your machine except as the request you asked for.
 
 - **Ask:** type, press Enter. The answer streams in and the file is written as it goes.
 - **Stop:** Send becomes Stop while an answer arrives. What arrived is kept.
-- **Attach:** the paperclip takes a note or an image, from your vault or from your
-  computer. A file from your computer is copied into your vault first, so the conversation
-  links to something that is actually there.
+- **Attach:** paste a screenshot straight into the box, or use the paperclip for a note or
+  an image, from your vault or from your computer. Anything from outside the vault is
+  copied in first, so the conversation links to something that is actually there.
 - **Pick up where you left off:** the history button lists past conversations. They are
   rebuilt from the file, so one you edited by hand resumes just the same.
 

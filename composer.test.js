@@ -151,3 +151,15 @@ test("Send is the control the row ends on", () => {
   const buttons = composer.controls.findAll((e) => e.tagName === "button");
   assert.equal(buttons.at(-1), send, "and last in the row");
 });
+
+/** A screenshot is on the clipboard before it is anywhere else, so the box hands it on. */
+test("a paste into the box is handed on, text and files alike", () => {
+  const pasted = [];
+  const composer = createComposer(new El(), { onSend: () => {}, onPaste: (event) => pasted.push(event) });
+
+  composer.input.paste([{ name: "shot.png" }]);
+  composer.input.paste([], "just some words");
+
+  assert.equal(pasted.length, 2, "the decision about which is which is not the box's");
+  assert.equal(pasted[0].clipboardData.files[0].name, "shot.png");
+});

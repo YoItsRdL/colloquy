@@ -15,7 +15,7 @@ import { createThread } from "./thread.js";
 import { createWhere } from "./where.js";
 import { createComposer } from "./composer.js";
 import { createBar } from "./bar.js";
-import { pickAttachment } from "./attaching.js";
+import { pickAttachment, pasteAttachments } from "./attaching.js";
 import { pickConversation, resumeConversation, startConversationAfresh } from "./resume.js";
 import { createReady } from "./ready.js";
 import { ask } from "./asking.js";
@@ -47,6 +47,7 @@ export class ConversationView extends ItemView {
       onSend: () => this.send(),
       onStop: () => this.stop(),
       onAttach: (event) => this.attach(event),
+      onPaste: (event) => pasteAttachments(this, event),
     });
     this.composer.addAttach();
     const controls = this.composer.controls;

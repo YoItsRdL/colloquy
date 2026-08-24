@@ -45,14 +45,22 @@ export function chooseFromDisk(app, onPicked) {
 }
 
 /**
+ * A clipboard image usually arrives called "image.png", and sometimes with no name at all.
+ * Everything downstream decides what a file is from its extension, so a nameless one is
+ * given a plausible one from its type rather than being refused for having none.
+ */
+const nameFor = (file) => file.name || `pasted.${(file.type ?? "").split("/")[1]?.replace(/[^a-z0-9]/gi, "") || "png"}`;
+
+/**
  * Copies a chosen file into the vault and reads it as an attachment.
  *
  * The name Obsidian would have given it, `getAvailablePathForAttachment` honours whatever
  * attachment folder the person configured, and avoids collisions, so a file attached here
  * lands where the same file dropped into a note would have.
  */
-async function bringIntoVault(app, file) {
-  const why = refuse({ name: file.name, size: file.size });
+export async function bringIntoVault(app, file) {
+  const name = nameFor(file);
+  const why = refuse({ name, size: file.size });
   if (why) {
     new Notice(why, 6000);
     return null;
@@ -60,16 +68,16 @@ async function bringIntoVault(app, file) {
 
   try {
     const buffer = await file.arrayBuffer();
-    const path = await app.fileManager.getAvailablePathForAttachment(file.name);
+    const path = await app.fileManager.getAvailablePathForAttachment(name);
     const created = await app.vault.createBinary(path, buffer);
 
-    const kind = kindOf(file.name);
+    const kind = kindOf(name);
     return kind === "text"
       ? { kind, name: created.name, path: created.path, text: new TextDecoder().decode(buffer) }
-      : { kind, name: created.name, path: created.path, mime: mimeOf(file.name), data: base64Of(buffer) };
+      : { kind, name: created.name, path: created.path, mime: mimeOf(name), data: base64Of(buffer) };
   } catch (err) {
     // Named, because "could not attach" leaves somebody guessing which of three files failed.
-    new Notice(`${file.name} could not be brought into the vault: ${err?.message ?? err}`, 8000);
+    new Notice(`${name} could not be brought into the vault: ${err?.message ?? err}`, 8000);
     return null;
   }
 }

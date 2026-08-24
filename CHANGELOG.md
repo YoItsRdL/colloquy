@@ -5,6 +5,10 @@ Dates are release dates. Reasoning that outlived a single release lives in
 
 ## Unreleased
 
+- **Paste a screenshot straight into the box.** It is copied into your vault like anything
+  else attached from outside it, so the conversation links to something that is really
+  there. Pasted text is untouched.
+
 - **Usable on a phone.** Controls that were a pointer's size are a thumb's, the row of them
   wraps instead of running off the edge, the box no longer makes iOS zoom the page when you
   tap it, and nothing sits under the home indicator.

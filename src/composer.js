@@ -10,7 +10,7 @@
  */
 import { setIcon } from "obsidian";
 
-export function createComposer(container, { onSend, onStop, onAttach }) {
+export function createComposer(container, { onSend, onStop, onAttach, onPaste }) {
   const el = container.createDiv({ cls: "colloquy-composer" });
 
   // Above the box, because an attachment is part of the question rather than a setting on
@@ -22,6 +22,10 @@ export function createComposer(container, { onSend, onStop, onAttach }) {
     attr: { rows: 2, placeholder: "Ask anything. It lands in your inbox" },
   });
   const controls = el.createDiv({ cls: "colloquy-controls" });
+
+  // A screenshot is on the clipboard before it is anywhere else, so this is where an
+  // attachment most often starts.
+  input.addEventListener("paste", (event) => onPaste?.(event));
 
   input.addEventListener("keydown", (event) => {
     // Enter sends, Shift+Enter is a newline. The convention everywhere else that has a

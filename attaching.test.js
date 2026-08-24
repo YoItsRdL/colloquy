@@ -9,7 +9,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { El, Menu, Modal, menus, modals, notices } from "./test/obsidian.js";
-import { pickAttachment, clearAttachments, showAttachments } from "./src/attaching.js";
+import { pickAttachment, clearAttachments, showAttachments, pasteAttachments } from "./src/attaching.js";
 import { AttachPicker, readAttachment } from "./src/attach-picker.js";
 import { chooseFromDisk } from "./src/attach-disk.js";
 
@@ -183,4 +183,69 @@ test("the hidden input does not outlive the dialog", async () => {
   await input.onchange();
 
   assert.ok(!activeDocument.body.children.includes(input), "nothing left behind in the document");
+});
+
+// ── from the clipboard ───────────────────────────────────────────────────────────
+
+const onClipboard = (name, type = "image/png", size = 100) =>
+  ({ name, type, size, arrayBuffer: async () => bytes(8) });
+
+/**
+ * The route people reach for first: a screenshot is on the clipboard already, and saving
+ * it, finding it and opening a file dialog is three steps to arrive where Ctrl+V arrives.
+ */
+test("an image on the clipboard is brought into the vault and held", async () => {
+  const view = panel({ attachmentPath: "attachments/shot.png" });
+
+  const taken = await pasteAttachments(view, { clipboardData: { files: [onClipboard("shot.png")] }, preventDefault() {} });
+
+  assert.equal(taken, true);
+  assert.deepEqual(view.created, ["attachments/shot.png"], "copied in, like anything else from outside");
+  assert.deepEqual(view.attachments.map((a) => a.name), ["shot.png"]);
+});
+
+/** Pasted text is still pasted text. Only a file takes the event away from the box. */
+test("pasting text is left entirely alone", async () => {
+  const view = panel();
+  let prevented = false;
+
+  const taken = await pasteAttachments(view, { clipboardData: { files: [] }, preventDefault() { prevented = true; } });
+
+  assert.equal(taken, false);
+  assert.equal(prevented, false, "the box gets its own event");
+  assert.deepEqual(view.attachments, []);
+});
+
+/**
+ * A clipboard image often arrives with no name, and everything downstream decides what a
+ * file is from its extension. Refusing it for having none would refuse the commonest case.
+ */
+test("a nameless image is given a name from its type rather than refused", async () => {
+  notices.length = 0;
+  const view = panel({ attachmentPath: "attachments/pasted.png" });
+
+  await pasteAttachments(view, { clipboardData: { files: [onClipboard("", "image/png")] }, preventDefault() {} });
+
+  assert.deepEqual(view.attachments.map((a) => a.name), ["pasted.png"]);
+  assert.deepEqual(notices, [], "and nothing complained");
+});
+
+test("the same image pasted twice is held once", async () => {
+  const view = panel({ attachmentPath: "attachments/shot.png" });
+
+  for (let i = 0; i < 2; i++) {
+    await pasteAttachments(view, { clipboardData: { files: [onClipboard("shot.png")] }, preventDefault() {} });
+  }
+
+  assert.equal(view.attachments.length, 1);
+});
+
+test("something the model could not read is refused, with the reason", async () => {
+  notices.length = 0;
+  const view = panel();
+
+  await pasteAttachments(view, { clipboardData: { files: [onClipboard("paper.pdf", "application/pdf")] }, preventDefault() {} });
+
+  assert.deepEqual(view.attachments, []);
+  assert.match(notices.join(" "), /paper\.pdf/);
 });

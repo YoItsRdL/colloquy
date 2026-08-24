@@ -93,6 +93,17 @@ export class El {
     return { defaultPrevented };
   }
 
+  /** Pasting, as the box receives it: files on the clipboard, text beside them. */
+  paste(files = [], text = "") {
+    let defaultPrevented = false;
+    this.dispatchEvent({
+      type: "paste",
+      clipboardData: { files, getData: () => text },
+      preventDefault() { defaultPrevented = true; },
+    });
+    return { defaultPrevented };
+  }
+
   // ── reading the tree, for assertions ────────────────────────────────────────────
   descendants() { return this.children.flatMap((c) => [c, ...c.descendants()]); }
   find(pred) { return this.descendants().find(pred) ?? null; }
