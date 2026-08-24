@@ -40,15 +40,45 @@ export function recordPath(source, date, root) {
   return `${folderFor(date, root)}/${name}.md`;
 }
 
+export const LATELY = "## Lately";
+export const ABOUT = "## About us";
+
+/**
+ * The two halves of a record, whichever of them it has.
+ *
+ * A record written before the split has neither heading. Its whole body counts as lately,
+ * which is the safe reading: it was one paragraph mixing both, and treating a mixture as
+ * durable would carry the disposable half forward for years.
+ */
+export function partsOf(text) {
+  const body = String(text ?? "").replace(/^---\r?\n[\s\S]*?\r?\n---\r?\n/, "").trim();
+  if (!body.includes(ABOUT) && !body.includes(LATELY)) return { lately: body, about: "" };
+
+  const section = (heading) => {
+    const at = body.indexOf(heading);
+    if (at === -1) return "";
+    const rest = body.slice(at + heading.length);
+    const next = rest.search(/\n## /);
+    return (next === -1 ? rest : rest.slice(0, next)).trim();
+  };
+  return { lately: section(LATELY), about: section(ABOUT) };
+}
+
 /**
  * Writes what this conversation said about us.
+ *
+ * Two headings rather than one paragraph, because the halves have different lifespans:
+ * what we were doing on a Tuesday is worth a week, and what we work under is worth years.
+ * Kept apart here so that reading them back can spend its budget on the half that lasts.
  *
  * Overwrites rather than appends. The account describes the whole conversation, so when a
  * conversation is picked up again and read a second time, the new account replaces the old
  * one instead of sitting beside a version of itself that stops halfway.
  */
 export async function writeContext(app, { context, source, root }, now = new Date()) {
-  if (!context) return null;
+  const lately = String(context?.lately ?? "").trim();
+  const about = String(context?.about ?? "").trim();
+  if (!lately && !about) return null;
 
   await ensureFolder(app, folderFor(now, root));
 
@@ -63,8 +93,8 @@ export async function writeContext(app, { context, source, root }, now = new Dat
     `source: "[[${name}]]"`,
     "---",
     "",
-    context,
-    "",
+    ...(lately ? [LATELY, "", lately, ""] : []),
+    ...(about ? [ABOUT, "", about, ""] : []),
   ].join("\n");
 
   const existing = app.vault.getAbstractFileByPath(path);

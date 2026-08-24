@@ -46,7 +46,7 @@ test("a record is named for its conversation, under the day it happened", () => 
 
 test("what was noticed is written, with a link back to where it came from", async () => {
   const { app, files } = fakeVault();
-  const path = await writeContext(app, { context: ACCOUNT, source: SOURCE, root: LOG }, AUGUST_19);
+  const path = await writeContext(app, { context: { lately: ACCOUNT, about: "" }, source: SOURCE, root: LOG }, AUGUST_19);
 
   assert.match(files.get(path), /^type: context$/m);
   assert.match(files.get(path), /^author: agent$/m);
@@ -58,13 +58,13 @@ test("what was noticed is written, with a link back to where it came from", asyn
 /** Statements about us do not belong in the folder reserved for claims about the world. */
 test("nothing is written to the knowledge base", async () => {
   const { app, files } = fakeVault();
-  await writeContext(app, { context: ACCOUNT, source: SOURCE, root: LOG }, AUGUST_19);
+  await writeContext(app, { context: { lately: ACCOUNT, about: "" }, source: SOURCE, root: LOG }, AUGUST_19);
   assert.equal([...files.keys()].some((p) => p.startsWith("10-notes/")), false);
 });
 
 test("a conversation with nothing to say about us leaves nothing behind", async () => {
   const { app, files } = fakeVault();
-  assert.equal(await writeContext(app, { context: "", source: SOURCE, root: LOG }, AUGUST_19), null);
+  assert.equal(await writeContext(app, { context: { lately: "", about: "" }, source: SOURCE, root: LOG }, AUGUST_19), null);
   assert.equal(files.size, 0);
 });
 
@@ -74,10 +74,10 @@ test("a conversation with nothing to say about us leaves nothing behind", async 
  */
 test("reading a conversation again replaces its record rather than adding another", async () => {
   const { app, files } = fakeVault();
-  const first = await writeContext(app, { context: ACCOUNT, source: SOURCE, root: LOG }, AUGUST_19);
+  const first = await writeContext(app, { context: { lately: ACCOUNT, about: "" }, source: SOURCE, root: LOG }, AUGUST_19);
 
   const later = "We came back to it and settled on gemma3 for reading, qwen3 for answering.";
-  const second = await writeContext(app, { context: later, source: SOURCE, root: LOG }, AUGUST_19);
+  const second = await writeContext(app, { context: { lately: later, about: "" }, source: SOURCE, root: LOG }, AUGUST_19);
 
   assert.equal(second, first, "the same record");
   assert.equal(files.size, 1);

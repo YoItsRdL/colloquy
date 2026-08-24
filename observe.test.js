@@ -9,19 +9,25 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import { readContext, inspect, observeConversation } from "./src/observe.js";
 
-const said = (context) => JSON.stringify({ context });
+const said = (lately, about = "") => JSON.stringify({ lately, about });
+
+/** Both halves as one string, which is what every rule about voice is judged on. */
+const account = (raw) => {
+  const context = readContext(raw);
+  return context === null ? null : `${context.lately} ${context.about}`.trim();
+};
 const GOOD = "We were weighing local models against Claude, mostly on cost. You would rather not spend more on API credits.";
 
 test("a first-person account survives intact", () => {
-  assert.equal(readContext(said(GOOD)), GOOD);
+  assert.equal(account(said(GOOD)), GOOD);
 });
 
 test("nothing to record is an answer, and not the same as no answer", () => {
-  assert.equal(readContext(said("")), "");
-  assert.equal(readContext("I could not find anything, sorry."), null);
-  assert.equal(readContext(""), null);
-  assert.equal(readContext(null), null);
-  assert.equal(readContext('{"notes":[]}'), null, "the right shape, or nothing");
+  assert.equal(account(said("")), "");
+  assert.equal(account("I could not find anything, sorry."), null);
+  assert.equal(account(""), null);
+  assert.equal(account(null), null);
+  assert.equal(account('{"notes":[]}'), null, "the right shape, or nothing");
 });
 
 /**
@@ -36,7 +42,7 @@ test("an account written from outside the conversation is refused", () => {
     "The user was asking about self-hosting local models.",
     "This exchange covers vault design.",
   ]) {
-    assert.equal(readContext(said(outside)), null, outside);
+    assert.equal(account(said(outside)), null, outside);
   }
 });
 
@@ -47,38 +53,38 @@ test("an account written from outside the conversation is refused", () => {
  */
 test("mentioning the conversation is fine; writing from outside it is not", () => {
   const inside = "We were comparing two models, and we guided the conversation towards cost.";
-  assert.equal(readContext(said(inside)), inside);
+  assert.equal(account(said(inside)), inside);
 
   const outside = "The conversation covers two models. We looked at cost.";
-  assert.equal(readContext(said(outside)), null, "the giveaway is where the sentence starts");
+  assert.equal(account(said(outside)), null, "the giveaway is where the sentence starts");
 });
 
 test("an account that never mentions us is not about us", () => {
-  assert.equal(readContext(said("Qwen3 has an earlier training cutoff than Claude 3.")), null);
-  assert.equal(readContext(said("Local models are cheaper to run.")), null);
+  assert.equal(account(said("Qwen3 has an earlier training cutoff than Claude 3.")), null);
+  assert.equal(account(said("Local models are cheaper to run.")), null);
 });
 
 test("second person counts as much as first", () => {
   const yours = "You would rather not spend more on API credits, so local models it is.";
-  assert.equal(readContext(said(yours)), yours);
+  assert.equal(account(said(yours)), yours);
 });
 
 test("prose and code fences around the JSON cost nothing", () => {
-  assert.equal(readContext("Sure!\n```json\n" + said(GOOD) + "\n```\nHope that helps."), GOOD);
+  assert.equal(account("Sure!\n```json\n" + said(GOOD) + "\n```\nHope that helps."), GOOD);
 });
 
 test("a reasoning model's monologue is not part of the answer", () => {
-  assert.equal(readContext(`<think>Hmm, {"context":""} would be safe.</think>${said(GOOD)}`), GOOD);
+  assert.equal(account(`<think>Hmm, {"context":""} would be safe.</think>${said(GOOD)}`), GOOD);
 });
 
 /** The prompt shows the model an example to copy, so it is the likeliest wrong answer. */
 test("the format restated before the answer does not become the answer", () => {
   const echoed = `Format: ${said("We were ...")}\n\nHere is the real one:\n${said(GOOD)}`;
-  assert.equal(readContext(echoed), GOOD);
+  assert.equal(account(echoed), GOOD);
 });
 
 test("an account long enough to be a summary is refused", () => {
-  assert.equal(readContext(said(`We ${"talked about things ".repeat(90)}`)), null);
+  assert.equal(account(said(`We ${"talked about things ".repeat(90)}`)), null);
 });
 
 /**
@@ -156,4 +162,38 @@ test("a conversation we never spoke in has nothing of ours to record", async () 
 test("a provider failure is raised, never recorded as an uneventful conversation", async () => {
   await assert.rejects(() => observeConversation(model(new Error("ollama is not running")), "text"), /not running/);
   await assert.rejects(() => observeConversation({}, "text"), /no model is configured/);
+});
+
+/**
+ * The two halves have different lifespans: what we were doing on a Tuesday is worth a week,
+ * what we work under is worth years. Kept apart so that reading them back can spend its
+ * budget on the half that lasts.
+ */
+test("the two halves come back separately", () => {
+  const both = inspect(JSON.stringify({
+    lately: "We were pricing a graphics card against what it can still run.",
+    about: "We work to a tight budget and prefer tools that stay cheap to run.",
+  }));
+
+  assert.equal(both.why, null);
+  assert.match(both.context.lately, /pricing a graphics card/);
+  assert.match(both.context.about, /tight budget/);
+});
+
+test("a conversation with nothing durable in it leaves that half empty", () => {
+  const { context, why } = inspect(JSON.stringify({ lately: "We were checking a train time.", about: "" }));
+
+  assert.equal(why, null);
+  assert.equal(context.about, "", "not everything said is worth keeping for a year");
+});
+
+/** One half in the wrong voice is the account being written badly, not half an account. */
+test("the voice is judged across both halves, not one at a time", () => {
+  const { context, why } = inspect(JSON.stringify({
+    lately: "We were comparing two models.",
+    about: "The user prefers cheaper tools.",
+  }));
+
+  assert.equal(context, null);
+  assert.match(why, /outside the conversation/);
 });

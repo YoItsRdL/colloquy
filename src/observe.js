@@ -53,10 +53,14 @@ const BEFORE = [
   "Write two to four sentences in the first person plural (we, us, our, you) as somebody",
   "who was there. Never write 'the conversation', 'the user' or 'this discussion'.",
   "",
-  "Record only:",
-  "  - what we were trying to do, and why",
-  "  - constraints we work under, and what we prefer",
-  "  - what we chose to do next, and what we set aside",
+  "Two parts, and they are different in kind:",
+  "",
+  "  lately: one or two sentences on what we were trying to do this time, why, and what we",
+  "  chose to do next.",
+  "",
+  "  about: one or two sentences on what holds beyond today. What we work under, what we",
+  "  prefer, how we like to work. Leave it empty unless this conversation shows something",
+  "  that would still be true of us in a year.",
   "",
   // The failure this replaced was a false claim about the world. Wrapping the same claim in
   // "we realised that…" launders it rather than fixing it, and a later conversation handed
@@ -65,8 +69,8 @@ const BEFORE = [
   "found or established. How a tool, a place or a product actually behaves belongs to the",
   "transcript, and may be wrong.",
   "",
-  "Reply as JSON and nothing else, in the form {\"context\":\"...\"}.",
-  "If the conversation says nothing about us, reply {\"context\":\"\"}.",
+  "Reply as JSON and nothing else, in the form {\"lately\":\"...\",\"about\":\"...\"}.",
+  "If the conversation says nothing about us, reply {\"lately\":\"\",\"about\":\"\"}.",
   "",
   "The conversation follows.",
   "",
@@ -82,36 +86,44 @@ const AFTER = [
  * What the model returned, and which rule refused it when nothing usable came back. This
  * runs unattended, so the reason is the only evidence anybody gets.
  *
- * @returns {{context: string|null, why: string|null}} `""` means it looked and found
- * nothing, `null` means it did not answer. Reporting the second as the first is how a
- * broken sweep looks like a quiet one.
+ * @returns {{context: {lately: string, about: string}|null, why: string|null}} Two empty
+ * strings mean it looked and found nothing, `null` means it did not answer. Reporting the
+ * second as the first is how a broken sweep looks like a quiet one.
  */
 export function inspect(raw) {
   const text = String(raw ?? "").replace(/<think>[\s\S]*?<\/think>/gi, "");
 
-  // The last object carrying a `context` key. The prompt shows the model one to copy, and
-  // a small model restating the format before answering is common; restating it after is
-  // not.
+  // The last object carrying either key. The prompt shows the model one to copy, and a
+  // small model restating the format before answering is common; restating it after is not.
   let found = null;
   for (let i = text.indexOf("{"); i !== -1; i = text.indexOf("{", i + 1)) {
     for (let j = text.lastIndexOf("}"); j > i; j = text.lastIndexOf("}", j - 1)) {
       try {
         const parsed = JSON.parse(text.slice(i, j + 1));
-        if (typeof parsed?.context === "string") found = parsed.context.trim();
+        if (typeof parsed?.lately === "string" || typeof parsed?.about === "string") {
+          found = {
+            lately: String(parsed.lately ?? "").trim(),
+            about: String(parsed.about ?? "").trim(),
+          };
+        }
         break;
       } catch { /* not a whole object, keep looking */ }
     }
   }
 
   if (found === null) return { context: null, why: "it did not reply in the format asked for" };
-  if (!found) return { context: "", why: null };   // it looked and found nothing. A real answer.
+
+  // Judged together. The rules are about the voice an account is written in, and one
+  // sentence of it can be in the wrong voice while the other is fine.
+  const both = `${found.lately} ${found.about}`.trim();
+  if (!both) return { context: found, why: null };   // it looked and found nothing. A real answer.
 
   // Everything below is the model answering badly, which is not the same as it answering
-  // "nothing", returning "" for these would mark the conversation read and record silence,
-  // losing it for good. null sends it back round instead.
-  if (DISTANT.test(found)) return { context: null, why: "the account was written from outside the conversation" };
-  if (!OURS.test(found)) return { context: null, why: "the account never mentions us" };
-  if (found.split(/\s+/).length > MAX_WORDS) return { context: null, why: "the account ran to a summary of the transcript" };
+  // "nothing", returning empty for these would mark the conversation read and record
+  // silence, losing it for good. null sends it back round instead.
+  if (DISTANT.test(both)) return { context: null, why: "the account was written from outside the conversation" };
+  if (!OURS.test(both)) return { context: null, why: "the account never mentions us" };
+  if (both.split(/\s+/).length > MAX_WORDS) return { context: null, why: "the account ran to a summary of the transcript" };
 
   return { context: found, why: null };
 }

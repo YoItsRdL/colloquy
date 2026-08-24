@@ -9,7 +9,11 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import { recall, attachMemory } from "./src/memory.js";
 
-const record = (body) => `---\ntype: context\nauthor: agent\n---\n\n${body}\n`;
+const record = (lately, about = "") => [
+  "---", "type: context", "author: agent", "---", "",
+  ...(lately ? ["## Lately", "", lately, ""] : []),
+  ...(about ? ["## About us", "", about, ""] : []),
+].join("\n");
 
 function fakeVault(seed = {}) {
   const files = new Map(Object.entries(seed));
@@ -79,14 +83,46 @@ test("the most recent are the ones that come back", async () => {
  * the half that survives reads as the whole of what we thought.
  */
 test("a budget drops whole records rather than cutting one in half", async () => {
-  const long = "We ".concat("talked ".repeat(80));
+  const long = "We ".concat("prefer ".repeat(80));
   const app = fakeVault({
-    "60-log/conversations/2026/08/1-a.md": record(long),
-    "60-log/conversations/2026/08/2-b.md": record(long),
+    "60-log/conversations/2026/08/1/a.md": record("", long),
+    "60-log/conversations/2026/08/2/b.md": record("", long),
   });
-  const block = await recall(app, { root: LOG, budget: long.length + 10 });
+  // Seven tenths of the budget goes to the durable half, and this is room for one of them.
+  const block = await recall(app, { root: LOG, budget: Math.round((long.length * 1.5) / 0.7) });
+
   assert.equal(block.match(/^- /gm).length, 1);
-  assert.doesNotMatch(block, /talked t$/m, "nothing is left mid-word");
+  assert.doesNotMatch(block, /prefer p$/m, "nothing is left mid-word");
+});
+
+/**
+ * The point of keeping the halves apart. What we work under is gathered from far further
+ * back than what we were doing on Tuesday, because it is still true and that is not.
+ */
+test("what holds beyond today is remembered from further back than what happened lately", async () => {
+  const seed = {};
+  for (let i = 0; i < 10; i++) {
+    seed[`${LOG}/2026/08/${String(i).padStart(2, "0")}/talk-${i}.md`] =
+      record(`We were on task ${i}.`, `We prefer approach ${i}.`);
+  }
+  const block = await recall(fakeVault(seed), { root: LOG });
+
+  const lately = block.match(/We were on task \d/g) ?? [];
+  const about = block.match(/We prefer approach \d/g) ?? [];
+
+  assert.equal(lately.length, 3, "only the newest few conversations are what we are doing now");
+  assert.ok(about.length > lately.length, `${about.length} durable lines against ${lately.length}`);
+  assert.match(block, /What holds beyond today:/);
+  assert.match(block, /Lately:/);
+});
+
+/** A record written before the split is one paragraph mixing both, so it is treated as the disposable half. */
+test("a record from before the split is read as something that happened, not something that holds", async () => {
+  const old = `---\ntype: context\nauthor: agent\n---\n\nWe were weighing local models against Claude.\n`;
+  const block = await recall(fakeVault({ [`${LOG}/2026/08/19/old.md`]: old }), { root: LOG });
+
+  assert.match(block, /Lately:/);
+  assert.doesNotMatch(block, /What holds beyond today:/);
 });
 
 /**

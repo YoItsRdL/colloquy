@@ -5,12 +5,30 @@
  * never instruction. These are an agent's reading of a conversation, and the one thing a
  * wrong one must not do is arrive with the authority of something we said.
  */
-import { recentContext } from "./context.js";
+import { recentContext, partsOf } from "./context.js";
 import { foldersOf, DEFAULT_FOLDERS } from "./folders.js";
 
 /** Enough to be recognised by, little enough to leave the question room. */
-const MAX_RECORDS = 8;
 const MAX_CHARS = 2400;
+
+/**
+ * Most of the room goes to what holds beyond today, and the rest to what happened lately.
+ *
+ * The two halves of a record have different lifespans, and the old arrangement spent the
+ * whole budget on whichever eight conversations happened most recently. After a year that
+ * is a memory of last week: which graphics card was priced on Tuesday, and nothing about
+ * the person who priced it.
+ */
+const ABOUT_CHARS = Math.round(MAX_CHARS * 0.7);
+const LATELY_CHARS = MAX_CHARS - ABOUT_CHARS;
+
+/**
+ * How far back the durable half is gathered from, against how far back the disposable half
+ * is. Reading thirty short records costs nothing and happens once per conversation, and it
+ * is what lets a preference stated in March still be known in December.
+ */
+const LOOK_BACK = 30;
+const LATELY_RECORDS = 3;
 
 const PREAMBLE = [
   "Background on the person you are talking to, gathered from earlier conversations.",
@@ -22,32 +40,46 @@ const PREAMBLE = [
   "",
 ].join("\n");
 
-/** The body of a record, without the frontmatter this plugin put on it. */
-const bodyOf = (text) => String(text ?? "").replace(/^---\r?\n[\s\S]*?\r?\n---\r?\n/, "").trim();
-
 /**
  * What earlier conversations noticed, as one block of background.
  *
  * @returns the block, or null when there is nothing worth sending, which is the ordinary
  * case for a new vault and must cost nothing.
  */
-export async function recall(app, { root = DEFAULT_FOLDERS.context, limit = MAX_RECORDS, budget = MAX_CHARS } = {}) {
+export async function recall(app, { root = DEFAULT_FOLDERS.context, limit = LOOK_BACK, budget = MAX_CHARS } = {}) {
   const files = recentContext(app, root, limit);
   if (!files.length) return null;
 
-  const lines = [];
-  let spent = 0;
-  for (const file of files) {
-    const body = bodyOf(await app.vault.read(file));
-    if (!body) continue;
-    // Whole records only. Half an account read back is worse than one fewer account,
-    // because the half that survives reads as the whole of what we thought.
-    if (spent + body.length > budget) break;
-    spent += body.length;
-    lines.push(`- ${body}`);
+  const share = (part) => Math.round(budget * (part === "about" ? 0.7 : 0.3));
+  const taken = { about: [], lately: [] };
+  const spent = { about: 0, lately: 0 };
+  const seen = new Set();
+
+  for (const [index, file] of files.entries()) {
+    const parts = partsOf(await app.vault.read(file));
+
+    for (const part of ["about", "lately"]) {
+      const line = parts[part];
+      // Only the newest few conversations are worth reporting as what we were just doing.
+      if (!line || (part === "lately" && index >= LATELY_RECORDS)) continue;
+      // The same preference stated twice in the same words is one preference.
+      if (seen.has(line)) continue;
+      // Whole records only. Half an account read back is worse than one fewer account,
+      // because the half that survives reads as the whole of what we thought.
+      if (spent[part] + line.length > share(part)) continue;
+
+      seen.add(line);
+      spent[part] += line.length;
+      taken[part].push(`- ${line}`);
+    }
   }
 
-  return lines.length ? `${PREAMBLE}${lines.join("\n")}` : null;
+  const block = [
+    taken.about.length ? `What holds beyond today:\n${taken.about.join("\n")}` : "",
+    taken.lately.length ? `Lately:\n${taken.lately.join("\n")}` : "",
+  ].filter(Boolean).join("\n\n");
+
+  return block ? `${PREAMBLE}${block}` : null;
 }
 
 /**

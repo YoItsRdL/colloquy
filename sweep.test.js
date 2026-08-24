@@ -12,7 +12,10 @@ import { createSweep, isFree, wasRead } from "./src/sweep.js";
 
 const FOLDERS = { conversations: "00-inbox", context: "60-log/conversations" };
 const CONVERSATION = "00-inbox/2026/08/19/trains.md";
-const good = '{"context":"We were working out whether the train beats the bus, and you would rather not change twice."}';
+const good = JSON.stringify({
+  lately: "We were working out whether the train beats the bus.",
+  about: "We would rather not change twice.",
+});
 
 /** A plugin, a vault, and a model, enough of each to watch the sweep behave. */
 function harness({ reply = good, keyKind = "url" } = {}) {
@@ -128,7 +131,7 @@ test("an unreadable answer leaves the conversation for another time", async () =
  * unlike a failure, it must not be read again on every future sweep.
  */
 test("a conversation worth nothing is still marked read", async () => {
-  const { plugin, files, front } = harness({ reply: '{"context":""}' });
+  const { plugin, files, front } = harness({ reply: JSON.stringify({ lately: "", about: "" }) });
   await createSweep(plugin).read(CONVERSATION);
 
   assert.deepEqual(records(files), []);
