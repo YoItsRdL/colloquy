@@ -58,9 +58,23 @@ async function fillLibrary(tab, list, note, adapter, key) {
           if (!(await confirmRemoval(tab, model))) return;
           await adapter.library.remove({ key, model: model.id });
           new Notice(`Removed ${model.id}`);
+          await reselect(tab, model.id, installed);
           tab.display();
         }));
   }
+}
+
+/**
+ * Removing the model in use would leave the panel pointing at one that is no longer on the
+ * machine, and every question after it failing at the provider. The key screen has repointed
+ * the provider like this since ADR-0004; this is the same rule one level down.
+ */
+async function reselect(tab, removed, installed) {
+  if (tab.plugin.settings.model !== removed) return;
+  const left = installed.find((m) => m.id !== removed);
+  tab.plugin.settings.model = left?.id ?? null;
+  await tab.plugin.save();
+  tab.plugin.refreshPanel?.();
 }
 
 /** Asked first: this is gigabytes, and getting it back means downloading it again. */
@@ -81,35 +95,55 @@ function confirmRemoval(tab, model) {
 }
 
 /** Downloading one by name, with progress, because these take minutes and gigabytes. */
+const NAMING = "Named as the provider names it: qwen3:8b, gemma3:4b.";
+
+/**
+ * Downloading one by name, with progress, because these take minutes and gigabytes.
+ *
+ * The download outlives this row. Removing a model rebuilds the whole screen, which used to
+ * leave a pull reporting into a row that had been thrown away: the percentage vanished, a
+ * blank field took its place, and a five gigabyte download looked as though it had never
+ * been started. So what is in flight is held on the tab, and each redraw picks it back up.
+ */
 function renderPuller(tab, containerEl, adapter, key) {
-  let wanted = "";
+  let wanted = tab.pulling?.model ?? "";
   const row = new Setting(containerEl)
     .setName("Download a model")
-    .setDesc("Named as the provider names it: qwen3:8b, gemma3:4b.");
+    .setDesc(tab.pulling?.said ?? NAMING);
 
   let button;
   row.addText((text) => {
     text.setPlaceholder("model:tag");
+    text.setValue(wanted);
+    text.setDisabled(Boolean(tab.pulling));
     text.onChange((value) => { wanted = value.trim(); button.setDisabled(!wanted); });
   });
 
+  // Always the row on screen now, not the one that was there when the pull began.
+  tab.sayPulling = (said) => row.setDesc(said);
+
   row.addButton((b) => {
     button = b;
-    b.setButtonText("Download").setDisabled(true).onClick(async () => {
+    b.setButtonText("Download").setDisabled(!wanted || Boolean(tab.pulling)).onClick(async () => {
       button.setDisabled(true);
+      tab.pulling = { model: wanted, said: "starting" };
       try {
         await adapter.library.pull({ key, model: wanted }, ({ status, completed, total }) => {
           const pct = total ? Math.round((completed / total) * 100) : null;
           // In the description, where the eye already is, rather than in a notice that
           // would have to be replaced hundreds of times.
-          row.setDesc(pct === null ? status : `${status}, ${pct}%`);
+          tab.pulling.said = pct === null ? status : `${status}, ${pct}%`;
+          tab.sayPulling(tab.pulling.said);
         });
+        tab.pulling = null;
         new Notice(`${wanted} is ready`);
-        tab.display();
       } catch (err) {
-        row.setDesc(String(err.message ?? err));
-        button.setDisabled(false);
+        tab.pulling = null;
+        // A notice as well as the row. The row may have been rebuilt since this started,
+        // and a download that fails silently is indistinguishable from one still running.
+        new Notice(`${wanted} did not download: ${err?.message ?? err}`, 10000);
       }
+      tab.display();
     });
   });
 }

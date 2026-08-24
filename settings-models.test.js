@@ -35,8 +35,19 @@ function screen(settings = { keys: {} }) {
     app: {},
     containerEl,
     redraws: 0,
-    plugin: { settings },
-    display() { this.redraws += 1; },
+    refreshed: 0,
+    plugin: {
+      settings,
+      async save() {},
+      refreshPanel() { tab.refreshed += 1; },
+    },
+    // The real one empties and rebuilds. Rebuilding is the whole point of two of these
+    // tests, so this does it too.
+    display() {
+      this.redraws += 1;
+      containerEl.empty();
+      renderLibrary(this, containerEl);
+    },
   };
   renderLibrary(tab, containerEl);
   return tab;
@@ -140,8 +151,13 @@ test("a download reports progress in the row it was started from", async () => {
   }
 });
 
-test("a download that fails leaves the reason and the button usable", async () => {
+/**
+ * The row this would have been written to may have been rebuilt since the download began,
+ * and a download that fails silently is indistinguishable from one still running.
+ */
+test("a download that fails says so somewhere that survives a redraw", async () => {
   serving({ models: [] });
+  notices.length = 0;
   const tab = screen();
   await settle();
 
@@ -153,14 +169,86 @@ test("a download that fails leaves the reason and the button usable", async () =
   try {
     const puller = row(tab, "Download a model");
     puller.find((e) => e.tagName === "input").enter("qwen3:8b");
-    const button = puller.find((e) => e.tagName === "button");
-    await button.onclick();
+    await puller.find((e) => e.tagName === "button").onclick();
 
-    assert.match(descOf(puller), /no space left on device/);
-    assert.equal(button.disabled, false, "so it can be tried again");
+    assert.match(notices.join(" "), /qwen3:8b did not download: no space left on device/);
+    assert.equal(tab.pulling, null, "and nothing is left claiming to be in flight");
+    assert.equal(row(tab, "Download a model").find((e) => e.tagName === "button").disabled, true,
+      "the rebuilt row starts empty, as it does on first open");
   } finally {
     ollama.library.pull = real;
   }
+});
+
+/**
+ * Removing a model rebuilt the whole screen under a download in progress, which left the
+ * percentage reporting into a row that had been thrown away: a five gigabyte pull looked as
+ * though it had never been started.
+ */
+test("a download in progress survives the screen being rebuilt under it", async () => {
+  serving({ models: [] });
+  const tab = screen();
+  await settle();
+
+  const { all } = await import("./src/providers/index.js");
+  const ollama = all().find((a) => a.name === "ollama");
+  const real = ollama.library.pull;
+  let report;
+  ollama.library.pull = (_opts, onProgress) => new Promise(() => { report = onProgress; });
+
+  try {
+    const puller = row(tab, "Download a model");
+    puller.find((e) => e.tagName === "input").enter("qwen3:8b");
+    puller.find((e) => e.tagName === "button").onclick();
+    report({ status: "downloading", completed: 300, total: 1000 });
+    assert.match(descOf(row(tab, "Download a model")), /downloading, 30%/);
+
+    tab.display();
+
+    const rebuilt = row(tab, "Download a model");
+    assert.match(descOf(rebuilt), /downloading, 30%/, "it picks the pull back up");
+    assert.equal(rebuilt.find((e) => e.tagName === "input").value, "qwen3:8b", "and still names it");
+
+    report({ status: "downloading", completed: 900, total: 1000 });
+    assert.match(descOf(row(tab, "Download a model")), /downloading, 90%/, "and keeps reporting");
+  } finally {
+    ollama.library.pull = real;
+    tab.pulling = null;
+  }
+});
+
+/**
+ * The panel would otherwise be left pointing at a model that is no longer on the machine,
+ * and every question after it failing at the provider.
+ */
+test("removing the model in use moves the selection to one still installed", async () => {
+  serving({ models: [model("gemma3:4b", 3e9, "4.3B", "Q4_K_M"), model("qwen3:4b", 2e9, "4.0B", "Q4_K_M")] });
+  modals.length = 0;
+  const tab = screen({ keys: {}, model: "qwen3:4b" });
+  await settle();
+
+  row(tab, "qwen3:4b").find((e) => e.getAttr("data-icon") === "trash").onclick();
+  await settle();
+  Modal.last().contentEl.button("Remove").click();
+  await settle();
+
+  assert.equal(tab.plugin.settings.model, "gemma3:4b", "the one still there");
+  assert.equal(tab.refreshed, 1, "and the panel is told, so its chip agrees");
+});
+
+test("removing a model that was not selected leaves the selection alone", async () => {
+  serving({ models: [model("gemma3:4b", 3e9, "4.3B", "Q4_K_M"), model("qwen3:4b", 2e9, "4.0B", "Q4_K_M")] });
+  modals.length = 0;
+  const tab = screen({ keys: {}, model: "gemma3:4b" });
+  await settle();
+
+  row(tab, "qwen3:4b").find((e) => e.getAttr("data-icon") === "trash").onclick();
+  await settle();
+  Modal.last().contentEl.button("Remove").click();
+  await settle();
+
+  assert.equal(tab.plugin.settings.model, "gemma3:4b");
+  assert.equal(tab.refreshed, 0, "nothing changed, so nothing to tell");
 });
 
 // ── removing ─────────────────────────────────────────────────────────────────────
