@@ -3,7 +3,28 @@
  *
  * Context, not claims. A small local model gets facts about the world confidently wrong;
  * what it cannot be wrong about is what we were doing, because it was there.
+ *
+ * Which is true of our half of a conversation and not of the model's, so only our half is
+ * read (ADR-0013). Reading both closed a loop with nothing outside it: a wrong answer was
+ * summarised into something we had settled, handed to the next conversation as background,
+ * agreed with, and summarised again. Four records here came to say we own a GTX 1070 Ti,
+ * and one that a model with no such size was the version that worked.
  */
+import { readTranscript } from "./transcript.js";
+
+/**
+ * What we said, and nothing the model said back.
+ *
+ * The questions carry the subject and the constraints, which is all this is for. An answer
+ * is where the errors live, and none of them belong in something later conversations are
+ * told as fact.
+ */
+function oursIn(raw) {
+  return readTranscript(raw)
+    .filter((turn) => turn.role === "user")
+    .map((turn) => turn.text)
+    .join("\n\n");
+}
 
 /**
  * A backstop against a runaway answer, not a style rule. At 120 it threw away good accounts
@@ -35,13 +56,14 @@ const BEFORE = [
   "Record only:",
   "  - what we were trying to do, and why",
   "  - constraints we work under, and what we prefer",
-  "  - what we decided, and what we ruled out",
+  "  - what we chose to do next, and what we set aside",
   "",
   // The failure this replaced was a false claim about the world. Wrapping the same claim in
   // "we realised that…" launders it rather than fixing it, and a later conversation handed
   // this back as context would carry the error forward as something we had settled.
-  "Record no facts about the world, not even ones worked out here. How a tool, a place or a",
-  "product actually behaves belongs to the transcript, and may be wrong.",
+  "Record no facts about the world, not even ones worked out here, and not as something we",
+  "found or established. How a tool, a place or a product actually behaves belongs to the",
+  "transcript, and may be wrong.",
   "",
   "Reply as JSON and nothing else, in the form {\"context\":\"...\"}.",
   "If the conversation says nothing about us, reply {\"context\":\"\"}.",
@@ -111,7 +133,7 @@ export async function observeConversation(candidate, conversation) {
   const reply = await candidate.provider.complete({
     model: candidate.model,
     key: candidate.key,
-    messages: [{ role: "user", text: `${BEFORE}\n${conversation.slice(0, 6000)}${AFTER}` }],
+    messages: [{ role: "user", text: `${BEFORE}\n${oursIn(conversation).slice(0, 6000)}${AFTER}` }],
   });
   return inspect(reply);
 }

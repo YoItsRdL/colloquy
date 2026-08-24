@@ -20,6 +20,7 @@ entire feature was ripped out than from any description of what remains.
 | [0010](0010-the-folders-are-yours.md) | The folders are the vault owner's | Accepted |
 | [0011](0011-asking-about-something-in-your-vault.md) | Attachments from the vault, or from anywhere into it | Accepted |
 | [0012](0012-a-phone-has-no-localhost.md) | A phone has no localhost | Accepted |
+| [0013](0013-only-our-half-is-read-back.md) | Only our half is read back | Accepted |
 
 ## The two reversals, in short
 

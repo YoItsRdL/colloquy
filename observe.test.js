@@ -102,14 +102,55 @@ const model = (reply) => ({
   provider: { complete: async () => (reply instanceof Error ? Promise.reject(reply) : reply) },
 });
 
+/** A conversation as it is written to the vault, which is the only shape this ever sees. */
+const TRANSCRIPT = `---
+uid: 20260824T101500
+---
+
+# Which Card
+
+**me** _(10:15)_
+
+is a GTX 1070 enough for an 8B model?
+
+**qwen3:8b** _(10:16)_
+
+Yes, your GTX 1070 Ti handles qwen3:7b comfortably at 4-bit.
+`;
+
 test("the conversation reaches the model chosen in the chips", async () => {
   let saw;
   const spy = { model: "gemma3:4b", key: "k", provider: { complete: async (o) => { saw = o; return said(GOOD) } } };
-  await observeConversation(spy, "a conversation about trains");
+  await observeConversation(spy, TRANSCRIPT);
 
   assert.equal(saw.model, "gemma3:4b");
-  assert.match(saw.messages[0].text, /a conversation about trains/);
+  assert.match(saw.messages[0].text, /is a GTX 1070 enough for an 8B model\?/);
   assert.match(saw.messages[0].text, /first person/i, "and the instruction that matters goes with it");
+});
+
+/**
+ * The loop this closes: an answer was summarised into something we had settled, handed to
+ * the next conversation as background, agreed with, and summarised again. Nothing outside
+ * it ever disagreed. Both errors below are real ones it produced (ADR-0013).
+ */
+test("what the model said is not read back, only what we said", async () => {
+  let saw;
+  const spy = { model: "gemma3:4b", key: "k", provider: { complete: async (o) => { saw = o; return said(GOOD) } } };
+  await observeConversation(spy, TRANSCRIPT);
+
+  const sent = saw.messages[0].text;
+  assert.ok(!sent.includes("1070 Ti"), "a card we do not own");
+  assert.ok(!sent.includes("qwen3:7b"), "a model that does not exist");
+  assert.ok(!sent.includes("comfortably at 4-bit"), "nor anything else it asserted");
+});
+
+test("a conversation we never spoke in has nothing of ours to record", async () => {
+  let saw;
+  const spy = { model: "gemma3:4b", key: "k", provider: { complete: async (o) => { saw = o; return said("") } } };
+  await observeConversation(spy, "notes somebody pasted in, with no turns in them");
+
+  assert.match(saw.messages[0].text, /first person/i, "still asked");
+  assert.ok(!saw.messages[0].text.includes("somebody pasted"), "but given nothing to work from");
 });
 
 test("a provider failure is raised, never recorded as an uneventful conversation", async () => {
