@@ -34,10 +34,23 @@ export async function ensureFolder(app, folder) {
   }
 }
 
-/** Named for the conversation, so the record and its source are obviously a pair. */
+/**
+ * Named for the conversation and filed under the conversation's own day, so the record and
+ * its source are a pair in both name and place.
+ *
+ * The day of the conversation rather than the day it was read, which are the same thing
+ * only the first time. Reading an August conversation again in December has to land on the
+ * record it already wrote, or the promise below (that a record is replaced rather than
+ * added to) quietly becomes two records saying different things about one conversation.
+ *
+ * A conversation that is not under a date at all, because somebody chose their own scheme
+ * for the folder, falls back to the day it was read. It is still one path per conversation.
+ */
 export function recordPath(source, date, root) {
   const name = source.replace(/\.md$/, "").split("/").pop();
-  return `${folderFor(date, root)}/${name}.md`;
+  const day = source.match(/\/(\d{4})\/(\d{2})\/(\d{2})\//);
+  const folder = day ? `${root}/${day[1]}/${day[2]}/${day[3]}` : folderFor(date, root);
+  return `${folder}/${name}.md`;
 }
 
 export const LATELY = "## Lately";
@@ -80,9 +93,9 @@ export async function writeContext(app, { context, source, root }, now = new Dat
   const about = String(context?.about ?? "").trim();
   if (!lately && !about) return null;
 
-  await ensureFolder(app, folderFor(now, root));
-
   const path = recordPath(source, now, root);
+  await ensureFolder(app, path.slice(0, path.lastIndexOf("/")));
+
   const name = source.replace(/\.md$/, "").split("/").pop();
   const text = [
     "---",

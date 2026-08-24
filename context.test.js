@@ -102,3 +102,30 @@ test("only so much is read back, however much has accumulated", () => {
   for (let i = 0; i < 30; i++) seed[`60-log/conversations/2026/08/${i}/talk.md`] = "";
   assert.equal(recentContext(fakeVault(seed).app, LOG).length, 12);
 });
+
+/**
+ * The day of the conversation, not the day it was read. Those are the same thing only the
+ * first time, and when they diverge the promise above (a record is replaced, not added to)
+ * quietly becomes two records saying different things about one conversation.
+ */
+test("reading a conversation months later still writes to its own record", async () => {
+  const { app, files } = fakeVault();
+  const inAugust = await writeContext(app, { context: { lately: ACCOUNT, about: "" }, source: SOURCE, root: LOG }, AUGUST_19);
+
+  const inDecember = new Date("2026-12-01T09:00:00");
+  const later = await writeContext(app, { context: { lately: "We came back to it.", about: "" }, source: SOURCE, root: LOG }, inDecember);
+
+  assert.equal(later, inAugust, "the same record, under the conversation's own day");
+  assert.equal(files.size, 1, "and not a second one under December");
+});
+
+/** Somebody else's folder scheme has no date in it, and still gets one record per conversation. */
+test("a conversation filed outside a date folder still gets one record", async () => {
+  const { app } = fakeVault();
+  const flat = "chats/is-it-better-by-train.md";
+
+  const first = await writeContext(app, { context: { lately: ACCOUNT, about: "" }, source: flat, root: LOG }, AUGUST_19);
+  const again = await writeContext(app, { context: { lately: ACCOUNT, about: "" }, source: flat, root: LOG }, AUGUST_19);
+
+  assert.equal(again, first);
+});
