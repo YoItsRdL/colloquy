@@ -21,7 +21,8 @@ const FIELDS = [
     key: "context",
     name: "What was noticed",
     desc: "Where the short account of each conversation is kept, and read back from to " +
-      "give later conversations their context. Filed by month underneath.",
+      "give later conversations their context. Filed by day underneath, the same as the " +
+      "conversations themselves.",
   },
 ];
 

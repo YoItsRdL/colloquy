@@ -31,7 +31,7 @@ warned about.
 
 ```
 Conversations/2026/08/19/is-it-better-by-train.md      the conversation, as markdown
-Conversations/context/2026/08/19-is-it-better…md       what it noticed about you
+Conversations/context/2026/08/19/is-it-better…md       what it noticed about you
 ```
 
 Both folders are settings. The defaults are plain names; if your vault has its own scheme,

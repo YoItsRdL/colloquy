@@ -6,13 +6,18 @@
  *
  * One record per conversation, rewritten when the conversation grows, two half-accounts
  * of one thing are worse than one whole one.
+ *
+ * Filed by day, in the same shape as the conversations they describe. This used to shard by
+ * month and put the day in the filename, which is the arrangement paths.js already rejects
+ * for conversations: a prefix spends the first characters of every name saying what the
+ * folder says.
  */
+import { folderFor } from "./paths.js";
+
 const pad = (n) => String(n).padStart(2, "0");
 
 export const stampOf = (date) =>
   `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}`;
-
-export const logFolder = (date, root) => `${root}/${date.getFullYear()}/${pad(date.getMonth() + 1)}`;
 
 /**
  * Makes a folder and everything above it.
@@ -29,10 +34,10 @@ export async function ensureFolder(app, folder) {
   }
 }
 
-/** Named for the day and the conversation, so the record and its source are obviously a pair. */
+/** Named for the conversation, so the record and its source are obviously a pair. */
 export function recordPath(source, date, root) {
   const name = source.replace(/\.md$/, "").split("/").pop();
-  return `${logFolder(date, root)}/${pad(date.getDate())}-${name}.md`;
+  return `${folderFor(date, root)}/${name}.md`;
 }
 
 /**
@@ -45,8 +50,7 @@ export function recordPath(source, date, root) {
 export async function writeContext(app, { context, source, root }, now = new Date()) {
   if (!context) return null;
 
-  const folder = logFolder(now, root);
-  await ensureFolder(app, folder);
+  await ensureFolder(app, folderFor(now, root));
 
   const path = recordPath(source, now, root);
   const name = source.replace(/\.md$/, "").split("/").pop();

@@ -7,7 +7,7 @@
  */
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { writeContext, recentContext, recordPath, logFolder, stampOf } from "./src/context.js";
+import { writeContext, recentContext, recordPath, stampOf } from "./src/context.js";
 
 function fakeVault(seed = {}) {
   const files = new Map(Object.entries(seed));
@@ -34,14 +34,14 @@ const LOG = "60-log/conversations";
 const SOURCE = "00-inbox/2026/08/19/local-model-claude-limitations.md";
 const ACCOUNT = "We were weighing local models against Claude, mostly on cost.";
 
-test("records are filed by month, in the log rather than the knowledge base", () => {
-  assert.equal(logFolder(AUGUST_19, LOG), "60-log/conversations/2026/08");
+test("records are filed by day, in the log rather than the knowledge base", () => {
+  assert.equal(recordPath(SOURCE, AUGUST_19, LOG).startsWith("60-log/conversations/2026/08/19/"), true);
   assert.equal(stampOf(AUGUST_19), "2026-08-19");
 });
 
-test("a record is named for its day and its conversation", () => {
+test("a record is named for its conversation, under the day it happened", () => {
   assert.equal(recordPath(SOURCE, AUGUST_19, LOG),
-    "60-log/conversations/2026/08/19-local-model-claude-limitations.md");
+    "60-log/conversations/2026/08/19/local-model-claude-limitations.md");
 });
 
 test("what was noticed is written, with a link back to where it came from", async () => {
@@ -88,8 +88,8 @@ test("reading a conversation again replaces its record rather than adding anothe
 /** A record nothing ever reads back is a log with ambitions, not memory. */
 test("what has been noticed can be read back, most recent first", () => {
   const { app } = fakeVault({
-    "60-log/conversations/2026/08/18-older.md": "",
-    "60-log/conversations/2026/08/19-newer.md": "",
+    "60-log/conversations/2026/08/18/older.md": "",
+    "60-log/conversations/2026/08/19/newer.md": "",
     "10-notes/2026/08/a-note.md": "",
   });
   const found = recentContext(app, LOG);
@@ -99,6 +99,6 @@ test("what has been noticed can be read back, most recent first", () => {
 
 test("only so much is read back, however much has accumulated", () => {
   const seed = {};
-  for (let i = 0; i < 30; i++) seed[`60-log/conversations/2026/08/${i}-talk.md`] = "";
+  for (let i = 0; i < 30; i++) seed[`60-log/conversations/2026/08/${i}/talk.md`] = "";
   assert.equal(recentContext(fakeVault(seed).app, LOG).length, 12);
 });
