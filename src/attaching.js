@@ -5,9 +5,10 @@
  * list belongs to the panel and not to any one conversation: attaching a note and then
  * changing your mind about which conversation to ask should not lose it.
  */
-import { Menu } from "obsidian";
+import { Menu, Notice } from "obsidian";
 import { AttachPicker, readAttachment } from "./attach-picker.js";
 import { chooseFromDisk, bringIntoVault } from "./attach-disk.js";
+import { urlsIn, pageAt } from "./page.js";
 
 /** Redraws the row, with removal wired to the list it is drawn from. */
 export function showAttachments(view) {
@@ -71,6 +72,31 @@ export async function pasteAttachments(view, event) {
 
   for (const file of files) hold(view, await bringIntoVault(view.app, file));
   return true;
+}
+
+/**
+ * Reads any page linked to in the box, and holds it like anything else attached.
+ *
+ * Waits for the typing to stop. Fetched on every keystroke it would read a page for each
+ * half-typed address on the way to the real one, which is a request to a stranger's server
+ * for every character.
+ */
+export function noticeLinks(view, text) {
+  clearTimeout(view.reading);
+  view.reading = setTimeout(() => readLinks(view, text), 700);
+}
+
+async function readLinks(view, text) {
+  for (const url of urlsIn(text)) {
+    if (view.attachments.some((held) => held.path === url)) continue;
+    try {
+      hold(view, await pageAt(url));
+    } catch (err) {
+      // Named, and once. A link that cannot be read is worth saying so about, and worth
+      // saying so about quietly: the question can still be asked without it.
+      new Notice(`Could not read ${url}: ${err?.message ?? err}`, 8000);
+    }
+  }
 }
 
 /** Empties the row, after a question is sent with them, or when one is abandoned. */

@@ -86,6 +86,15 @@ export function asTurn(question, attachments = []) {
   };
 }
 
-/** How an attachment is written into the transcript, so the file records what was asked about. */
+/**
+ * How an attachment is written into the transcript, so the file records what was asked
+ * about.
+ *
+ * A page has an address rather than a place in the vault, so it is linked to as one. A
+ * wikilink to a page that was never a note is a link to nothing.
+ */
 export const asLinks = (attachments = []) =>
-  attachments.map((a) => (a.kind === "image" ? `![[${a.name}]]` : `[[${a.name}]]`)).join("\n");
+  attachments.map((a) => {
+    if (/^https?:\/\//.test(a.path ?? "")) return `[${a.name}](${a.path})`;
+    return a.kind === "image" ? `![[${a.name}]]` : `[[${a.name}]]`;
+  }).join("\n");

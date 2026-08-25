@@ -358,3 +358,20 @@ export function installGlobals() {
   globalThis.window.open = (url) => { opened.push(url); return null; };
   globalThis.activeWindow = globalThis.window;
 }
+
+/**
+ * Obsidian's own HTTP, which a plugin uses because `fetch` cannot cross an origin.
+ *
+ * Every request is recorded, and what comes back is whatever the test says: these are
+ * requests to somebody else's server, and a suite that makes them is a suite that fails
+ * when their site is down.
+ */
+export const requests = [];
+let answer = async () => ({ status: 200, text: "", headers: {} });
+export const answerWith = (fn) => { answer = fn; };
+
+export async function requestUrl(options) {
+  const asked = typeof options === "string" ? { url: options } : options;
+  requests.push(asked);
+  return answer(asked);
+}

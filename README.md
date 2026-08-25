@@ -58,6 +58,9 @@ and never leaves your machine except as the request you asked for.
 
 - **Ask:** type, press Enter. The answer streams in and the file is written as it goes.
 - **Stop:** Send becomes Stop while an answer arrives. What arrived is kept.
+- **Link:** put a URL in your question and the page is read and sent with it. A video gives
+  its title and description, not what it contains: that page is a script bundle, and no
+  amount of stripping tags gets a transcript out of it.
 - **Attach:** paste a screenshot straight into the box, or use the paperclip for a note or
   an image, from your vault or from your computer. Anything from outside the vault is
   copied in first, so the conversation links to something that is actually there.

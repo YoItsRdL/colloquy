@@ -5,6 +5,11 @@ Dates are release dates. Reasoning that outlived a single release lives in
 
 ## Unreleased
 
+- **A link in your question is read and sent with it.** No model can fetch anything, so
+  this does the fetching: title, address, description and whatever prose survives the
+  markup coming off. A video gives its title and description, not what it contains
+  (ADR-0014).
+
 - **Paste a screenshot straight into the box.** It is copied into your vault like anything
   else attached from outside it, so the conversation links to something that is really
   there. Pasted text is untouched.

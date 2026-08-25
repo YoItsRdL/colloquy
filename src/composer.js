@@ -10,7 +10,7 @@
  */
 import { setIcon } from "obsidian";
 
-export function createComposer(container, { onSend, onStop, onAttach, onPaste }) {
+export function createComposer(container, { onSend, onStop, onAttach, onPaste, onTyping }) {
   const el = container.createDiv({ cls: "colloquy-composer" });
 
   // Above the box, because an attachment is part of the question rather than a setting on
@@ -26,6 +26,10 @@ export function createComposer(container, { onSend, onStop, onAttach, onPaste })
   // A screenshot is on the clipboard before it is anywhere else, so this is where an
   // attachment most often starts.
   input.addEventListener("paste", (event) => onPaste?.(event));
+
+  // What is in the box can be worth reading before it is sent, which is how a link
+  // becomes something the question carries.
+  input.addEventListener("input", () => onTyping?.(input.value));
 
   input.addEventListener("keydown", (event) => {
     // Enter sends, Shift+Enter is a newline. The convention everywhere else that has a
