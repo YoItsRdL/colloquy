@@ -56,10 +56,7 @@ async function fillLibrary(tab, list, note, adapter, key) {
       .addExtraButton((button) =>
         button.setIcon("trash").setTooltip("Remove from this machine").onClick(async () => {
           if (!(await confirmRemoval(tab, model))) return;
-          await adapter.library.remove({ key, model: model.id });
-          new Notice(`Removed ${model.id}`);
-          await reselect(tab, model.id, installed);
-          tab.display();
+          await removeModel(tab, adapter, key, model, installed);
         }));
   }
 }
@@ -75,6 +72,48 @@ async function reselect(tab, removed, installed) {
   tab.plugin.settings.model = left?.id ?? null;
   await tab.plugin.save();
   tab.plugin.refreshPanel?.();
+}
+
+/**
+ * Removal, said truthfully.
+ *
+ * This used to announce "Removed X" the moment the call returned, and let a thrown
+ * error escape an async click handler, where nothing catches it and nothing is shown.
+ * A removal attempted while a download was in flight failed exactly that way: no
+ * message, no model gone, and 3.1 GB still on disk weeks later under the belief it had
+ * been freed. Silence read as success.
+ *
+ * So the server is asked again afterwards. Only a model that is actually absent from
+ * the second listing is reported as removed, and anything else says what happened.
+ */
+async function removeModel(tab, adapter, key, model, installed) {
+  try {
+    await adapter.library.remove({ key, model: model.id });
+  } catch (err) {
+    new Notice(`Could not remove ${model.id}. ${err?.message ?? err}`, 10000);
+    tab.display();
+    return;
+  }
+
+  // A 200 is the server's claim, not evidence. Verifying costs one cheap request and
+  // is the only thing that makes the message above trustworthy.
+  let after;
+  try {
+    after = await adapter.library.list({ key });
+  } catch {
+    // The listing failing says nothing about whether the delete worked, so say that.
+    new Notice(`Removed ${model.id}, but could not confirm — check the list.`, 8000);
+    tab.display();
+    return;
+  }
+
+  if (after.some((m) => m.id === model.id)) {
+    new Notice(`${model.id} is still installed. Nothing was freed.`, 10000);
+  } else {
+    new Notice(`Removed ${model.id}, freeing ${(model.bytes / 1e9).toFixed(1)} GB.`);
+    await reselect(tab, model.id, installed);
+  }
+  tab.display();
 }
 
 /** Asked first: this is gigabytes, and getting it back means downloading it again. */

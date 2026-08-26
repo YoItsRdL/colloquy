@@ -17,13 +17,28 @@ const model = (name, size, parameter_size, quantization_level) =>
   ({ name, size, details: { parameter_size, quantization_level } });
 
 /** Answers the endpoints the local provider actually calls, and refuses everything else. */
-function serving({ models = null, unreachable = false } = {}) {
+/**
+ * `deleteFails` makes the server refuse, which is what happens when one is attempted
+ * while a download holds the model. That case used to be invisible in the interface.
+ *
+ * A delete really does drop the model from the next listing, because the real server
+ * does. The stub used to answer 200 and keep serving it, which meant a verification
+ * step could not be written against it — and the absence of that step is what let a
+ * failed removal pass for a successful one.
+ */
+function serving({ models = null, unreachable = false, deleteFails = false } = {}) {
   const requests = [];
+  let served = models ?? [];
   globalThis.fetch = async (url, init) => {
     requests.push({ url: String(url), init });
     if (unreachable) throw new TypeError("Failed to fetch");
-    if (String(url).endsWith("/api/tags")) return { ok: true, json: async () => ({ models: models ?? [] }) };
-    if (String(url).endsWith("/api/delete")) return { ok: true, json: async () => ({}) };
+    if (String(url).endsWith("/api/tags")) return { ok: true, json: async () => ({ models: served }) };
+    if (String(url).endsWith("/api/delete")) {
+      if (deleteFails) return { ok: false, status: 500, text: async () => "model is in use" };
+      const gone = JSON.parse(init.body).model;
+      served = served.filter((m) => m.name !== gone);
+      return { ok: true, json: async () => ({}) };
+    }
     return { ok: false, status: 404, text: async () => "no" };
   };
   return requests;
@@ -234,6 +249,63 @@ test("removing the model in use moves the selection to one still installed", asy
 
   assert.equal(tab.plugin.settings.model, "gemma3:4b", "the one still there");
   assert.equal(tab.refreshed, 1, "and the panel is told, so its chip agrees");
+});
+
+/**
+ * The failure that cost 3.1 GB. A removal was attempted while a download held the
+ * model, the server refused, the thrown error escaped an async click handler where
+ * nothing catches it, and the interface said nothing at all. The model was believed
+ * gone for weeks. Anything other than an explicit failure here is a regression.
+ */
+test("a removal the server refuses says so, and does not claim the space back", async () => {
+  serving({
+    models: [model("gemma3:4b", 3e9, "4.3B", "Q4_K_M"), model("qwen3:4b", 2e9, "4.0B", "Q4_K_M")],
+    deleteFails: true,
+  });
+  modals.length = 0;
+  notices.length = 0;
+  const tab = screen({ keys: {}, model: "qwen3:4b" });
+  await settle();
+
+  row(tab, "gemma3:4b").find((e) => e.getAttr("data-icon") === "trash").onclick();
+  await settle();
+  Modal.last().contentEl.button("Remove").click();
+  await settle();
+
+  const said = notices.join(" ");
+  assert.match(said, /could not remove gemma3:4b/i, "it names what failed");
+  assert.doesNotMatch(said, /Removed gemma3:4b/, "and never reports it as removed");
+  assert.equal(tab.plugin.settings.model, "qwen3:4b", "the selection is untouched");
+  assert.ok(row(tab, "gemma3:4b"), "and the model is still listed, because it is still there");
+});
+
+/**
+ * A server can answer 200 and still have kept the model — a stale manifest, a delete
+ * that raced a pull. The listing afterwards is the only evidence, so it is checked.
+ */
+test("a delete that reports success but keeps the model is not reported as removed", async () => {
+  const requests = [];
+  globalThis.fetch = async (url, init) => {
+    requests.push(String(url));
+    if (String(url).endsWith("/api/tags")) {
+      return { ok: true, json: async () => ({ models: [model("gemma3:4b", 3e9, "4.3B", "Q4_K_M")] }) };
+    }
+    if (String(url).endsWith("/api/delete")) return { ok: true, json: async () => ({}) };
+    return { ok: false, status: 404, text: async () => "no" };
+  };
+  modals.length = 0;
+  notices.length = 0;
+  const tab = screen({ keys: {}, model: "gemma3:4b" });
+  await settle();
+
+  row(tab, "gemma3:4b").find((e) => e.getAttr("data-icon") === "trash").onclick();
+  await settle();
+  Modal.last().contentEl.button("Remove").click();
+  await settle();
+
+  const said = notices.join(" ");
+  assert.match(said, /still installed/i, "the listing is believed over the status code");
+  assert.doesNotMatch(said, /freeing/, "and no space is claimed back");
 });
 
 test("removing a model that was not selected leaves the selection alone", async () => {
