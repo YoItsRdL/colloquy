@@ -190,8 +190,11 @@
   font-style: italic;
 }
 
+/* Longhand rather than the `underline dotted` shorthand, which older Electron parses
+   only partially and can drop entirely, taking the underline with it. */
 .colloquy-view .colloquy-chip.is-fallback .colloquy-chip-label {
-  text-decoration: underline dotted;
+  text-decoration-line: underline;
+  text-decoration-style: dotted;
   text-underline-offset: 3px;
 }
 
@@ -262,95 +265,6 @@
    in. Only the last control is pushed over, so adding a third does not scatter them. */
 .colloquy-bar .colloquy-new:last-child { margin-left: auto; }
 
-
-/* --- Deciding what a conversation was worth (ADR-0005) ------------------------------- */
-
-/* One claim, what already exists near it, and three ways out. The proportions do the
-   arguing: the claim is the largest thing on screen and the neighbours are the smallest,
-   because the question is what this note asserts, not what it resembles. */
-.modal:has(.colloquy-review-claim) { max-width: 34rem; }
-
-.colloquy-review-count {
-  font-size: var(--font-ui-smaller);
-  color: var(--text-faint);
-  margin: 0 0 var(--size-4-2);
-  letter-spacing: 0.04em;
-}
-
-.colloquy-review-claim {
-  margin: 0 0 var(--size-4-2);
-  font-size: var(--font-ui-large);
-  line-height: 1.3;
-}
-
-.colloquy-review-body {
-  color: var(--text-muted);
-  line-height: var(--line-height-normal);
-}
-
-.colloquy-review-body > :first-child { margin-top: 0; }
-.colloquy-review-body > :last-child { margin-bottom: 0; }
-
-.colloquy-review-related {
-  margin-top: var(--size-4-5);
-  padding-top: var(--size-4-3);
-  border-top: 1px solid var(--background-modifier-border);
-}
-
-.colloquy-review-related > .setting-item-description {
-  margin: 0 0 var(--size-2-2);
-  font-size: var(--font-ui-smaller);
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-  color: var(--text-faint);
-}
-
-/* Merging is offered with the same weight as creating, per ADR-0005, so these are real
-   rows rather than a footnote, but quiet enough that the page has one obvious next step. */
-.colloquy-review-related .setting-item {
-  padding: var(--size-2-3) 0;
-  border: 0;
-}
-
-.colloquy-review-related .setting-item-name { font-size: var(--font-ui-small); }
-
-.colloquy-review-related .setting-item-description {
-  font-size: var(--font-ui-smaller);
-  color: var(--text-faint);
-}
-
-/* A fact the person would otherwise have no way to learn, so it is coloured as one. */
-.colloquy-warning { color: var(--text-warning); }
-
-/* How many claims are waiting. Absent at zero rather than showing it, the resting state
-   of this queue is empty, and a badge reading "0" makes the normal case look like a task. */
-.colloquy-waiting.is-waiting {
-  margin-left: var(--size-2-1);
-  padding: 0 var(--size-2-2);
-  border-radius: var(--radius-l);
-  background: var(--color-accent);
-  color: var(--text-on-accent);
-  font-size: var(--font-ui-smaller);
-  line-height: 1.5;
-}
-
-/* What the review actually produced. Links, not paths. The question after deciding is
-   "where is it", and the answer should be one click rather than a search. */
-.colloquy-review-landed {
-  margin-top: var(--size-4-3);
-  padding-top: var(--size-4-2);
-  border-top: 1px solid var(--background-modifier-border);
-}
-
-.colloquy-review-landed > .setting-item-description {
-  margin: 0 0 var(--size-2-1);
-  font-size: var(--font-ui-smaller);
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-  color: var(--text-faint);
-}
-
-.colloquy-review-landed ul { margin: 0; padding-left: var(--size-4-4); }
 
 /* When a conversation last moved, under its name in the picker. Quiet, because the name
    is what you are scanning for and the date only settles a tie. */

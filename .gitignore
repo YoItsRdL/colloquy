@@ -2,7 +2,12 @@ node_modules/
 
 # The build output. Committed only on a release, as a release asset: a bundle in every
 # commit makes every diff twice as long and the second half unreadable.
-main.js
+#
+# Anchored to the root. Written as `main.js` it matched every file of that name at any
+# depth, which silently excluded src/main.js, the plugin's own entry point, from the
+# repository. Everything still built here because the file was on disk; a clean clone
+# could not build at all, and nobody noticed until the directory's review tried.
+/main.js
 
 # Whatever vault this is being tested against.
 test-vault/
