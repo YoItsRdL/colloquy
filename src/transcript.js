@@ -5,6 +5,7 @@
  * sitting and the next, which is what lets a conversation edited by hand still resume.
  */
 import { DEFAULT_FOLDERS } from "./folders.js";
+import { markdownUnder } from "./under.js";
 
 /** `**me** _(13:01)_`, who spoke, and the line the turn starts after. */
 const SPEAKER = /^\*\*(.+?)\*\* _\(\d{1,2}:\d{2}\)_$/;
@@ -44,7 +45,6 @@ export function readTranscript(text) {
 
 /** The conversations you could pick up again, most recent first. */
 export function conversationsIn(app, folder = DEFAULT_FOLDERS.conversations) {
-  return app.vault.getMarkdownFiles()
-    .filter((file) => file.path.startsWith(`${folder}/`))
+  return markdownUnder(app, folder)
     .sort((a, b) => (b.stat?.mtime ?? 0) - (a.stat?.mtime ?? 0));
 }

@@ -1,0 +1,53 @@
+# Builds the release assets on GitHub and signs a statement of where they came from.
+#
+# Obsidian's automated review asks for artifact attestations, and the reason is worth
+# stating plainly: main.js is a bundle. Nobody installing this plugin reads it, and until
+# now the only evidence it was built from this source was that its author said so. An
+# attestation is GitHub testifying that this commit produced this file, which is checkable
+# without trusting either of us.
+#
+# Triggered by publishing a release rather than by the tag, because the notes are written
+# by hand and the tag is pushed first. Assets are replaced rather than added, so a release
+# published with hand-built files ends up carrying the attested ones instead.
+name: Release
+
+on:
+  release:
+    types: [published]
+
+permissions:
+  contents: write        # replace the release assets
+  id-token: write        # prove to the attestation service which workflow this is
+  attestations: write    # record the attestation
+
+jobs:
+  attest:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.release.tag_name }}
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - run: npm ci
+
+      # The same gate that runs before a commit. A release that cannot pass it should not
+      # be signed for.
+      - run: node scripts/gate.mjs
+
+      - uses: actions/attest-build-provenance@v2
+        with:
+          subject-path: |
+            main.js
+            styles.css
+            manifest.json
+
+      - name: Replace the release assets with the attested build
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ github.event.release.tag_name }}
+        run: gh release upload "$TAG" main.js manifest.json styles.css --clobber

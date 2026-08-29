@@ -8,6 +8,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { recall, attachMemory } from "./src/memory.js";
+import { folderAware } from "./test/obsidian.js";
 
 const record = (lately, about = "") => [
   "---", "type: context", "author: agent", "---", "",
@@ -22,6 +23,7 @@ function fakeVault(seed = {}) {
   return {
     vault: {
       getMarkdownFiles: () => [...files.keys()].map(fileFor),
+      getAbstractFileByPath: folderAware(files, fileFor),
       read: async (file) => files.get(file.path) ?? "",
     },
   };

@@ -375,3 +375,29 @@ export async function requestUrl(options) {
   requests.push(asked);
   return answer(asked);
 }
+
+/**
+ * A `getAbstractFileByPath` that knows about folders as well as files.
+ *
+ * The fakes used to answer only for exact file paths, because everything under test
+ * reached its files through `getMarkdownFiles()`. Asking a folder for its children
+ * instead (src/under.js) meant a vault with no folders in it returned nothing, and
+ * eighteen tests failed while the code was correct.
+ *
+ * Folders are synthesised from the paths present rather than declared, so a test still
+ * describes its vault as a flat map of path to contents and nothing else has to change.
+ */
+export function folderAware(files, fileFor = (p) => ({ path: p })) {
+  const asFile = (p) => {
+    const file = fileFor(p);
+    // Real TFiles carry this and `markdownUnder` selects on it.
+    return file.extension ? file : { ...file, extension: p.split(".").pop() };
+  };
+
+  return (path) => {
+    if (files.has(path)) return asFile(path);
+    const prefix = `${path.replace(/\/$/, "")}/`;
+    const children = [...files.keys()].filter((p) => p.startsWith(prefix)).map(asFile);
+    return children.length ? { path, children } : null;
+  };
+}

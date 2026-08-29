@@ -13,6 +13,7 @@
  * folder says.
  */
 import { folderFor } from "./paths.js";
+import { markdownUnder } from "./under.js";
 
 const pad = (n) => String(n).padStart(2, "0");
 
@@ -128,8 +129,7 @@ export async function writeContext(app, { context, source, root }, now = new Dat
  * back is just a log with ambitions.
  */
 export function recentContext(app, root, limit = 12) {
-  return app.vault.getMarkdownFiles()
-    .filter((file) => file.path.startsWith(`${root}/`))
+  return markdownUnder(app, root)
     .sort((a, b) => (b.stat?.mtime ?? 0) - (a.stat?.mtime ?? 0))
     .slice(0, limit);
 }

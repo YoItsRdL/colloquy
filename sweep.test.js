@@ -9,6 +9,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { createSweep, isFree, wasRead } from "./src/sweep.js";
+import { folderAware } from "./test/obsidian.js";
 
 const FOLDERS = { conversations: "00-inbox", context: "60-log/conversations" };
 const CONVERSATION = "00-inbox/2026/08/19/trains.md";
@@ -27,7 +28,7 @@ function harness({ reply = good, keyKind = "url" } = {}) {
 
   const app = {
     vault: {
-      getAbstractFileByPath: (p) => (files.has(p) ? fileFor(p) : null),
+      getAbstractFileByPath: folderAware(files, fileFor),
       getMarkdownFiles: () => [...files.keys()].map(fileFor),
       createFolder: async () => {},
       create: async (p, text) => { files.set(p, text); return fileFor(p); },

@@ -9,6 +9,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { ConversationView } from "./src/view.js";
+import { folderAware } from "./test/obsidian.js";
 
 const FOLDERS = { conversations: "00-inbox", context: "60-log/conversations" };
 

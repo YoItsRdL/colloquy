@@ -10,6 +10,7 @@ import assert from "node:assert/strict";
 import { readTranscript, conversationsIn } from "./src/transcript.js";
 import { DEFAULT_FOLDERS } from "./src/folders.js";
 import { appendTurn } from "./src/vault.js";
+import { folderAware } from "./test/obsidian.js";
 
 const HEADER = [
   "---",
@@ -104,9 +105,16 @@ test("bold text inside an answer is not read as a new speaker", async () => {
   assert.equal(readTranscript(text).length, 2);
 });
 
-const vaultOf = (...paths) => ({
-  vault: { getMarkdownFiles: () => paths.map(([path, mtime]) => ({ path, stat: { mtime } })) },
-});
+const vaultOf = (...paths) => {
+  const files = new Map(paths.map(([path]) => [path, ""]));
+  const mtimes = new Map(paths);
+  return {
+    vault: {
+      getMarkdownFiles: () => paths.map(([path, mtime]) => ({ path, stat: { mtime } })),
+      getAbstractFileByPath: folderAware(files, (p) => ({ path: p, stat: { mtime: mtimes.get(p) } })),
+    },
+  };
+};
 
 test("conversations are offered most recently touched first", () => {
   const app = vaultOf(

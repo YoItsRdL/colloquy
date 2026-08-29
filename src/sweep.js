@@ -7,6 +7,7 @@
 import { observeConversation } from "./observe.js";
 import { writeContext } from "./context.js";
 import { foldersOf } from "./folders.js";
+import { markdownUnder } from "./under.js";
 
 /** Long enough that a pause to think is not a conversation ending. */
 const IDLE_MS = 3 * 60 * 1000;
@@ -25,8 +26,7 @@ export const wasRead = (app, file) =>
   Boolean(app.metadataCache.getFileCache(file)?.frontmatter?.noticed);
 
 /** Conversations nobody has read yet, oldest first. */
-export const unread = (app, { conversations, context }) => app.vault.getMarkdownFiles()
-  .filter((file) => file.path.startsWith(`${conversations}/`))
+export const unread = (app, { conversations, context }) => markdownUnder(app, conversations)
   // The two folders default to one inside the other, so without this the sweep would read
   // its own accounts and write accounts of those.
   .filter((file) => !file.path.startsWith(`${context}/`))

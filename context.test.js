@@ -8,6 +8,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { writeContext, recentContext, recordPath, stampOf } from "./src/context.js";
+import { folderAware } from "./test/obsidian.js";
 
 function fakeVault(seed = {}) {
   const files = new Map(Object.entries(seed));
@@ -16,7 +17,7 @@ function fakeVault(seed = {}) {
 
   const app = {
     vault: {
-      getAbstractFileByPath: (p) => (files.has(p) ? fileFor(p) : (folders.has(p) ? { path: p } : null)),
+      getAbstractFileByPath: (p) => folderAware(files, fileFor)(p) ?? (folders.has(p) ? { path: p, children: [] } : null),
       getMarkdownFiles: () => [...files.keys()].map(fileFor),
       createFolder: async (p) => { if (folders.has(p)) throw new Error("exists"); folders.add(p); },
       create: async (p, text) => { files.set(p, text); return fileFor(p); },
