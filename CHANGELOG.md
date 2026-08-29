@@ -3,6 +3,35 @@
 Dates are release dates. Reasoning that outlived a single release lives in
 [`decisions/`](decisions/) instead.
 
+## 1.0.4 (2026-08-29)
+
+Everything here came out of the community directory's review of 1.0.3, and the largest of
+it was invisible from inside the project.
+
+- **It no longer reads the path of every note you own.** Three things that wanted the
+  contents of one folder were getting there by listing every markdown file in the vault
+  and discarding the rest. Same answer, far more reach. They ask the folder for its
+  children now. The attachment picker still sees everything, because offering you any file
+  in the vault is what it is for, and it only looks when you open it.
+
+- **The plugin's own entry point had never been committed.** `.gitignore` said `main.js`,
+  meaning any file of that name at any depth, which quietly included `src/main.js`. It
+  built here because the file was on disk, so nothing ever complained. Anyone cloning this
+  repository got something that could not build at all, and had since the first commit.
+  Now verified against a fresh clone rather than by reading the pattern.
+
+- **Eighty-eight lines of stylesheet for an interface that no longer exists.** The review
+  modal went when ADR-0007 reversed ADR-0005; its CSS stayed, and shipped to everyone.
+  Gone, which takes a flagged `:has` selector with it.
+
+- **An underline that could vanish.** `text-decoration: underline dotted` is a shorthand
+  older Electron parses only partially, dropping the underline it was there to draw.
+  Written longhand.
+
+Under the surface: releases are now built on GitHub and carry an attestation, so the
+bundle you install can be checked against the source it claims to come from rather than
+taken on trust. The description was two characters over the directory's limit.
+
 ## 1.0.3 (2026-08-26)
 
 The memory stopped repeating things that were never true, and started keeping the things
