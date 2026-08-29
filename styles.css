@@ -190,12 +190,13 @@
   font-style: italic;
 }
 
-/* Longhand rather than the `underline dotted` shorthand, which older Electron parses
-   only partially and can drop entirely, taking the underline with it. */
+/* A border rather than a decorated underline. `underline dotted` is a shorthand older
+   Electron parses only partially, and the longhand that replaced it is flagged by the
+   directory's own CSS lint for the same reason. A border draws the same dotted rule,
+   sits at a controllable distance, and has been supported since long before any of this. */
 .colloquy-view .colloquy-chip.is-fallback .colloquy-chip-label {
-  text-decoration-line: underline;
-  text-decoration-style: dotted;
-  text-underline-offset: 3px;
+  border-bottom: 1px dotted currentColor;
+  padding-bottom: 2px;
 }
 
 /* Disabled still reports a fact, so it keeps its colour and only loses the affordance. */
