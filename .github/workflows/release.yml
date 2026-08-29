@@ -14,6 +14,12 @@ name: Release
 on:
   release:
     types: [published]
+  # So a release whose run failed can be attested without publishing it again.
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: The release tag to build and attest
+        required: true
 
 permissions:
   contents: write        # replace the release assets
@@ -26,11 +32,14 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: ${{ github.event.release.tag_name }}
+          ref: ${{ github.event.release.tag_name || inputs.tag }}
 
+      # 24, not 20. The test harness resolves "obsidian" to a stub through
+      # `registerHooks` from node:module, which arrived in 22.15. On 20 the import throws
+      # before a single test runs, which is how the first run of this workflow failed.
       - uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 24
           cache: npm
 
       - run: npm ci
@@ -49,5 +58,5 @@ jobs:
       - name: Replace the release assets with the attested build
         env:
           GH_TOKEN: ${{ github.token }}
-          TAG: ${{ github.event.release.tag_name }}
+          TAG: ${{ github.event.release.tag_name || inputs.tag }}
         run: gh release upload "$TAG" main.js manifest.json styles.css --clobber
