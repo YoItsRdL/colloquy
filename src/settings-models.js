@@ -102,7 +102,7 @@ async function removeModel(tab, adapter, key, model, installed) {
     after = await adapter.library.list({ key });
   } catch {
     // The listing failing says nothing about whether the delete worked, so say that.
-    new Notice(`Removed ${model.id}, but could not confirm — check the list.`, 8000);
+    new Notice(`Removed ${model.id}, but could not confirm. Check the list.`, 8000);
     tab.display();
     return;
   }

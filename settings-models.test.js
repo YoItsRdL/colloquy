@@ -23,7 +23,7 @@ const model = (name, size, parameter_size, quantization_level) =>
  *
  * A delete really does drop the model from the next listing, because the real server
  * does. The stub used to answer 200 and keep serving it, which meant a verification
- * step could not be written against it — and the absence of that step is what let a
+ * step could not be written against it, and the absence of that step is what let a
  * failed removal pass for a successful one.
  */
 function serving({ models = null, unreachable = false, deleteFails = false } = {}) {
@@ -280,7 +280,7 @@ test("a removal the server refuses says so, and does not claim the space back", 
 });
 
 /**
- * A server can answer 200 and still have kept the model — a stale manifest, a delete
+ * A server can answer 200 and still have kept the model: a stale manifest, a delete
  * that raced a pull. The listing afterwards is the only evidence, so it is checked.
  */
 test("a delete that reports success but keeps the model is not reported as removed", async () => {

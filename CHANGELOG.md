@@ -10,15 +10,15 @@ worth keeping. Everything else here is smaller than that.
 
 - **It no longer remembers what the model said.** A question about graphics cards drew an
   answer naming a card this machine does not have. That answer was in the transcript, the
-  transcript was read, and a record was filed saying we owned it — then handed to the next
-  conversation as background, agreed with, and summarised again. Four of twelve records
+  transcript was read, and a record was filed saying we owned it. That record was handed to
+  the next conversation as background, agreed with, and summarised again. Four of twelve
   carried it. The observer now reads **your half of the conversation only**, so a claim the
   model invented can no longer become something the plugin believes about you (ADR-0013).
 
 - **A record now has two halves, and the older one is what lasts.** What you were doing on
   a Tuesday is worth a week; what you work under is worth years. Both used to go in one
-  paragraph, and recall spent its whole budget on whichever conversations were most recent
-  — so the memory got *worse* the longer you used it. A year in, it would know which
+  paragraph, and recall spent its whole budget on whichever conversations were most recent,
+  so the memory got *worse* the longer you used it. A year in, it would know which
   graphics card was priced on a Tuesday and nothing about the person who priced it. The two
   are written under their own headings now, and the durable half is gathered from far
   further back.
@@ -40,7 +40,7 @@ worth keeping. Everything else here is smaller than that.
   into a row that had been thrown away.
 
 - **A removal that fails now says so.** It announced "Removed" the moment the call
-  returned, and let an error escape where nothing catches it — so a removal refused because
+  returned, and let an error escape where nothing catches it, so a removal refused because
   a download held the model looked exactly like one that worked, and 3.1 GB stayed on disk
   under the belief it was freed. The server is now asked again afterwards, and only a model
   actually gone is reported as gone.

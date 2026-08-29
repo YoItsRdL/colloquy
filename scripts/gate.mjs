@@ -104,6 +104,26 @@ const leaked = [...sources(join(ROOT, "src")), ...readdirSync(ROOT).filter((f) =
   .map((file) => file.slice(ROOT.length + 1));
 report("no key has been committed", leaked.length === 0, leaked.join("\n        "));
 
+// ── no em dashes ─────────────────────────────────────────────────────────────────
+// 313 of them were replaced by hand in one pass. Six came back within three days, in
+// prose written for the release that would carry the fix. A rule kept by remembering is
+// a rule already broken, so it is checked here instead.
+//
+// Two exemptions, both literal rather than stylistic: a regex in title.js matches a dash
+// a model may put in front of a title it suggests, and the changelog quotes a dash the
+// interface itself displayed. Neither is prose, and neither can be rewritten.
+const DASH_EXEMPT = new Set(["src/title.js", "CHANGELOG.md"]);
+const prose = [
+  ...sources(join(ROOT, "src")),
+  ...readdirSync(ROOT).filter((f) => f.endsWith(".test.js") || f.endsWith(".md")).map((f) => join(ROOT, f)),
+  ...sources(join(ROOT, "decisions")),
+];
+const dashed = prose
+  .map((file) => file.slice(ROOT.length + 1).split("\\").join("/"))
+  .filter((rel) => !DASH_EXEMPT.has(rel))
+  .filter((rel) => readFileSync(join(ROOT, rel), "utf8").includes("\u2014"));
+report("no em dashes", dashed.length === 0, dashed.join("\n        "));
+
 // ── the bundle still builds ──────────────────────────────────────────────────────
 try {
   run("node", [join(ROOT, "build.mjs")]);
