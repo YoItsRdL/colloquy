@@ -5,11 +5,9 @@ here is real, but the conclusion was wrong: it made key entry
 impossible on mobile, which is the platform ADR-0001 chose a plugin to reach. Kept rather
 than deleted, because reasoning that turned out wrong is worth being able to read.
 **Date:** 2026-08-18
-**Carries forward:** the gateway's
-ADR-0003 of the gateway unchanged in
-substance, and retires its
-ADR-0008 of the gateway, whose
-settings screen existed because a server could not read a file nobody had handed it.
+**Carries forward:** the gateway's ADR-0003 unchanged in substance, and retires its
+ADR-0008, whose settings screen existed because a server could not read a file nobody
+had handed it.
 
 ## Context
 

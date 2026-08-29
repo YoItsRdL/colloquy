@@ -3,17 +3,14 @@
 **Status:** Accepted
 **Date:** 2026-08-18
 
-> The gateway's own ADRs are referenced below by number and are no longer linkable: that
-> directory was deleted in TKT-0301. They are in git history, at the last commit that
-> contained the server's own decision records.
-**Supersedes:** the gateway's architecture entirely. Its
-ADR-0001 of the gateway (provider seam),
-ADR-0004 of the gateway
-(streaming), ADR-0005 of the gateway
-(model listing), ADR-0006 of the gateway
-(fallback) and ADR-0007 of the gateway
-(consent) are carried forward on their own merits. Its TKT-0501 (LAN auth), TKT-0502
-(request limits) and the unmerged Google sign-in are retired.
+> The gateway's own ADRs are referenced below by number and are not linkable: that
+> directory went with the server when it was deleted. They survive in git history, at the
+> last commit that contained the server's own decision records.
+
+**Supersedes:** the gateway's architecture entirely. Its ADR-0001 (provider seam),
+ADR-0004 (streaming), ADR-0005 (model listing), ADR-0006 (fallback) and ADR-0007
+(consent) are carried forward on their own merits. Its LAN authentication, request
+limits and unmerged Google sign-in are retired.
 
 ## Context
 

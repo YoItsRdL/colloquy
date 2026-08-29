@@ -2,8 +2,7 @@
 
 **Status:** Accepted
 **Date:** 2026-08-18
-**Amends:** the gateway's ADR-0002 of the gateway,
-which forbade dependencies of any kind.
+**Amends:** the gateway's ADR-0002, which forbade dependencies of any kind.
 
 ## Context
 
