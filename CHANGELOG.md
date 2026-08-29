@@ -3,7 +3,47 @@
 Dates are release dates. Reasoning that outlived a single release lives in
 [`decisions/`](decisions/) instead.
 
-## Unreleased
+## 1.0.3 (2026-08-26)
+
+The memory stopped repeating things that were never true, and started keeping the things
+worth keeping. Everything else here is smaller than that.
+
+- **It no longer remembers what the model said.** A question about graphics cards drew an
+  answer naming a card this machine does not have. That answer was in the transcript, the
+  transcript was read, and a record was filed saying we owned it — then handed to the next
+  conversation as background, agreed with, and summarised again. Four of twelve records
+  carried it. The observer now reads **your half of the conversation only**, so a claim the
+  model invented can no longer become something the plugin believes about you (ADR-0013).
+
+- **A record now has two halves, and the older one is what lasts.** What you were doing on
+  a Tuesday is worth a week; what you work under is worth years. Both used to go in one
+  paragraph, and recall spent its whole budget on whichever conversations were most recent
+  — so the memory got *worse* the longer you used it. A year in, it would know which
+  graphics card was priced on a Tuesday and nothing about the person who priced it. The two
+  are written under their own headings now, and the durable half is gathered from far
+  further back.
+
+- **A conversation read twice no longer leaves two records.** The record was filed under the
+  day it was written rather than the day of the conversation it describes, so re-reading an
+  older conversation filed a second copy beside the first. Records are also stored by day
+  now, matching the conversations themselves.
+
+- **Nothing on screen that cannot be used.** On a phone with no key, the panel showed "No
+  provider", "—" and "Not written yet" under a bright Send button that could not send.
+  Every one of those was honest and none of them helped. Until there is something to answer
+  with, the thread and the composer stand down and what remains is one sentence saying what
+  is missing and one button that fixes it.
+
+- **Removing a local model no longer breaks the two things beside it.** The removed model
+  stayed selected, so every question afterwards failed at the provider with a 404 for a
+  model nobody had; a download running at the time lost its progress display and reported
+  into a row that had been thrown away.
+
+- **A removal that fails now says so.** It announced "Removed" the moment the call
+  returned, and let an error escape where nothing catches it — so a removal refused because
+  a download held the model looked exactly like one that worked, and 3.1 GB stayed on disk
+  under the belief it was freed. The server is now asked again afterwards, and only a model
+  actually gone is reported as gone.
 
 - **A link in your question is read and sent with it.** No model can fetch anything, so
   this does the fetching: title, address, description and whatever prose survives the
@@ -22,6 +62,9 @@ Dates are release dates. Reasoning that outlived a single release lives in
   advice that could not be taken on that device. It now says no key is set, and names the
   screen to set one on. An address typed in by hand (Ollama on your desktop, reached over
   your network) works exactly as before (ADR-0012).
+
+Under the surface: the em dash is gone from every line of prose the plugin shows you, and
+the file picker's one inline style moved into the stylesheet, where a theme can reach it.
 
 ## 1.0.2 (2026-08-23)
 

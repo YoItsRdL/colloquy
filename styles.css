@@ -655,3 +655,8 @@
    filename beside it absorbing the slack, which stopped being true the moment that moved
    to a line of its own, leaving Send stranded mid-row next to the chips. */
 .colloquy-view .colloquy-send { margin-left: auto; }
+
+/* The file picker is a real <input type="file"> that must exist in the document to be
+   clickable, and must never be seen. It lived on an inline style until submission, where
+   a style set from JavaScript is something a theme cannot override. */
+.colloquy-hidden-input { display: none; }

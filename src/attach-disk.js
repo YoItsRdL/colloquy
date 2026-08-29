@@ -27,7 +27,7 @@ function base64Of(buffer) {
  */
 export function chooseFromDisk(app, onPicked) {
   const input = createEl("input", { attr: { type: "file", multiple: true, accept: ".png,.jpg,.jpeg,.gif,.webp,.md,.txt,.csv,.json,.yaml,.yml,.js,.ts,.py,.html,.css" } });
-  input.style.display = "none";
+  input.addClass("colloquy-hidden-input");
   activeDocument.body.appendChild(input);
 
   input.onchange = async () => {
