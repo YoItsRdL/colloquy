@@ -22,6 +22,7 @@ entire feature was ripped out than from any description of what remains.
 | [0012](0012-a-phone-has-no-localhost.md) | A phone has no localhost | Accepted |
 | [0013](0013-only-our-half-is-read-back.md) | Only our half is read back | Accepted |
 | [0014](0014-a-link-is-read-before-the-question-is-sent.md) | A link is read before the question is sent | Accepted |
+| [0015](0015-preferences-survive-a-clone.md) | The settings that are not secret survive a clone | Accepted |
 
 ## The two reversals, in short
 

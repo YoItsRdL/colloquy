@@ -14,13 +14,19 @@ import { all as allAdapters } from "./providers/index.js";
 import { ConversationView, VIEW_TYPE } from "./view.js";
 import { SettingsTab, DEFAULTS } from "./settings.js";
 import { createSweep } from "./sweep.js";
+import { readShared, writeShared } from "./preferences.js";
 
 /** Long enough that opening the vault never waits on a model loading into VRAM. */
 const CATCH_UP_DELAY_MS = 30 * 1000;
 
 export default class ColloquyPlugin extends Plugin {
   async onload() {
-    this.settings = Object.assign({}, DEFAULTS, await this.loadData());
+    // Three layers, and the order is the point: the store is the live local copy and wins
+    // wherever it exists, the mirror answers for a vault that has one but no store yet
+    // (a fresh clone), and the defaults answer for a vault that has neither.
+    this.preferences = `${this.manifest.dir}/preferences.json`;
+    const shared = await readShared(this.app.vault.adapter, this.preferences);
+    this.settings = Object.assign({}, DEFAULTS, shared, await this.loadData());
 
     this.registerView(VIEW_TYPE, (leaf) => new ConversationView(leaf, this));
     this.addRibbonIcon("message-square", "Colloquy", () => this.open());
@@ -82,9 +88,15 @@ export default class ColloquyPlugin extends Plugin {
     for (const leaf of this.app.workspace.getLeavesOfType(VIEW_TYPE)) leaf.view?.refresh?.();
   }
 
-  /** Preferences only, never a key (ADR-0003). */
+  /**
+   * The store, then the mirror beside it (ADR-0004, ADR-0015).
+   *
+   * Both every time, so they cannot drift. The mirror carries no key and is allowed to
+   * fail silently; the store is the one that matters and is awaited first.
+   */
   async save() {
     await this.saveData(this.settings);
+    await writeShared(this.app.vault.adapter, this.preferences, this.settings);
   }
 
   /**
