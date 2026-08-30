@@ -151,17 +151,46 @@ test("what the model said is not read back, only what we said", async () => {
 });
 
 test("a conversation we never spoke in has nothing of ours to record", async () => {
-  let saw;
-  const spy = { model: "gemma3:4b", key: "k", provider: { complete: async (o) => { saw = o; return said("") } } };
-  await observeConversation(spy, "notes somebody pasted in, with no turns in them");
+  let asked = false;
+  const spy = { model: "gemma3:4b", key: "k", provider: { complete: async () => { asked = true; return said("") } } };
+  const { context, why } = await observeConversation(spy, "notes somebody pasted in, with no turns in them");
 
-  assert.match(saw.messages[0].text, /first person/i, "still asked");
-  assert.ok(!saw.messages[0].text.includes("somebody pasted"), "but given nothing to work from");
+  assert.equal(asked, false, "there is nothing to ask about, so nothing is asked");
+  assert.deepEqual(context, { lately: "", about: "" }, "looked, found nothing");
+  assert.equal(why, null, "which is an answer, not a failure to get one");
+});
+
+/**
+ * The fabrication this floor exists for. Asked to write two to four sentences about
+ * "hello", gemma3:4b wrote two to four sentences: it invented a project, an approach and a
+ * decision, and that account was handed to later conversations as background on somebody
+ * who had said nothing. The prompt already allowed an empty reply and it was never taken.
+ */
+test("a greeting is never sent to be summarised", async () => {
+  let asked = false;
+  const invents = async () => { asked = true; return said("We were refining the initial parameters for the project.") };
+  const spy = { model: "gemma3:4b", key: "k", provider: { complete: invents } };
+
+  const greeting = "**me** _(21:19)_\n\nhello\n\n**me** _(21:20)_\n\nwhat do you know about me?\n";
+  const { context, why } = await observeConversation(spy, greeting);
+
+  assert.equal(asked, false);
+  assert.deepEqual(context, { lately: "", about: "" });
+  assert.equal(why, null, "marked read, so the same greeting is not re-read for ever");
+});
+
+test("a short real question is still worth an account", async () => {
+  let asked = false;
+  const spy = { model: "gemma3:4b", key: "k", provider: { complete: async () => { asked = true; return said(GOOD) } } };
+  await observeConversation(spy, TRANSCRIPT);
+
+  assert.equal(asked, true, "the floor separates greetings from short questions, not from short conversations");
 });
 
 test("a provider failure is raised, never recorded as an uneventful conversation", async () => {
-  await assert.rejects(() => observeConversation(model(new Error("ollama is not running")), "text"), /not running/);
-  await assert.rejects(() => observeConversation({}, "text"), /no model is configured/);
+  // A real transcript, because a greeting never reaches the provider at all.
+  await assert.rejects(() => observeConversation(model(new Error("ollama is not running")), TRANSCRIPT), /not running/);
+  await assert.rejects(() => observeConversation({}, TRANSCRIPT), /no model is configured/);
 });
 
 /**

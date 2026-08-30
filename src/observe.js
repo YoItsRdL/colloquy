@@ -32,6 +32,28 @@ function oursIn(raw) {
  */
 const MAX_WORDS = 220;
 
+/**
+ * Below this our half is a greeting, and a greeting is not a conversation.
+ *
+ * The rule the prompt could not enforce. Asked to write two to four sentences about
+ * "hello", a 4B model writes two to four sentences: one such exchange became "we were
+ * attempting to refine the initial parameters for the project, settling on a more
+ * iterative approach through rapid prototyping", and that account was then handed to
+ * later conversations as background on somebody who had said nothing at all. The escape
+ * hatch was in the prompt the whole time and never taken, because "reply empty" competes
+ * with "write two to four sentences" and loses.
+ *
+ * So the question is not asked. Eight is measured rather than chosen, and the measurement
+ * is why it is this tight: across a vault of twenty conversations every greeting ran to
+ * seven words or fewer and every real exchange to eight or more, with nothing in between.
+ * A looser floor would start throwing away the short real ones, which is the mistake this
+ * file has made before and the reason MAX_WORDS above is 220 rather than 120.
+ */
+const MIN_WORDS = 8;
+
+/** Whether our half of a conversation has enough in it to be worth an account. */
+export const worthReading = (ours) => String(ours ?? "").split(/\s+/).filter(Boolean).length >= MIN_WORDS;
+
 /** A record that never says "we", "you" or "our" is writing about strangers. */
 const OURS = /\b(we|we're|we've|our|us|you|you're|your)\b/i;
 
@@ -50,8 +72,15 @@ const BEFORE = [
   "You are recording what a conversation says about the people in it, for a system that is",
   "learning about them over time.",
   "",
-  "Write two to four sentences in the first person plural (we, us, our, you) as somebody",
-  "who was there. Never write 'the conversation', 'the user' or 'this discussion'.",
+  // Said first, and as the ordinary outcome rather than a permission. Buried at the end as
+  // one line against "write two to four sentences", it was never once taken: a small model
+  // asked for sentences produces sentences, and invents the conversation to put in them.
+  "Most conversations say nothing about the people in them. That is the usual answer and a",
+  "good one. Write only what this conversation actually shows. If it shows nothing, if it is",
+  "a greeting, a test, or too short to tell, reply {\"lately\":\"\",\"about\":\"\"} and stop.",
+  "",
+  "Otherwise write two to four sentences in the first person plural (we, us, our, you) as",
+  "somebody who was there. Never write 'the conversation', 'the user' or 'this discussion'.",
   "",
   "Two parts, and they are different in kind:",
   "",
@@ -70,7 +99,7 @@ const BEFORE = [
   "transcript, and may be wrong.",
   "",
   "Reply as JSON and nothing else, in the form {\"lately\":\"...\",\"about\":\"...\"}.",
-  "If the conversation says nothing about us, reply {\"lately\":\"\",\"about\":\"\"}.",
+  "Never invent a subject, a project or a decision that is not in what follows.",
   "",
   "The conversation follows.",
   "",
@@ -142,10 +171,16 @@ export const readContext = (raw) => inspect(raw).context;
  */
 export async function observeConversation(candidate, conversation) {
   if (!candidate?.provider?.complete) throw new Error("no model is configured to read this");
+
+  // Two empty strings rather than null: it was looked at, and there was nothing in it. A
+  // null would send the same greeting back round on every sweep, for ever.
+  const ours = oursIn(conversation);
+  if (!worthReading(ours)) return { context: { lately: "", about: "" }, why: null };
+
   const reply = await candidate.provider.complete({
     model: candidate.model,
     key: candidate.key,
-    messages: [{ role: "user", text: `${BEFORE}\n${oursIn(conversation).slice(0, 6000)}${AFTER}` }],
+    messages: [{ role: "user", text: `${BEFORE}\n${ours.slice(0, 6000)}${AFTER}` }],
   });
   return inspect(reply);
 }

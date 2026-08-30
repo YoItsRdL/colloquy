@@ -13,6 +13,19 @@ import { folderAware } from "./test/obsidian.js";
 
 const FOLDERS = { conversations: "00-inbox", context: "60-log/conversations" };
 const CONVERSATION = "00-inbox/2026/08/19/trains.md";
+/**
+ * A real transcript rather than a line of prose. The sweep reads our half of a conversation
+ * and skips one with nothing in it, so a fixture with no turns in it exercises the skip
+ * instead of the sweep (see observe.js, MIN_WORDS).
+ */
+const TRANSCRIPT = `**me** _(09:14)_
+
+does the train from here beat the bus, or does it mean changing twice?
+
+**gemma3:4b** _(09:14)_
+
+The train is quicker but changes at Reading.
+`;
 const good = JSON.stringify({
   lately: "We were working out whether the train beats the bus.",
   about: "We would rather not change twice.",
@@ -20,7 +33,7 @@ const good = JSON.stringify({
 
 /** A plugin, a vault, and a model, enough of each to watch the sweep behave. */
 function harness({ reply = good, keyKind = "url" } = {}) {
-  const files = new Map([[CONVERSATION, "a conversation about trains"]]);
+  const files = new Map([[CONVERSATION, TRANSCRIPT]]);
   const front = new Map();
   const asked = [];
 
@@ -182,7 +195,7 @@ test("each turn pushes the read further out", async () => {
 test("a conversation is still read after you move on to another", async () => {
   const { plugin, files, asked } = harness();
   const OTHER = "00-inbox/2026/08/19/buses.md";
-  files.set(OTHER, "a conversation about buses");
+  files.set(OTHER, TRANSCRIPT);
 
   const sweep = createSweep(plugin, { idleMs: 30 });
   sweep.touch(CONVERSATION);
@@ -216,7 +229,7 @@ test("two reads cannot overlap", async () => {
 test("a conversation arriving mid-read waits rather than being dropped", async () => {
   const { plugin, files, asked } = harness();
   const OTHER = "00-inbox/2026/08/19/buses.md";
-  files.set(OTHER, "a conversation about buses");
+  files.set(OTHER, TRANSCRIPT);
 
   const sweep = createSweep(plugin);
   await Promise.all([sweep.read(CONVERSATION), sweep.read(OTHER)]);
@@ -230,7 +243,7 @@ test("a conversation arriving mid-read waits rather than being dropped", async (
  */
 test("conversations the idle clock never reached are picked up later", async () => {
   const { plugin, files, front, asked } = harness();
-  files.set("00-inbox/2026/08/18/older.md", "an older conversation");
+  files.set("00-inbox/2026/08/18/older.md", TRANSCRIPT);
   front.set("00-inbox/2026/08/18/older.md", {});   // seen, never read
 
   const remaining = await createSweep(plugin).catchUp();
@@ -255,7 +268,7 @@ test("catching up does not re-read what was already done", async () => {
 test("the sweep never reads what it wrote itself", async () => {
   const { plugin, files, asked } = harness();
   plugin.settings.folders = { conversations: "Conversations", context: "Conversations/context" };
-  files.set("Conversations/2026/08/19/a-real-conversation.md", "a conversation");
+  files.set("Conversations/2026/08/19/a-real-conversation.md", TRANSCRIPT);
   files.set("Conversations/context/2026/08/19-a-real-conversation.md", "an account of it");
 
   await createSweep(plugin).catchUp();
@@ -264,7 +277,7 @@ test("the sweep never reads what it wrote itself", async () => {
 
 test("only conversations are caught up, not notes somebody wrote", async () => {
   const { plugin, files, asked } = harness();
-  files.set("10-notes/2026/08/a-note-somebody-wrote.md", "not a conversation");
+  files.set("10-notes/2026/08/a-note-somebody-wrote.md", TRANSCRIPT);
 
   await createSweep(plugin).catchUp();
   assert.equal(asked.length, 1, "the note is none of this plugin's business");
@@ -276,7 +289,7 @@ test("only conversations are caught up, not notes somebody wrote", async () => {
  */
 test("a large backlog is read in bounded batches, and says what is left", async () => {
   const { plugin, files, asked } = harness();
-  for (let i = 0; i < 8; i++) files.set(`00-inbox/2026/08/18/talk-${i}.md`, "a conversation");
+  for (let i = 0; i < 8; i++) files.set(`00-inbox/2026/08/18/talk-${i}.md`, TRANSCRIPT);
 
   const remaining = await createSweep(plugin).catchUp({ limit: 3 });
   assert.equal(asked.length, 3);
