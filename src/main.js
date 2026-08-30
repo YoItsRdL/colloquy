@@ -8,6 +8,7 @@
  */
 import { Plugin, Notice } from "obsidian";
 import { buildConfig } from "./config.js";
+import { defaultModelFor } from "./models.js";
 import { keysOf } from "./keys.js";
 import { all as allAdapters } from "./providers/index.js";
 import { ConversationView, VIEW_TYPE } from "./view.js";
@@ -89,9 +90,15 @@ export default class ColloquyPlugin extends Plugin {
   /**
    * The shape the ported logic expects, rebuilt each turn because a key can be added in
    * settings between one turn and the next and nothing should need a restart to notice.
+   *
+   * The model is asked for only when nobody has chosen one, which is the case the stored
+   * constant gets wrong (see defaultModelFor). The answer is cached for the process, so
+   * this is one request on a fresh vault rather than one per turn.
    */
   async config() {
-    return buildConfig(this.settings, keysOf(this.settings, allAdapters()));
+    const config = buildConfig(this.settings, keysOf(this.settings, allAdapters()));
+    if (this.settings.model) return config;
+    return { ...config, model: await defaultModelFor(config) };
   }
 
   /** Shown where the person is looking, rather than written only to a console. */

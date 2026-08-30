@@ -9,7 +9,7 @@
  */
 import { test, beforeEach } from "node:test";
 import assert from "node:assert/strict";
-import { listModels, listAll, markBroken, isBroken, forgetModels } from "./src/models.js";
+import { listModels, listAll, markBroken, isBroken, forgetModels, defaultModelFor } from "./src/models.js";
 
 const configWith = (models, { model = "chosen-model" } = {}) => ({
   model,
@@ -29,6 +29,50 @@ test("the configured model is always present, and first", async () => {
   const models = await listModels(configWith([{ id: "other" }]));
   assert.equal(models[0].id, "chosen-model");
   assert.equal(models.length, 2);
+});
+
+/**
+ * The bug that made this a rule: Ollama's `defaultModel` is `qwen3:4b`, a constant in
+ * source rather than anything on the disk. Seeding it into the menu offered a model that
+ * was not installed, above the two that were, ticked as the one in use. Clicking it wrote
+ * it to the vault, and every turn after that asked for a model Ollama does not have.
+ */
+test("an adapter whose listing is the whole truth is not seeded with the configured model", async () => {
+  const config = configWith([{ id: "gemma3:1b" }, { id: "gemma3:4b" }], { model: "qwen3:4b" });
+  config.provider.listsEverything = true;
+
+  const models = await listModels(config);
+  assert.deepEqual(models.map((m) => m.id), ["gemma3:1b", "gemma3:4b"]);
+});
+
+/**
+ * The chip and the turn must agree, and an adapter's `defaultModel` is the place they
+ * stopped agreeing: a constant in source cannot know what is on the disk. Both sides ask
+ * this, so neither can guess separately.
+ */
+test("a local provider's default is the first model it actually has", async () => {
+  const config = configWith([{ id: "gemma3:1b" }, { id: "gemma3:4b" }], { model: null });
+  config.provider.listsEverything = true;
+  config.provider.defaultModel = "qwen3:4b";
+
+  assert.equal(await defaultModelFor(config), "gemma3:1b", "not the constant, which is not installed");
+});
+
+test("a hosted provider keeps its constant, whose listing is hundreds long and unordered", async () => {
+  const config = configWith([{ id: "gpt-4o" }, { id: "gpt-5" }], { model: null });
+  config.provider.defaultModel = "gpt-5";
+
+  assert.equal(await defaultModelFor(config), "gpt-5");
+});
+
+/** A default that needs the network to exist is not a default. */
+test("a local provider that cannot be reached falls back to the constant", async () => {
+  const config = configWith([], { model: null });
+  config.provider.listsEverything = true;
+  config.provider.defaultModel = "qwen3:4b";
+  config.provider.models = async () => { throw new Error("connection refused") };
+
+  assert.equal(await defaultModelFor(config), "qwen3:4b");
 });
 
 test("an adapter without models() reports its default alone", async () => {

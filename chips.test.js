@@ -129,3 +129,18 @@ test("a provider that cannot be reached still offers its default model", async (
   assert.equal(Menu.last().titles().length, 1, "one option rather than none");
   assert.ok(ui.model.textContent.trim().length > 0, "and the chip is not left saying loading…");
 });
+
+/**
+ * The regression this pins. The chip used to paint the adapter's `defaultModel` while the
+ * turn resolved the first installed model, which is the Gemini failure one level down:
+ * two places answering one question and agreeing until they did not.
+ */
+test("the model chip names what a turn would run, not the adapter's constant", async () => {
+  const ui = chipsFor({ provider: "ollama", model: null, keys: { OLLAMA_URL: NOWHERE } });
+  await settle();
+
+  // Nothing is listening, so the constant is all there is and the chip says so rather than
+  // emptying itself or waiting for ever.
+  assert.equal(ui.model.findAll((e) => e.hasClass("colloquy-chip-label"))[0].textContent, "qwen3:4b");
+  assert.equal(ui.model.disabled, false, "and it can still be opened to choose another");
+});

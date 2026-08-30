@@ -109,6 +109,30 @@ export async function listAll(config, { signal } = {}) {
   return (await Promise.all(asked)).filter((group) => group.models.length);
 }
 
+/**
+ * What to run when nobody has chosen a model.
+ *
+ * An adapter's `defaultModel` is a constant in source, which is a guess everywhere and a
+ * wrong one for a provider that keeps its models on the disk. Ollama's said `qwen3:4b` on
+ * a machine holding gemma3, so a vault whose stored model went missing asked for something
+ * that was never installed and failed every turn.
+ *
+ * Only for an adapter whose listing is the whole truth: for a hosted one the constant is
+ * the better answer, since its listing runs to hundreds of models in no useful order. A
+ * provider that cannot be reached falls back to the constant too, because a default that
+ * needs the network to exist is not a default.
+ */
+export async function defaultModelFor(config, { signal } = {}) {
+  const fallback = config.provider?.defaultModel;
+  if (!config.provider?.listsEverything) return fallback;
+  try {
+    const [first] = await listModels(config, { signal });
+    return first?.id ?? fallback;
+  } catch {
+    return fallback;
+  }
+}
+
 export async function listModels(config, { signal } = {}) {
   const provider = config.provider;
   const key = provider.name;
@@ -123,9 +147,14 @@ export async function listModels(config, { signal } = {}) {
       const seen = new Set();
       const models = [];
 
-      // The configured model first and always present. It may be too new to appear in a
-      // provider's own list, and a menu that omits what is currently running is broken.
-      for (const entry of [{ id: config.model }, ...listed]) {
+      // The configured model first and always present, because a hosted provider ships
+      // models faster than it lists them and a menu that omits what is currently running
+      // is broken. Not for an adapter that says its listing is the whole truth: a local
+      // one reads the disk, so a model missing from the list is a model that is not
+      // installed, and seeding it there offered `qwen3:4b` on a machine holding gemma3.
+      const seed = provider.listsEverything ? [] : [{ id: config.model }];
+
+      for (const entry of [...seed, ...listed]) {
         if (!entry?.id || seen.has(entry.id)) continue;
         if (entry.id !== config.model && NOT_CONVERSATIONAL.test(entry.id)) continue;
         seen.add(entry.id);

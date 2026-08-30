@@ -6,8 +6,9 @@
  * identical to the expensive one, and ran to 114 rows with four keys configured.
  */
 import { Menu, setIcon } from "obsidian";
-import { listModels } from "./models.js";
-import { all as allAdapters, resolve as resolveProvider } from "./providers/index.js";
+import { listModels, defaultModelFor } from "./models.js";
+import { all as allAdapters } from "./providers/index.js";
+import { chooseProvider } from "./config.js";
 import { keysOf } from "./keys.js";
 import { shorten } from "./label.js";
 
@@ -36,35 +37,56 @@ export function createChips({ container, plugin, onChange }) {
     allAdapters().filter((adapter) => adapter.keyVar && keys()[adapter.keyVar]);
 
   /**
-   * The provider in use, and never one that cannot answer.
+   * The provider in use, asked of the same rule a turn asks (config.js).
    *
-   * A stored choice can outlive its key. The adapter still resolves, so the chip would
-   * name a provider confidently while every turn failed with "no key". Falling back to one
-   * that has a key means the chip and the turn agree.
+   * A stored choice can outlive its key, and the chip used to work that out for itself.
+   * It got the same answer as a turn right up until it did not, and then the chip named
+   * one provider while the question went to another. Asking once means they cannot drift.
    */
-  function current() {
-    let chosen = null;
-    try {
-      chosen = resolveProvider(settings().provider);
-    } catch {
-      chosen = null;   // a provider that no longer exists at all
-    }
-    if (chosen && keys()[chosen.keyVar]) return chosen;
-    return available()[0] ?? null;
-  }
+  const current = () => (available().length ? chooseProvider(settings(), keys()) : null);
 
-  function paint() {
+  /**
+   * What a turn will run when nobody has chosen a model, once it is known.
+   *
+   * An adapter's `defaultModel` is a guess, and for a local provider a wrong one: the chip
+   * would name `qwen3:4b` while the turn ran the first model actually installed. Same
+   * failure as the provider chip naming Gemini, one level down. Resolving it needs the
+   * listing and painting does not wait, so the guess is shown and then corrected.
+   */
+  let settled = null;
+
+  function draw() {
     const provider = current();
 
     providerControl.label.setText(provider?.label ?? provider?.name ?? "No provider");
     providerChip.disabled = available().length < 2;   // nothing to choose between
 
-    const id = settings().model ?? provider?.defaultModel ?? "no model";
+    const id = settings().model ?? settled ?? provider?.defaultModel ?? "no model";
     modelControl.label.setText(shorten(id, provider));
     modelChip.disabled = !provider;
 
     // The whole id, since the label deliberately drops part of it.
     modelChip.title = id;
+  }
+
+  /**
+   * Asks what the turn would ask, and redraws only if the answer differs from the guess.
+   * Redrawing through `draw` rather than `paint` is what stops this calling itself.
+   */
+  async function settle() {
+    const provider = current();
+    if (!provider || settings().model) return;
+
+    try {
+      const model = await defaultModelFor({ provider, key: keys()[provider.keyVar] });
+      if (model !== settled) { settled = model; draw(); }
+    } catch { /* the guess stands, and a turn will report the real failure */ }
+  }
+
+  /** Drawn now from what is known, corrected when the listing answers. */
+  function paint() {
+    draw();
+    settle();
   }
 
   providerChip.onclick = (event) => {
@@ -80,6 +102,7 @@ export function createChips({ container, plugin, onChange }) {
           // one provider's model to another fails on the first turn.
           settings().provider = adapter.name;
           settings().model = null;
+          settled = null;   // it belonged to the provider we are leaving
           await plugin.save();
           paint();
           onChange?.();
@@ -115,7 +138,7 @@ export function createChips({ container, plugin, onChange }) {
         item.setTitle(model.label ?? model.id);
         item.setChecked(model.id === (settings().model ?? provider.defaultModel));
         item.onClick(async () => {
-              settings().model = model.id;
+          settings().model = model.id;
           await plugin.save();
           paint();
           onChange?.();

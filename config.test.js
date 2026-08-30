@@ -30,15 +30,41 @@ test("no model chosen means the provider's own default", () => {
  * plugin that will not start because of a preference, and a plugin that will not start is
  * one that has taken its conversation history with it.
  */
-test("a provider that no longer exists falls back to the default rather than throwing", () => {
+test("a provider that no longer exists falls back rather than throwing", () => {
   const config = buildConfig({ provider: "a-provider-that-was-deleted" }, KEYS);
-  assert.equal(config.provider.name, defaultProvider);
+  assert.ok(config.key, "falls back to one that can actually answer");
 });
 
-test("nothing chosen at all still produces something runnable", () => {
+/**
+ * The default is a name in a constant, not a promise that a key exists for it. Falling
+ * back to it when nothing can use it is how "No key for Gemini" got shown to someone who
+ * runs Ollama and had chosen nothing at all.
+ */
+test("nothing chosen at all falls back to a provider with a key, not to the default", () => {
   const config = buildConfig({}, KEYS);
-  assert.equal(config.provider.name, defaultProvider);
+  assert.notEqual(config.provider.name, defaultProvider);
+  assert.ok(config.key);
   assert.equal(typeof config.model, "string");
+});
+
+/**
+ * The bug this rule exists for: one provider configured, a stale preference naming
+ * another, and a panel that named the usable one while every turn ran the useless one.
+ */
+test("a stored provider whose key is gone gives way to one that has a key", () => {
+  const config = buildConfig({ provider: "gemini" }, { OLLAMA_URL: "http://localhost:11434/v1" });
+  assert.equal(config.provider.name, "ollama");
+  assert.equal(config.key, "http://localhost:11434/v1");
+});
+
+/**
+ * When nothing can answer, the error should name the provider someone picked. Rerouting
+ * to an arbitrary keyless one would report a provider they had never heard of.
+ */
+test("with no keys at all the stored choice is kept, so the error names it", () => {
+  const config = buildConfig({ provider: "anthropic" }, {});
+  assert.equal(config.provider.name, "anthropic");
+  assert.equal(config.key, undefined);
 });
 
 /**

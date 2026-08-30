@@ -21,6 +21,16 @@ export const defaultModel = "qwen3:4b";
 export const keyHint = "Where Ollama is listening. The default is right if it runs on this machine.";
 
 /**
+ * The listing is the whole truth, so nothing is added to it (see models.js).
+ *
+ * A hosted provider ships models faster than it lists them, which is why the menu adds
+ * the configured one whether or not it was listed. Here `/v1/models` reads the disk: a
+ * model absent from it is a model that is not installed. Offering one anyway is how
+ * `qwen3:4b`, this file's default and nobody's download, ended up chosen and saved.
+ */
+export const listsEverything = true;
+
+/**
  * Nothing extra, and that is a decision rather than an omission.
  *
  * A reasoning model like qwen3 thinks before it answers, which costs about four seconds
