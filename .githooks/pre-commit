@@ -1,0 +1,10 @@
+#!/bin/sh
+# The gate, before a commit rather than after a release.
+#
+# Tracked here rather than left in .git/hooks, which git does not carry, and enabled by
+# `npm run prepare` (which npm install runs for you). Skip a single commit with
+# `git commit --no-verify` when the gate is not the thing being worked on.
+#
+# The workflow in .github/workflows/ is the one that cannot be skipped. This is the one
+# that saves you the round trip.
+exec npm run gate
