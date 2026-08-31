@@ -13,7 +13,7 @@ entire feature was ripped out than from any description of what remains.
 | [0003](0003-keys-stay-out-of-plugin-data.md) | Keys stay in a dotfile, never in plugin data | **Superseded by 0004** |
 | [0004](0004-keys-live-in-plugin-data.md) | Keys live in Obsidian's plugin data | Accepted |
 | [0005](0005-promotion-needs-a-decision-per-note.md) | The plugin may write notes, one human decision at a time | **Superseded by 0007** |
-| [0006](0006-passive-extraction-into-an-unreviewed-layer.md) | Conversations are read automatically | Accepted, amended by 0007 |
+| [0006](0006-passive-extraction-into-an-unreviewed-layer.md) | Conversations are read automatically | Accepted, amended by 0007 and 0016 |
 | [0007](0007-context-about-us-not-claims-about-the-world.md) | Record what we were doing, not what the model believes | Accepted |
 | [0008](0008-what-was-noticed-is-handed-back.md) | What was noticed is handed back, as a hint | Accepted |
 | [0009](0009-one-provider-and-a-plain-error.md) | One provider, and a plain error when it fails | Accepted |
@@ -23,6 +23,7 @@ entire feature was ripped out than from any description of what remains.
 | [0013](0013-only-our-half-is-read-back.md) | Only our half is read back | Accepted |
 | [0014](0014-a-link-is-read-before-the-question-is-sent.md) | A link is read before the question is sent | Accepted |
 | [0015](0015-preferences-survive-a-clone.md) | The settings that are not secret survive a clone | Accepted |
+| [0016](0016-the-unattended-work-can-run-on-its-own-model.md) | The work nobody asked for can run on its own model | Accepted |
 
 ## The two reversals, in short
 

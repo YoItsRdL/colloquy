@@ -23,9 +23,10 @@ few conversations rides in front of the next one, so the model has context. It g
 whichever provider you have selected, **including a paid one**. This can be turned off too,
 and the setting says plainly where the text goes.
 
-The automatic reading only ever runs on a local model. Reading every conversation through a
-metered API is a bill that grows while you sleep, so it was designed out rather than
-warned about.
+The automatic reading runs on a model that costs nothing. Reading every conversation
+through a metered API is a bill that grows while you sleep, so it was designed out rather
+than warned about. That work has its own setting: point it at a small local model and the
+record keeps itself while you talk to whatever you like, paid or not.
 
 ## What it looks like in your vault
 
@@ -50,6 +51,8 @@ put your own paths in and the plugin will use them. Nothing else is ever written
 
 1. Settings → Colloquy → paste a key for OpenAI, Anthropic, Google or DeepSeek.
 2. Pick the provider and model in the chips under the composer.
+3. Worth doing once: Settings → Colloquy → **Model for reading and naming** → Ollama. The
+   answers come from what you are paying for, the record keeps itself for nothing.
 
 Keys are stored in the plugin's own data file, which is never rendered back to the screen
 and never leaves your machine except as the request you asked for.
@@ -80,9 +83,10 @@ and never leaves your machine except as the request you asked for.
   the conversations in your vault, but a phone has no `localhost` for Ollama to be on, so
   the free local route is a desktop one. Point it at Ollama on your own machine over the
   network and that works too (ADR-0012).
-- **Nothing is read automatically on a phone.** The unprompted reading only ever runs on a
-  provider that charges nothing per request, which on a phone means one reached over your
-  network. Conversations you have on a phone are read the next time the desktop is open.
+- **Nothing is read automatically on a phone.** The unprompted reading runs on a provider
+  that charges nothing per request, which on a phone means one reached over your network.
+  Conversations you have on a phone are read the next time the desktop is open, unless you
+  have deliberately named a paid model for that work.
 
 ## Why it works the way it does
 

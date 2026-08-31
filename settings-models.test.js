@@ -252,6 +252,26 @@ test("removing the model in use moves the selection to one still installed", asy
 });
 
 /**
+ * The same rule for the model that reads conversations (ADR-0016), and the more important
+ * half of it: a chip pointing at a model that is gone fails in front of somebody, and this
+ * one fails at three in the morning with nobody to tell.
+ */
+test("removing the model set for reading moves that selection too", async () => {
+  serving({ models: [model("gemma3:4b", 3e9, "4.3B", "Q4_K_M"), model("qwen3:4b", 2e9, "4.0B", "Q4_K_M")] });
+  modals.length = 0;
+  const tab = screen({ keys: {}, model: "gemma3:4b", background: { provider: "ollama", model: "qwen3:4b" } });
+  await settle();
+
+  row(tab, "qwen3:4b").find((e) => e.getAttr("data-icon") === "trash").onclick();
+  await settle();
+  Modal.last().contentEl.button("Remove").click();
+  await settle();
+
+  assert.deepEqual(tab.plugin.settings.background, { provider: "ollama", model: "gemma3:4b" });
+  assert.equal(tab.plugin.settings.model, "gemma3:4b", "the chips were pointing elsewhere and stay there");
+});
+
+/**
  * The failure that cost 3.1 GB. A removal was attempted while a download held the
  * model, the server refused, the thrown error escaped an async click handler where
  * nothing catches it, and the interface said nothing at all. The model was believed

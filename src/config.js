@@ -47,3 +47,39 @@ export function buildConfig(settings, keys) {
     key: keys[provider.keyVar],
   };
 }
+
+/**
+ * What the work nobody asked for runs against (ADR-0016).
+ *
+ * Reading a conversation and naming one happen on their own, so what they cost and how
+ * long they take are not felt by anyone at the time. That is a different question from
+ * which model should answer, and until now it was not asked: both ran on whatever the
+ * chips said, which meant a conversation held with a paid provider was never read at all.
+ *
+ * Unset is the default and is not a model: it means the chat one, exactly as before.
+ * `chosen` says which of the two answered, because the sweep's free-only rule (ADR-0006)
+ * turns on it. A bill nobody chose is what that rule is against, and this is a choice.
+ *
+ * A background provider whose key has since gone gives way to the chat one rather than
+ * failing, on the same reasoning as chooseProvider above: the work runs unattended, and
+ * unattended work that stops has no one to tell.
+ */
+export function backgroundConfig(settings, keys) {
+  const wanted = settings?.background;
+  let adapter = null;
+  if (wanted?.provider) {
+    try {
+      adapter = resolveProvider(wanted.provider);
+    } catch {
+      adapter = null;   // a provider that no longer exists at all
+    }
+  }
+  if (!adapter || !keys[adapter.keyVar]) return { ...buildConfig(settings, keys), chosen: false };
+
+  return {
+    provider: adapter,
+    model: wanted.model ?? adapter.defaultModel,
+    key: keys[adapter.keyVar],
+    chosen: true,
+  };
+}

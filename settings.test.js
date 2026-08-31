@@ -90,7 +90,21 @@ test("what the automatic reading toggle says names the folder it writes to", () 
   const desc = row(tab, "Read conversations automatically").find((e) => e.hasClass("setting-item-description"));
 
   assert.match(desc.textContent, /60-log\/conversations\//, "the actual folder, not the default");
-  assert.match(desc.textContent, /Only runs on a local model/, "and why it cannot cost money");
+  assert.match(desc.textContent, /runs on a local model/, "and why it does not cost money");
+});
+
+/**
+ * The one place on this screen a provider and a model are named, and the reason it is not
+ * the contradiction the test above describes: nobody is on screen when this work runs, so
+ * there is no control beside the composer for it to disagree with (ADR-0016).
+ */
+test("the model for the work that runs by itself is on the screen, next to the work", () => {
+  const shown = names(screen());
+  const reading = shown.indexOf("Read conversations automatically");
+
+  assert.ok(shown.includes("Model for reading and naming"), shown.join(" | "));
+  assert.equal(shown[reading + 1], "Model for reading and naming", "under the toggle it qualifies");
+  assert.ok(shown.indexOf("Name conversations automatically") > reading, "and above the other one");
 });
 
 test("the memory toggle says plainly that a paid provider may see it", () => {

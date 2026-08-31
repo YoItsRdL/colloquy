@@ -575,3 +575,10 @@
    clickable, and must never be seen. It lived on an inline style until submission, where
    a style set from JavaScript is something a theme cannot override. */
 .colloquy-hidden-input { display: none; }
+
+/* ── The settings screen ──────────────────────────────────────────────────────────
+   A line on that screen that says something has gone wrong, or is about to cost
+   money, in the colour this theme already uses for exactly that. It was written as a
+   description like every other, which meant the one line worth reading looked like
+   the six around it. */
+.colloquy-warning { color: var(--text-warning); }

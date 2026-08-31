@@ -19,6 +19,16 @@ const IDLE_MS = 3 * 60 * 1000;
 export const isFree = (config) => config?.provider?.keyKind === "url";
 
 /**
+ * Whether reading may run at all: free, or paid and picked for this and nothing else.
+ *
+ * The rule above is against a cost nobody chose, not against paying (ADR-0016). A model
+ * named in the settings row for reading is a decision somebody made about their own money,
+ * and overruling it would be this plugin deciding how they spend it. Inheriting a paid
+ * provider from the chips is not that decision, and is still refused.
+ */
+export const mayRead = (config) => isFree(config) || Boolean(config?.chosen);
+
+/**
  * In the conversation's own frontmatter, so it survives the rename that follows the first
  * answer. A ledger keyed on path would re-read half of them.
  */
@@ -126,8 +136,13 @@ export function createSweep(plugin, { idleMs = IDLE_MS } = {}) {
     if (!changed.has(path) && (done.has(path) || wasRead(plugin.app, file))) return;
 
     try {
-      const config = await plugin.config();
-      if (!isFree(config)) return note(`${config.provider?.name ?? "that provider"} charges per request`);
+      const config = await plugin.background();
+      // Named where it can be fixed: the settings row for this is directly under the line
+      // that shows this reason, and "charges per request" alone reads as a dead end.
+      if (!mayRead(config)) {
+        return note(`${config.provider?.name ?? "that provider"} charges per request, and ` +
+          "nothing else is set to do the reading");
+      }
 
       const { context, why } = await observeConversation(config, await plugin.app.vault.read(file));
       if (context === null) return note(why);

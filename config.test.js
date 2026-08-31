@@ -8,7 +8,7 @@
  */
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { buildConfig } from "./src/config.js";
+import { buildConfig, backgroundConfig } from "./src/config.js";
 import { resolve as resolveProvider, defaultProvider } from "./src/providers/index.js";
 
 const KEYS = { OPENAI_API_KEY: "sk-test", OLLAMA_URL: "http://localhost:11434/v1" };
@@ -78,4 +78,59 @@ test("a turn is handed one provider and no alternatives", () => {
 
 test("a missing key is reported as missing, not substituted", () => {
   assert.equal(buildConfig({ provider: "openai" }, {}).key, undefined);
+});
+
+// ── the model for the work nobody asked for (ADR-0016) ───────────────────────────
+
+/**
+ * Unset is not a model. It means the chat one, so a vault that has never opened that
+ * setting reads and names exactly as it did before there was one.
+ */
+test("with nothing set, the unattended work runs on the chat model", () => {
+  const config = backgroundConfig({ provider: "openai", model: "gpt-5" }, KEYS);
+
+  assert.equal(config.provider.name, "openai");
+  assert.equal(config.model, "gpt-5");
+  assert.equal(config.chosen, false, "inherited, not picked");
+});
+
+test("a model set for it is what the unattended work runs on, whatever the chips say", () => {
+  const config = backgroundConfig(
+    { provider: "openai", model: "gpt-5", background: { provider: "ollama", model: "gemma3:1b" } },
+    KEYS,
+  );
+
+  assert.equal(config.provider.name, "ollama");
+  assert.equal(config.model, "gemma3:1b");
+  assert.equal(config.key, KEYS.OLLAMA_URL);
+  assert.equal(config.chosen, true, "picked, which is what lets it charge if it charges");
+});
+
+/** A provider chosen for it, with no model named yet: the provider's own default. */
+test("a provider set for it with no model runs that provider's default", () => {
+  const config = backgroundConfig({ background: { provider: "openai" } }, KEYS);
+
+  assert.equal(config.provider.name, "openai");
+  assert.equal(config.model, resolveProvider("openai").defaultModel);
+});
+
+/**
+ * The work runs unattended, and unattended work that stops has nobody to tell. Both of the
+ * ways this preference can outlive what it names fall back rather than fail.
+ */
+test("a key removed since it was chosen gives way to the chat model", () => {
+  const config = backgroundConfig(
+    { provider: "ollama", background: { provider: "openai", model: "gpt-5" } },
+    { OLLAMA_URL: "http://localhost:11434/v1" },
+  );
+
+  assert.equal(config.provider.name, "ollama");
+  assert.equal(config.chosen, false, "and it stops counting as a choice, so the free rule applies again");
+});
+
+test("a provider that no longer exists gives way rather than throwing", () => {
+  const config = backgroundConfig({ background: { provider: "a-provider-that-was-deleted" } }, KEYS);
+
+  assert.ok(config.key);
+  assert.equal(config.chosen, false);
 });

@@ -32,7 +32,7 @@ const good = JSON.stringify({
 });
 
 /** A plugin, a vault, and a model, enough of each to watch the sweep behave. */
-function harness({ reply = good, keyKind = "url" } = {}) {
+function harness({ reply = good, keyKind = "url", chosen = false } = {}) {
   const files = new Map([[CONVERSATION, TRANSCRIPT]]);
   const front = new Map();
   const asked = [];
@@ -62,9 +62,12 @@ function harness({ reply = good, keyKind = "url" } = {}) {
     // Named explicitly rather than left to the defaults: these fixtures use one vault's
     // scheme, and the shipped default is deliberately not that (ADR-0010).
     settings: { folders: FOLDERS },
-    config: async () => ({
+    // What the unattended work runs against, which is the chat model until somebody sets
+    // one for it (ADR-0016). `chosen` is what tells the two apart.
+    background: async () => ({
       model: "gemma3:4b",
       key: "http://localhost:11434/v1",
+      chosen,
       provider: {
         keyKind,
         complete: async (opts) => {
@@ -109,6 +112,28 @@ test("nothing is read on a provider that charges for it", async () => {
   assert.deepEqual(asked, [], "the request is never made");
   assert.deepEqual(records(files), []);
   assert.equal(front.has(CONVERSATION), false, "and it stays unread, not marked done");
+});
+
+/**
+ * The free-only rule is against a bill nobody chose, not against paying. A model named in
+ * the settings row for this work is a decision somebody made about their own money, and
+ * overruling it would be the plugin deciding how they spend it (ADR-0016).
+ */
+test("a paid model picked for the reading is honoured", async () => {
+  const { plugin, files, asked } = harness({ keyKind: "secret", chosen: true });
+  await createSweep(plugin).read(CONVERSATION);
+
+  assert.equal(asked.length, 1, "it was asked, because it was asked for");
+  assert.equal(records(files).length, 1);
+});
+
+/** A dead end reads as a bug. This one names the setting that fixes it. */
+test("the refusal says what would make it read", async () => {
+  const { plugin } = harness({ keyKind: "secret" });
+  await createSweep(plugin).read(CONVERSATION);
+
+  assert.match(plugin.lastRead.reason, /charges per request/);
+  assert.match(plugin.lastRead.reason, /nothing else is set to do the reading/);
 });
 
 test("a conversation already read is left alone", async () => {

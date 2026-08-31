@@ -7,7 +7,7 @@
  * fallback chain (ADR-0009) a matter of deleting it rather than untangling it.
  */
 import { Plugin, Notice } from "obsidian";
-import { buildConfig } from "./config.js";
+import { buildConfig, backgroundConfig } from "./config.js";
 import { defaultModelFor } from "./models.js";
 import { keysOf } from "./keys.js";
 import { all as allAdapters } from "./providers/index.js";
@@ -110,6 +110,23 @@ export default class ColloquyPlugin extends Plugin {
   async config() {
     const config = buildConfig(this.settings, keysOf(this.settings, allAdapters()));
     if (this.settings.model) return config;
+    return { ...config, model: await defaultModelFor(config) };
+  }
+
+  /**
+   * The same shape, for the work that runs without being asked: reading a conversation,
+   * and naming one (ADR-0016).
+   *
+   * The same answer as `config()` until somebody sets a model for it, so a vault that has
+   * never opened that setting behaves exactly as it did. `chosen` travels with it because
+   * the sweep's free-only rule turns on whether this was picked or inherited.
+   */
+  async background() {
+    const config = backgroundConfig(this.settings, keysOf(this.settings, allAdapters()));
+    // The stored constant is a guess and, for a local provider, a wrong one: asked only
+    // when nobody has named a model, and cached for the process (see defaultModelFor).
+    const named = config.chosen ? this.settings.background?.model : this.settings.model;
+    if (named) return config;
     return { ...config, model: await defaultModelFor(config) };
   }
 

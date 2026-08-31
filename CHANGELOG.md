@@ -3,6 +3,17 @@
 Dates are release dates. Reasoning that outlived a single release lives in
 [`decisions/`](decisions/) instead.
 
+## Unreleased
+
+- **The reading and the naming can run on their own model.** Both happen without you asking
+  — a conversation is read a few minutes after it goes quiet, and given a name once there
+  is something to name it after — and until now both ran on whatever the chips beside the
+  composer said. Reading only ever runs free, so a conversation held with a paid provider
+  was never read at all: the context folder stayed empty for exactly the conversations most
+  worth keeping. Settings → Colloquy now has one row for the model that does that work.
+  Leave it alone and nothing changes. Point it at a small local model and the record keeps
+  itself whatever you are talking to. See [ADR-0016](decisions/0016-the-unattended-work-can-run-on-its-own-model.md).
+
 ## 1.0.4 (2026-08-29)
 
 Everything here came out of the community directory's review of 1.0.3, and the largest of

@@ -67,10 +67,13 @@ export function slugFrom(title) {
 }
 
 /**
- * Asks the model that answered for a title.
+ * Asks a model for a title, given the exchange to name.
  *
- * Deliberately the same provider and model: it has the context, it is already configured,
- * and asking a second provider would spend somewhere the person did not choose.
+ * The one that answered, by default: it is already configured, and asking a second
+ * provider would spend somewhere the person did not choose. Whoever sets a model for the
+ * unattended work has chosen otherwise, and that one is asked instead (ADR-0016). Nothing
+ * is lost by moving: the exchange is restated in the prompt below rather than relied on
+ * being in a context this model was present for.
  *
  * Any failure returns null. A conversation keeps the name it has; nothing is worth
  * failing a turn over, and this happens after the answer is already safe on disk.

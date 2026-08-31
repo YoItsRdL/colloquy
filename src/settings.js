@@ -1,12 +1,14 @@
 /**
  * The settings screen (ADR-0004).
  *
- * Three sections, in the order a first run needs them: keys, local models, and what
- * happens by itself.
+ * Four sections, in the order a first run needs them: keys, local models, where things go,
+ * and what happens by itself.
  *
- * Provider and model are deliberately absent. They are per-question choices with controls
- * beside the composer, and a setting duplicating a control is two truths waiting to
- * disagree.
+ * The provider and model a question runs against are deliberately absent. They are
+ * per-question choices with controls beside the composer, and a setting duplicating a
+ * control is two truths waiting to disagree. The model for the work that runs *without* a
+ * question is a different matter, and lives in the last section: nothing on screen chooses
+ * it, because nobody is on screen when it happens (ADR-0016).
  */
 import { PluginSettingTab, Setting } from "obsidian";
 import { all as allAdapters, defaultProvider } from "./providers/index.js";
@@ -14,11 +16,12 @@ import { status } from "./keys.js";
 import { renderKeys } from "./settings-keys.js";
 import { renderLibrary } from "./settings-models.js";
 import { renderFolders } from "./settings-folders.js";
+import { renderBackground } from "./settings-background.js";
 import { foldersOf } from "./folders.js";
 
 const SUPPORT = "https://buymeacoffee.com/ibonescalap";
 
-export const DEFAULTS = { provider: defaultProvider, model: null, keys: {}, folders: {}, autoName: true, autoRead: true, useMemory: true };
+export const DEFAULTS = { provider: defaultProvider, model: null, background: null, keys: {}, folders: {}, autoName: true, autoRead: true, useMemory: true };
 
 export class SettingsTab extends PluginSettingTab {
   constructor(app, plugin) {
@@ -41,13 +44,19 @@ export class SettingsTab extends PluginSettingTab {
 
   renderNaming(containerEl) {
     new Setting(containerEl)
+      .setName("What happens by itself")
+      .setDesc("Work that runs without you asking for it, and which model does it.")
+      .setHeading();
+
+    new Setting(containerEl)
       .setName("Read conversations automatically")
       .setDesc(
         `A few minutes after you stop, the conversation is read and a short account of ` +
         `what you were doing is written to ${foldersOf(this.plugin.settings).context}/, so later ` +
         "conversations have the context. It records what you were working on, never facts the model " +
-        "asserted. Only runs on a local model, because reading every conversation on a " +
-        "paid one is a bill that grows without you pressing anything.",
+        "asserted. It runs on a local model, because reading every conversation on a paid " +
+        "one is a bill that grows without you pressing anything. Below is where that model " +
+        "is chosen.",
       )
       .addToggle((toggle) => {
         toggle.setValue(this.plugin.settings.autoRead !== false);
@@ -67,6 +76,10 @@ export class SettingsTab extends PluginSettingTab {
       containerEl.createEl("p", { cls: "setting-item-description colloquy-warning" })
         .setText(`Last attempt did not file anything: ${last.reason}.`);
     }
+
+    // Directly under the reason it is most often needed, and above the naming toggle it
+    // also governs.
+    renderBackground(this, containerEl);
 
     new Setting(containerEl)
       .setName("Use what earlier conversations noticed")

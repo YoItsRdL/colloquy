@@ -65,11 +65,21 @@ async function fillLibrary(tab, list, note, adapter, key) {
  * Removing the model in use would leave the panel pointing at one that is no longer on the
  * machine, and every question after it failing at the provider. The key screen has repointed
  * the provider like this since ADR-0004; this is the same rule one level down.
+ *
+ * Twice over, because there are now two selections a removal can hollow out: the one the
+ * chips name and the one set for reading and naming (ADR-0016). The second is the worse of
+ * the two to leave dangling: nobody is watching it fail.
  */
-async function reselect(tab, removed, installed) {
-  if (tab.plugin.settings.model !== removed) return;
-  const left = installed.find((m) => m.id !== removed);
-  tab.plugin.settings.model = left?.id ?? null;
+async function reselect(tab, adapter, removed, installed) {
+  const settings = tab.plugin.settings;
+  const background = settings.background;
+  const inUse = settings.model === removed;
+  const inBackground = background?.provider === adapter.name && background.model === removed;
+  if (!inUse && !inBackground) return;
+
+  const left = installed.find((m) => m.id !== removed)?.id ?? null;
+  if (inUse) settings.model = left;
+  if (inBackground) settings.background = { ...background, model: left };
   await tab.plugin.save();
   tab.plugin.refreshPanel?.();
 }
@@ -111,7 +121,7 @@ async function removeModel(tab, adapter, key, model, installed) {
     new Notice(`${model.id} is still installed. Nothing was freed.`, 10000);
   } else {
     new Notice(`Removed ${model.id}, freeing ${(model.bytes / 1e9).toFixed(1)} GB.`);
-    await reselect(tab, model.id, installed);
+    await reselect(tab, adapter, model.id, installed);
   }
   tab.display();
 }
