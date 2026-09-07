@@ -3,7 +3,12 @@
 Dates are release dates. Reasoning that outlived a single release lives in
 [`decisions/`](decisions/) instead.
 
-## Unreleased
+## 1.0.5 (2026-09-07)
+
+Three of these are one story: a vault cloned to a second machine arrives without its
+settings, because the file holding them is gitignored to protect the keys, and the plugin
+then answers with a provider and a model nobody chose. The rest were found while looking
+at that.
 
 - **The reading and the naming can run on their own model.** Both happen without you asking
   — a conversation is read a few minutes after it goes quiet, and given a name once there
@@ -13,6 +18,40 @@ Dates are release dates. Reasoning that outlived a single release lives in
   worth keeping. Settings → Colloquy now has one row for the model that does that work.
   Leave it alone and nothing changes. Point it at a small local model and the record keeps
   itself whatever you are talking to. See [ADR-0016](decisions/0016-the-unattended-work-can-run-on-its-own-model.md).
+
+- **The settings that are not secret now survive a clone.** They live in Obsidian's plugin
+  data, which is gitignored so the keys in it are never committed, and that rule does not
+  distinguish: a vault cloned to a second machine came back with the plugin and none of its
+  configuration. The non-secret half is now mirrored to `preferences.json` beside the store,
+  which carries no key and is safe to commit. What that cost, before it was fixed, is the
+  three entries below. See [ADR-0015](decisions/0015-preferences-survive-a-clone.md).
+
+- **Every question could go to a provider you had never chosen.** The chip beside the
+  composer fell back to a provider that had a key; a turn took the stored preference at
+  face value. With only Ollama configured the panel read "Ollama" while every question went
+  to Gemini and failed with "no key" for a provider nobody had picked. Both now ask the same
+  rule.
+
+- **The model menu offered a model you did not have.** The menu adds the model currently in
+  use whether or not the provider listed it, which is right for a hosted provider shipping
+  faster than it lists, and wrong for a local one whose listing is the disk. Ollama offered
+  `qwen3:4b`, a constant in this source and nobody's download, above the models that were
+  actually installed. A provider that keeps its models locally is now taken at its word, and
+  when no model has been chosen the first installed one is used rather than that constant.
+
+- **A greeting is no longer written up as a conversation.** Asked to write two to four
+  sentences about "hello", a small model writes two to four sentences: one such exchange
+  became a confident account of refining a project's initial parameters, which was then
+  handed to later conversations as background on somebody who had said nothing at all. The
+  prompt had always allowed an empty reply and it was never once taken. It is now stated
+  first, as the ordinary outcome, and a conversation shorter than a greeting is not sent to
+  be summarised at all.
+
+- **A dotted rule that some versions of Electron dropped.** The fallback label under the
+  provider chip was underlined with `text-decoration: underline dotted`, a shorthand older
+  Electron parses only partially. The longhand that replaced it in 1.0.4 was flagged by the
+  directory's own CSS lint for the same reason, so it is a border now, which draws the same
+  rule and predates every version of anything involved.
 
 ## 1.0.4 (2026-08-29)
 
