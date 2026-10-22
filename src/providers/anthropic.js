@@ -27,10 +27,16 @@ const SEP_LINE = /\r?\n/;
  */
 const MAX_TOKENS = 4096;
 
+/**
+ * The last header is not a hazard here: the API refuses a request that comes from inside a
+ * browser unless it is sent, and an Obsidian plugin is one. The key is the user's own, in
+ * their own vault, and goes nowhere but this API.
+ */
 const headers = (key) => ({
   "content-type": "application/json",
   "x-api-key": key,
   "anthropic-version": VERSION,
+  "anthropic-dangerous-direct-browser-access": "true",
 });
 
 /**
@@ -149,7 +155,7 @@ function summarise(raw) {
 /** What this provider offers (ADR-0005). */
 export async function models({ key, signal }) {
   const res = await fetch("https://api.anthropic.com/v1/models?limit=100", {
-    headers: { "x-api-key": key, "anthropic-version": VERSION },
+    headers: headers(key),
     signal,
   });
   if (!res.ok) throw new Error(`${name} ${res.status}: could not list models`);

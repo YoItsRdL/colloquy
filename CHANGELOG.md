@@ -3,6 +3,13 @@
 Dates are release dates. Reasoning that outlived a single release lives in
 [`decisions/`](decisions/) instead.
 
+## 1.0.6 (2026-10-22)
+
+- **Anthropic works from a fresh install.** Its API refuses a request that comes from a
+  browser unless it says so with a header, and an Obsidian plugin is one. The header was
+  missing, so every Claude question and the model list failed until `main.js` was patched
+  by hand, which is why a clone seemed to be needed. Both calls now send it.
+
 ## 1.0.5 (2026-09-07)
 
 Three of these are one story: a vault cloned to a second machine arrives without its

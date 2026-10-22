@@ -131,3 +131,18 @@ test("anthropic: an error event mid-stream is raised", async () => {
   serve(['data: {"type":"error","error":{"message":"overloaded"}}\n\n']);
   await assert.rejects(collect(anthropic.stream(opts)), /overloaded/);
 });
+
+test("anthropic: every call says it comes from a browser, which an Obsidian plugin is", async () => {
+  // Without this header the API refuses the request outright. It is the same for the model
+  // list as for a reply, so both are checked.
+  const seen = [];
+  globalThis.fetch = async (_url, init) => {
+    seen.push(init.headers);
+    return { ok: true, status: 200, json: async () => ({ data: [] }), body: { getReader: () => ({ read: async () => ({ done: true }), cancel: async () => {} }) } };
+  };
+  await collect(anthropic.stream(opts));
+  await anthropic.models({ key: "k" });
+  assert.equal(seen.length, 2);
+  for (const h of seen) assert.equal(h["anthropic-dangerous-direct-browser-access"], "true");
+});
+
