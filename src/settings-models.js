@@ -10,6 +10,7 @@
 import { Setting, Modal, Notice } from "obsidian";
 import { all as allAdapters } from "./providers/index.js";
 import { keysOf } from "./keys.js";
+import { modelOf, setModel } from "./config.js";
 
 export function renderLibrary(tab, containerEl) {
   const keys = keysOf(tab.plugin.settings, allAdapters());
@@ -73,12 +74,12 @@ async function fillLibrary(tab, list, note, adapter, key) {
 async function reselect(tab, adapter, removed, installed) {
   const settings = tab.plugin.settings;
   const background = settings.background;
-  const inUse = settings.model === removed;
+  const inUse = modelOf(settings, adapter) === removed;
   const inBackground = background?.provider === adapter.name && background.model === removed;
   if (!inUse && !inBackground) return;
 
   const left = installed.find((m) => m.id !== removed)?.id ?? null;
-  if (inUse) settings.model = left;
+  if (inUse) setModel(settings, adapter, left);
   if (inBackground) settings.background = { ...background, model: left };
   await tab.plugin.save();
   tab.plugin.refreshPanel?.();

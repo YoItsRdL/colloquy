@@ -21,7 +21,7 @@
  * secret ends up committed, and the whole point of ADR-0004 is that the safe thing is what
  * happens when nobody is paying attention.
  */
-export const SHARED = ["provider", "model", "background", "folders", "autoName", "autoRead", "useMemory"];
+export const SHARED = ["provider", "models", "model", "background", "folders", "autoName", "autoRead", "useMemory"];
 
 /** The mirrorable half of a settings object, with nothing invented that was not set. */
 export function sharedOf(settings) {

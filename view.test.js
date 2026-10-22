@@ -49,7 +49,7 @@ function panel({ chunks = ["Yes", ", by train."], key = "http://localhost:11434/
 
   const touched = [];
   const plugin = {
-    settings: { provider: "ollama", model: "gemma3:4b", folders: FOLDERS, keys: {}, autoRead: true, useMemory: false, autoName: false },
+    settings: { provider: "ollama", models: { ollama: "gemma3:4b" }, folders: FOLDERS, keys: {}, autoRead: true, useMemory: false, autoName: false },
     sweep: { touch: (p) => touched.push(p), stop: () => {} },
     async save() {},
     async config() { return { provider, model: "gemma3:4b", key }; },

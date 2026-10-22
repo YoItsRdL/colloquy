@@ -8,13 +8,13 @@
  */
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { buildConfig, backgroundConfig } from "./src/config.js";
+import { buildConfig, backgroundConfig, migrate } from "./src/config.js";
 import { resolve as resolveProvider, defaultProvider } from "./src/providers/index.js";
 
 const KEYS = { OPENAI_API_KEY: "sk-test", OLLAMA_URL: "http://localhost:11434/v1" };
 
 test("what the chips say is what the turn runs against", () => {
-  const config = buildConfig({ provider: "openai", model: "gpt-5" }, KEYS);
+  const config = buildConfig({ provider: "openai", models: { openai: "gpt-5" } }, KEYS);
   assert.equal(config.provider.name, "openai");
   assert.equal(config.model, "gpt-5");
   assert.equal(config.key, "sk-test");
@@ -87,7 +87,7 @@ test("a missing key is reported as missing, not substituted", () => {
  * setting reads and names exactly as it did before there was one.
  */
 test("with nothing set, the unattended work runs on the chat model", () => {
-  const config = backgroundConfig({ provider: "openai", model: "gpt-5" }, KEYS);
+  const config = backgroundConfig({ provider: "openai", models: { openai: "gpt-5" } }, KEYS);
 
   assert.equal(config.provider.name, "openai");
   assert.equal(config.model, "gpt-5");
@@ -96,7 +96,7 @@ test("with nothing set, the unattended work runs on the chat model", () => {
 
 test("a model set for it is what the unattended work runs on, whatever the chips say", () => {
   const config = backgroundConfig(
-    { provider: "openai", model: "gpt-5", background: { provider: "ollama", model: "gemma3:1b" } },
+    { provider: "openai", models: { openai: "gpt-5" }, background: { provider: "ollama", model: "gemma3:1b" } },
     KEYS,
   );
 
@@ -120,7 +120,7 @@ test("a provider set for it with no model runs that provider's default", () => {
  */
 test("a key removed since it was chosen gives way to the chat model", () => {
   const config = backgroundConfig(
-    { provider: "ollama", background: { provider: "openai", model: "gpt-5" } },
+    { provider: "ollama", background: { provider: "openai", models: { openai: "gpt-5" } } },
     { OLLAMA_URL: "http://localhost:11434/v1" },
   );
 
@@ -133,4 +133,20 @@ test("a provider that no longer exists gives way rather than throwing", () => {
 
   assert.ok(config.key);
   assert.equal(config.chosen, false);
+});
+
+test("a stored model is only ever the stored provider's, even when another provider answers", () => {
+  // Gemini is stored, but only OpenAI has a key, so OpenAI answers. Gemini's model must not
+  // be sent there.
+  const config = buildConfig({ provider: "gemini", models: { gemini: "gemini-2.5-flash" } }, { OPENAI_API_KEY: "k" });
+  assert.equal(config.provider.name, "openai");
+  assert.notEqual(config.model, "gemini-2.5-flash");
+  assert.equal(config.model, config.provider.defaultModel);
+});
+
+test("settings from before models were kept per provider are moved to their provider", () => {
+  const migrated = migrate({ provider: "openai", model: "gpt-5", keys: {} });
+  assert.deepEqual(migrated.models, { openai: "gpt-5" });
+  assert.equal("model" in migrated, false, "so it cannot be read as anyone else's");
+  assert.deepEqual(migrate({ provider: "openai", models: { openai: "x" } }).models, { openai: "x" }, "new ones left alone");
 });

@@ -83,7 +83,6 @@ function confirmRemoval(tab, containerEl, key) {
         if (tab.plugin.settings.provider === key.name) {
           const left = status(allAdapters(), tab.plugin.settings).find((k) => k.configured);
           tab.plugin.settings.provider = left?.name ?? defaultProvider;
-          tab.plugin.settings.model = null;
         }
 
         await tab.plugin.save();

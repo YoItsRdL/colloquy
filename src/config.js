@@ -6,6 +6,38 @@
  */
 import { resolve as resolveProvider, defaultProvider, all as allAdapters } from "./providers/index.js";
 
+/**
+ * The model chosen for one provider, or nothing.
+ *
+ * Kept per provider because a model belongs to the provider that listed it. A single stored
+ * model had to be thrown away on every switch, and was wrong whenever the provider in use
+ * was not the one it was chosen for, which is what happens when a stored provider has lost
+ * its key and something else answers. Each provider keeps its own, so switching back finds
+ * it where it was left and nothing travels between them.
+ */
+export const modelOf = (settings, provider) => settings?.models?.[provider?.name] ?? null;
+
+/** Records the choice for one provider, or forgets it when `id` is empty. */
+export function setModel(settings, provider, id) {
+  const models = { ...settings.models };
+  if (id) models[provider.name] = id;
+  else delete models[provider.name];
+  settings.models = models;
+}
+
+/**
+ * Settings written before models were kept per provider held one, for whichever provider
+ * was stored beside it. Moved to that provider and the old field dropped, so it cannot be
+ * read as belonging to another.
+ */
+export function migrate(settings) {
+  if (settings.model === undefined) return settings;
+  const { model, ...rest } = settings;
+  const models = { ...rest.models };
+  if (model && rest.provider && !models[rest.provider]) models[rest.provider] = model;
+  return { ...rest, models };
+}
+
 /** Every adapter that could actually answer right now, in registration order. */
 const configured = (keys) => allAdapters().filter((a) => a.keyVar && keys[a.keyVar]);
 
@@ -43,7 +75,7 @@ export function buildConfig(settings, keys) {
 
   return {
     provider,
-    model: settings.model ?? provider.defaultModel,
+    model: modelOf(settings, provider) ?? provider.defaultModel,
     key: keys[provider.keyVar],
   };
 }

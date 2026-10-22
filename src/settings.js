@@ -21,7 +21,7 @@ import { foldersOf } from "./folders.js";
 
 const SUPPORT = "https://buymeacoffee.com/ibonescalap";
 
-export const DEFAULTS = { provider: defaultProvider, model: null, background: null, keys: {}, folders: {}, autoName: true, autoRead: true, useMemory: true };
+export const DEFAULTS = { provider: defaultProvider, models: {}, background: null, keys: {}, folders: {}, autoName: true, autoRead: true, useMemory: true };
 
 export class SettingsTab extends PluginSettingTab {
   constructor(app, plugin) {

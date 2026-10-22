@@ -10,6 +10,7 @@ import assert from "node:assert/strict";
 import { El, Menu, menus } from "./test/obsidian.js";
 import { createChips } from "./src/chips.js";
 import { forgetModels } from "./src/models.js";
+import { modelOf } from "./src/config.js";
 
 /** Somewhere nothing is listening, so listing models fails the way an absent server does. */
 const NOWHERE = "http://127.0.0.1:1/v1";
@@ -54,8 +55,8 @@ test("with nothing to choose between, the provider chip does not invite a click"
  * A model belongs to the provider that listed it, so it cannot travel, sending one
  * provider's model to another fails on the first turn.
  */
-test("changing provider drops the model that belonged to the old one", async () => {
-  const settings = { provider: "gemini", model: "gemini-2.5-flash", keys: { GEMINI_API_KEY: "g", ANTHROPIC_API_KEY: "a" } };
+test("changing provider leaves the old one's model with the old one", async () => {
+  const settings = { provider: "gemini", models: { gemini: "gemini-2.5-flash" }, keys: { GEMINI_API_KEY: "g", ANTHROPIC_API_KEY: "a" } };
   const ui = chipsFor(settings);
 
   ui.provider.click();
@@ -63,20 +64,21 @@ test("changing provider drops the model that belonged to the old one", async () 
   await settle();
 
   assert.equal(settings.provider, "anthropic");
-  assert.equal(settings.model, null, "not carried across");
+  assert.deepEqual(settings.models, { gemini: "gemini-2.5-flash" }, "stays with its own provider");
+  assert.equal(modelOf(settings, { name: "anthropic" }), null, "and does not travel");
   assert.equal(ui.plugin.saves, 1);
   assert.equal(ui.changes, 1, "and the panel is told, so the next turn uses it");
 });
 
 test("choosing the provider already in use changes nothing", async () => {
-  const settings = { provider: "gemini", model: "gemini-2.5-flash", keys: { GEMINI_API_KEY: "g", ANTHROPIC_API_KEY: "a" } };
+  const settings = { provider: "gemini", models: { gemini: "gemini-2.5-flash" }, keys: { GEMINI_API_KEY: "g", ANTHROPIC_API_KEY: "a" } };
   const ui = chipsFor(settings);
 
   ui.provider.click();
   await Menu.last().choose("Gemini");
   await settle();
 
-  assert.equal(settings.model, "gemini-2.5-flash", "kept");
+  assert.equal(settings.models.gemini, "gemini-2.5-flash", "kept");
   assert.equal(ui.plugin.saves, 0, "and nothing written");
 });
 
@@ -112,7 +114,7 @@ test("a fresh install already points at the local provider", () => {
  * somewhere, otherwise two models that shorten alike are indistinguishable.
  */
 test("the model chip keeps the whole id in its tooltip", () => {
-  const ui = chipsFor({ provider: "gemini", model: "gemini-2.5-flash-preview-09-2025", keys: { GEMINI_API_KEY: "g" } });
+  const ui = chipsFor({ provider: "gemini", models: { gemini: "gemini-2.5-flash-preview-09-2025" }, keys: { GEMINI_API_KEY: "g" } });
 
   assert.equal(ui.model.title, "gemini-2.5-flash-preview-09-2025");
 });
@@ -136,11 +138,27 @@ test("a provider that cannot be reached still offers its default model", async (
  * two places answering one question and agreeing until they did not.
  */
 test("the model chip names what a turn would run, not the adapter's constant", async () => {
-  const ui = chipsFor({ provider: "ollama", model: null, keys: { OLLAMA_URL: NOWHERE } });
+  const ui = chipsFor({ provider: "ollama", models: {}, keys: { OLLAMA_URL: NOWHERE } });
   await settle();
 
   // Nothing is listening, so the constant is all there is and the chip says so rather than
   // emptying itself or waiting for ever.
   assert.equal(ui.model.findAll((e) => e.hasClass("colloquy-chip-label"))[0].textContent, "qwen3:4b");
   assert.equal(ui.model.disabled, false, "and it can still be opened to choose another");
+});
+
+test("each provider keeps its own model, so switching back finds it where it was left", async () => {
+  const settings = { provider: "gemini", models: { gemini: "gemini-2.5-flash" }, keys: { GEMINI_API_KEY: "g", ANTHROPIC_API_KEY: "a" } };
+  const ui = chipsFor(settings);
+
+  ui.provider.click();
+  await Menu.last().choose("Claude");
+  await settle();
+  ui.provider.click();
+  await Menu.last().choose("Gemini");
+  await settle();
+
+  assert.equal(settings.provider, "gemini");
+  assert.equal(settings.models.gemini, "gemini-2.5-flash", "not lost by the visit elsewhere");
+  assert.equal(settings.models.anthropic, undefined, "and nothing was invented for the other");
 });

@@ -7,7 +7,7 @@
  * fallback chain (ADR-0009) a matter of deleting it rather than untangling it.
  */
 import { Plugin, Notice } from "obsidian";
-import { buildConfig, backgroundConfig } from "./config.js";
+import { buildConfig, backgroundConfig, modelOf, migrate } from "./config.js";
 import { defaultModelFor } from "./models.js";
 import { keysOf } from "./keys.js";
 import { all as allAdapters } from "./providers/index.js";
@@ -26,7 +26,7 @@ export default class ColloquyPlugin extends Plugin {
     // (a fresh clone), and the defaults answer for a vault that has neither.
     this.preferences = `${this.manifest.dir}/preferences.json`;
     const shared = await readShared(this.app.vault.adapter, this.preferences);
-    this.settings = Object.assign({}, DEFAULTS, shared, await this.loadData());
+    this.settings = migrate(Object.assign({}, DEFAULTS, shared, await this.loadData()));
 
     this.registerView(VIEW_TYPE, (leaf) => new ConversationView(leaf, this));
     this.addRibbonIcon("message-square", "Colloquy", () => this.open());
@@ -109,7 +109,7 @@ export default class ColloquyPlugin extends Plugin {
    */
   async config() {
     const config = buildConfig(this.settings, keysOf(this.settings, allAdapters()));
-    if (this.settings.model) return config;
+    if (modelOf(this.settings, config.provider)) return config;
     return { ...config, model: await defaultModelFor(config) };
   }
 
@@ -125,7 +125,7 @@ export default class ColloquyPlugin extends Plugin {
     const config = backgroundConfig(this.settings, keysOf(this.settings, allAdapters()));
     // The stored constant is a guess and, for a local provider, a wrong one: asked only
     // when nobody has named a model, and cached for the process (see defaultModelFor).
-    const named = config.chosen ? this.settings.background?.model : this.settings.model;
+    const named = config.chosen ? this.settings.background?.model : modelOf(this.settings, config.provider);
     if (named) return config;
     return { ...config, model: await defaultModelFor(config) };
   }

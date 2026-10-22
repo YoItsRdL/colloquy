@@ -11,7 +11,7 @@ import { safeModelId, SAFE_ID } from "./model-id.js";
 
 export const name = "anthropic";
 export const label = "Claude";   // what a person calls it, so no product name lives outside providers/
-export const defaultModel = "claude-sonnet-5";
+export const defaultModel = "claude-sonnet-5-5";
 export const keyVar = "ANTHROPIC_API_KEY";
 
 const ENDPOINT = "https://api.anthropic.com/v1/messages";

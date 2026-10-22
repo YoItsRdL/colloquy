@@ -3,6 +3,16 @@
 Dates are release dates. Reasoning that outlived a single release lives in
 [`decisions/`](decisions/) instead.
 
+## 1.0.7 (2026-10-22)
+
+- **Each provider keeps its own model.** One stored model was shared by all of them, so when
+  the stored provider had lost its key and another one answered, the first one's model went
+  with the question. Models are now kept per provider: switching back finds yours where you
+  left it, and nothing travels between them. Settings from before are moved to the provider
+  they were stored beside.
+- **Claude's default is a model that exists.** A fresh install defaulted to `claude-sonnet-5`,
+  which Anthropic does not list. It is now `claude-sonnet-5-5`.
+
 ## 1.0.6 (2026-10-22)
 
 - **Anthropic works from a fresh install.** Its API refuses a request that comes from a

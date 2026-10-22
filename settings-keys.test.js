@@ -123,7 +123,7 @@ test("cancelling a removal keeps the key", async () => {
  * that cannot answer, and this screen has no provider dropdown to correct it with.
  */
 test("removing the key in use moves the selection to one that can answer", async () => {
-  const settings = { provider: "anthropic", model: "claude-3", keys: { ANTHROPIC_API_KEY: SECRET, GEMINI_API_KEY: "g" } };
+  const settings = { provider: "anthropic", models: { anthropic: "claude-3" }, keys: { ANTHROPIC_API_KEY: SECRET, GEMINI_API_KEY: "g" } };
   const tab = screen(settings);
   trashIn(row(tab, "Claude")).click();
 
@@ -131,7 +131,7 @@ test("removing the key in use moves the selection to one that can answer", async
   await settle();
 
   assert.equal(settings.provider, "gemini", "the one still configured");
-  assert.equal(settings.model, null, "and no model left over from the old one");
+  assert.equal(settings.models.gemini, undefined, "and none of the old one's is lent to the new");
 });
 
 test("a key pasted with whitespace is refused, and said so", async () => {

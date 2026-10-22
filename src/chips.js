@@ -8,7 +8,7 @@
 import { Menu, setIcon } from "obsidian";
 import { listModels, defaultModelFor } from "./models.js";
 import { all as allAdapters } from "./providers/index.js";
-import { chooseProvider } from "./config.js";
+import { chooseProvider, modelOf, setModel } from "./config.js";
 import { keysOf } from "./keys.js";
 import { shorten } from "./label.js";
 
@@ -61,7 +61,7 @@ export function createChips({ container, plugin, onChange }) {
     providerControl.label.setText(provider?.label ?? provider?.name ?? "No provider");
     providerChip.disabled = available().length < 2;   // nothing to choose between
 
-    const id = settings().model ?? settled ?? provider?.defaultModel ?? "no model";
+    const id = modelOf(settings(), provider) ?? settled ?? provider?.defaultModel ?? "no model";
     modelControl.label.setText(shorten(id, provider));
     modelChip.disabled = !provider;
 
@@ -75,7 +75,7 @@ export function createChips({ container, plugin, onChange }) {
    */
   async function settle() {
     const provider = current();
-    if (!provider || settings().model) return;
+    if (!provider || modelOf(settings(), provider)) return;
 
     try {
       const model = await defaultModelFor({ provider, key: keys()[provider.keyVar] });
@@ -98,10 +98,9 @@ export function createChips({ container, plugin, onChange }) {
         item.setChecked(adapter.name === chosen?.name);
         item.onClick(async () => {
           if (adapter.name === chosen?.name) return;
-          // A model belongs to the provider that listed it, so it cannot travel, sending
-          // one provider's model to another fails on the first turn.
+          // A model belongs to the provider that listed it, and each provider keeps its own
+          // (config.js), so nothing travels and switching back finds the choice as left.
           settings().provider = adapter.name;
-          settings().model = null;
           settled = null;   // it belonged to the provider we are leaving
           await plugin.save();
           paint();
@@ -123,7 +122,7 @@ export function createChips({ container, plugin, onChange }) {
       models = await listModels({
         provider,
         key: keys()[provider.keyVar],
-        model: settings().model ?? provider.defaultModel,
+        model: modelOf(settings(), provider) ?? provider.defaultModel,
       });
     } catch {
       // One provider failing to list is not a reason to offer nothing: its default is
@@ -136,9 +135,9 @@ export function createChips({ container, plugin, onChange }) {
     for (const model of models) {
       menu.addItem((item) => {
         item.setTitle(model.label ?? model.id);
-        item.setChecked(model.id === (settings().model ?? provider.defaultModel));
+        item.setChecked(model.id === (modelOf(settings(), provider) ?? provider.defaultModel));
         item.onClick(async () => {
-          settings().model = model.id;
+          setModel(settings(), provider, model.id);
           await plugin.save();
           paint();
           onChange?.();

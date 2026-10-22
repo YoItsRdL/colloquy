@@ -239,7 +239,7 @@ test("a download in progress survives the screen being rebuilt under it", async 
 test("removing the model in use moves the selection to one still installed", async () => {
   serving({ models: [model("gemma3:4b", 3e9, "4.3B", "Q4_K_M"), model("qwen3:4b", 2e9, "4.0B", "Q4_K_M")] });
   modals.length = 0;
-  const tab = screen({ keys: {}, model: "qwen3:4b" });
+  const tab = screen({ keys: {}, models: { ollama: "qwen3:4b" } });
   await settle();
 
   row(tab, "qwen3:4b").find((e) => e.getAttr("data-icon") === "trash").onclick();
@@ -247,7 +247,7 @@ test("removing the model in use moves the selection to one still installed", asy
   Modal.last().contentEl.button("Remove").click();
   await settle();
 
-  assert.equal(tab.plugin.settings.model, "gemma3:4b", "the one still there");
+  assert.equal(tab.plugin.settings.models.ollama, "gemma3:4b", "the one still there");
   assert.equal(tab.refreshed, 1, "and the panel is told, so its chip agrees");
 });
 
@@ -259,7 +259,7 @@ test("removing the model in use moves the selection to one still installed", asy
 test("removing the model set for reading moves that selection too", async () => {
   serving({ models: [model("gemma3:4b", 3e9, "4.3B", "Q4_K_M"), model("qwen3:4b", 2e9, "4.0B", "Q4_K_M")] });
   modals.length = 0;
-  const tab = screen({ keys: {}, model: "gemma3:4b", background: { provider: "ollama", model: "qwen3:4b" } });
+  const tab = screen({ keys: {}, models: { ollama: "gemma3:4b" }, background: { provider: "ollama", model: "qwen3:4b" } });
   await settle();
 
   row(tab, "qwen3:4b").find((e) => e.getAttr("data-icon") === "trash").onclick();
@@ -268,7 +268,7 @@ test("removing the model set for reading moves that selection too", async () => 
   await settle();
 
   assert.deepEqual(tab.plugin.settings.background, { provider: "ollama", model: "gemma3:4b" });
-  assert.equal(tab.plugin.settings.model, "gemma3:4b", "the chips were pointing elsewhere and stay there");
+  assert.equal(tab.plugin.settings.models.ollama, "gemma3:4b", "the chips were pointing elsewhere and stay there");
 });
 
 /**
@@ -284,7 +284,7 @@ test("a removal the server refuses says so, and does not claim the space back", 
   });
   modals.length = 0;
   notices.length = 0;
-  const tab = screen({ keys: {}, model: "qwen3:4b" });
+  const tab = screen({ keys: {}, models: { ollama: "qwen3:4b" } });
   await settle();
 
   row(tab, "gemma3:4b").find((e) => e.getAttr("data-icon") === "trash").onclick();
@@ -295,7 +295,7 @@ test("a removal the server refuses says so, and does not claim the space back", 
   const said = notices.join(" ");
   assert.match(said, /could not remove gemma3:4b/i, "it names what failed");
   assert.doesNotMatch(said, /Removed gemma3:4b/, "and never reports it as removed");
-  assert.equal(tab.plugin.settings.model, "qwen3:4b", "the selection is untouched");
+  assert.equal(tab.plugin.settings.models.ollama, "qwen3:4b", "the selection is untouched");
   assert.ok(row(tab, "gemma3:4b"), "and the model is still listed, because it is still there");
 });
 
@@ -315,7 +315,7 @@ test("a delete that reports success but keeps the model is not reported as remov
   };
   modals.length = 0;
   notices.length = 0;
-  const tab = screen({ keys: {}, model: "gemma3:4b" });
+  const tab = screen({ keys: {}, models: { ollama: "gemma3:4b" } });
   await settle();
 
   row(tab, "gemma3:4b").find((e) => e.getAttr("data-icon") === "trash").onclick();
@@ -331,7 +331,7 @@ test("a delete that reports success but keeps the model is not reported as remov
 test("removing a model that was not selected leaves the selection alone", async () => {
   serving({ models: [model("gemma3:4b", 3e9, "4.3B", "Q4_K_M"), model("qwen3:4b", 2e9, "4.0B", "Q4_K_M")] });
   modals.length = 0;
-  const tab = screen({ keys: {}, model: "gemma3:4b" });
+  const tab = screen({ keys: {}, models: { ollama: "gemma3:4b" } });
   await settle();
 
   row(tab, "qwen3:4b").find((e) => e.getAttr("data-icon") === "trash").onclick();
@@ -339,7 +339,7 @@ test("removing a model that was not selected leaves the selection alone", async 
   Modal.last().contentEl.button("Remove").click();
   await settle();
 
-  assert.equal(tab.plugin.settings.model, "gemma3:4b");
+  assert.equal(tab.plugin.settings.models.ollama, "gemma3:4b");
   assert.equal(tab.refreshed, 0, "nothing changed, so nothing to tell");
 });
 
